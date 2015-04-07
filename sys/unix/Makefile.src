@@ -461,11 +461,11 @@ all:	$(GAME)
 # below in the 'make depend' output.
 monst.o:
 	$(CC) $(CFLAGS) -c monst.c
-	@rm -f $(MAKEDEFS)
+	#@rm -f $(MAKEDEFS)
 
 objects.o:
 	$(CC) $(CFLAGS) -c objects.c
-	@rm -f $(MAKEDEFS)
+	#@rm -f $(MAKEDEFS)
 
 # Qt windowport meta-object-compiler output
 qt_kde0.moc: ../include/qt_kde0.h
@@ -477,12 +477,12 @@ qt_win.moc: ../include/qt_win.h
 qttableview.moc: ../include/qttableview.h
 	$(QTDIR)/bin/moc -o qttableview.moc ../include/qttableview.h
 
-$(MAKEDEFS): ../util/makedefs.c  $(CONFIG_H) ../include/permonst.h \
-		../include/objclass.h ../include/monsym.h \
-		../include/artilist.h ../include/dungeon.h ../include/obj.h \
-		../include/monst.h ../include/you.h ../include/flag.h \
-		../include/dlb.h ../include/patchlevel.h ../include/qtext.h
-	@( cd ../util ; $(MAKE) makedefs)
+#$(MAKEDEFS): ../util/makedefs.c  $(CONFIG_H) ../include/permonst.h \
+#		../include/objclass.h ../include/monsym.h \
+#		../include/artilist.h ../include/dungeon.h ../include/obj.h \
+#		../include/monst.h ../include/you.h ../include/flag.h \
+#		../include/dlb.h ../include/patchlevel.h ../include/qtext.h
+#	@( cd ../util ; $(MAKE) makedefs)
 
 ../include/onames.h: $(MAKEDEFS)
 	@( cd ../util ; $(MAKE) ../include/onames.h )

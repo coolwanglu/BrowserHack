@@ -35,7 +35,7 @@
 #   define termstruct	termio
 #  endif
 # endif /* POSIX_TYPES */
-# ifdef LINUX
+# if defined(LINUX) && !defined(WEB_GRAPHICS)
 #  include <sys/ioctl.h>
 #  undef delay_output	/* curses redefines this */
 #  include <curses.h>
