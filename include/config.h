@@ -56,6 +56,11 @@
  *	tty, X11, mac, amii, BeOS, Qt, Gem, Gnome
  */
 
+#ifdef WEB_GRAPHICS
+#define DEFAULT_WINDOW_SYS "Web"
+#define GRAPHIC_TOMBSTONE
+#endif
+
 /* MAC also means MAC windows */
 #ifdef MAC
 # ifndef	AUX
@@ -168,7 +173,7 @@
  *	compression.
  */
 
-#ifdef UNIX
+#if defined(UNIX) && !defined(WEB_GRAPHICS)
 /* path and file name extension for compression program */
 #define COMPRESS "/usr/bin/compress"	/* Lempel-Ziv compression */
 #define COMPRESS_EXTENSION ".Z"		/* compress's extension */
@@ -195,7 +200,7 @@
  */
 #define INSURANCE	/* allow crashed game recovery */
 
-#ifndef MAC
+#if !defined(MAC) && !defined(WEB_GRAPHICS)
 # define CHDIR		/* delete if no chdir() available */
 #endif
 
