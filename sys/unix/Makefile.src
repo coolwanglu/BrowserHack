@@ -173,6 +173,10 @@ CXX=g++
 WINTTYSRC = ../win/tty/getline.c ../win/tty/termcap.c ../win/tty/topl.c \
 	../win/tty/wintty.c
 WINTTYOBJ = getline.o termcap.o topl.o wintty.o
+
+WINWEBSRC = ../win/web/web.c tile.c
+WINWEBOBJ = web.o tile.o
+
 #
 # files for an X11 port
 # (tile.c is a generated source file)
@@ -214,8 +218,8 @@ WINBEOBJ =
 
 #
 #
-WINSRC = $(WINTTYSRC)
-WINOBJ = $(WINTTYOBJ)
+WINSRC = $(WINWEBSRC)
+WINOBJ = $(WINWEBOBJ)
 
 # on some systems the termcap library is in -ltermcap or -lcurses
 # on 386 Xenix, the -ltermlib tputs() seems not to work; use -lcurses instead
@@ -232,6 +236,9 @@ WINOBJ = $(WINTTYOBJ)
 # WINTTYLIB = -lcurses16
 # WINTTYLIB = -lncurses
 WINTTYLIB = -ltermlib
+
+WINWEBLIB =
+
 #
 # libraries for X11
 # If USE_XPM is defined in config.h, you will also need -lXpm here.
@@ -255,7 +262,8 @@ WINGEMLIB = -le_gem -lgem
 # libraries for BeOS 
 WINBELIB = -lbe
 
-WINLIB = $(WINTTYLIB)
+#WINLIB = $(WINTTYLIB)
+WINLIB = $(WINWEBLIB)
 
 # any other strange libraries your system needs (for Sysunix only -- the more
 # specialized targets should already be right)
@@ -605,6 +613,9 @@ topl.o: ../win/tty/topl.c $(HACK_H) ../include/tcap.h
 wintty.o: ../win/tty/wintty.c $(HACK_H) ../include/dlb.h \
 		../include/patchlevel.h ../include/tcap.h
 	$(CC) $(CFLAGS) -c ../win/tty/wintty.c
+web.o: ../win/web/web.c $(HACK_H) ../include/dlb.h \
+		../include/patchlevel.h 
+	$(CC) $(CFLAGS) -c ../win/web/web.c
 Window.o: ../win/X11/Window.c ../include/xwindowp.h ../include/xwindow.h \
 		$(CONFIG_H)
 	$(CC) $(CFLAGS) -c ../win/X11/Window.c
