@@ -1,0 +1,23 @@
+Debug-Mode Quick Reference:
+
+^E  ==  detect secret doors and traps.
+^F  ==  do magic mapping.
+^G  ==  create monster.
+^I  ==  identify items in pack.
+^O  ==  tell locations of special levels.
+^T  ==  do intra-level teleport.
+^V  ==  do trans-level teleport.
+^W  ==  make wish.
+^X  ==  show attributes including intrinsic attributes.
+
+#levelchange == change experience level
+#lightsources == show mobile light sources
+#monpolycontrol == control monster polymorphs
+#panic == panic test
+#polyself == polymorph self
+#seenv == show seen vectors
+#stats == show memory statistics
+#timeout == look at timeout queue
+#vision == show vision array
+#wmode == show wall modes
+

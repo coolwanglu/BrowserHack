@@ -1,0 +1,180 @@
+$RCSfile: fixes34.2,v $ $Revision: 1.2.2.130 $ $Date: 2003/08/26 15:13:56 $
+
+General Fixes and Modified Features
+-----------------------------------
+avoid panic when secondary weapon is cursed while generating bones level
+don't crash when applying a figurine, candle, or bell that gets used up
+grammar bits
+two invisible monsters hitting one another should not be visible
+if only one monster in a monster-vs-monster fight is visible, show an I symbol
+	for the other one whether it is an attacker or defender
+display "It" and not "The invisible <pet>" when an invisible pet eats food.
+include a hint about expected input when prompting for musical notes
+don't report "program initialization failed" if a panic occurs after the
+	game is over
+include statue contents in end of game inventory disclosure
+treat handlessness as a major problem when deciding prayer outcome
+perform artifact touch checks when putting on accessories
+missing noun in message when horns pierce through your helmet
+don't use hcolor() for trapped chest gases when you aren't hallucinating
+the age of a potion of oil from a bones file wasn't being handled correctly
+putting gold in a container on the shop floor wasn't credited the way
+	gold already in the container when dropped was credited
+avoid integer division rounding error when calculating carrying capacity
+don't lock/unlock a door while in a pit, to be consistent with door opening
+infravision should not make invisible player "visible" (it doesn't for monsters)
+Perseus statue should always be male
+charge correctly when breaking multiple objects with the same zap, avoids
+	a dopay: not to shopkeeper impossible
+clean up funny lighting on the healer locate level
+allow all tame monsters that eat to consider food thrown to them
+the screen display wasn't always up to date after map topology changes
+jumping over a sokobon pit would result in the player next to, not in, the pit
+don't let arrow, rock or dart traps provide an infinite number of objects
+make enhanced ammo harder to break to make lesser number last longer
+dropping from height or throwing a normal container may damage contents
+some Magicbane messages treated "erinys" as plural
+initialize artifacts before processing $WIZKIT
+clean up inconsistency between various places quaff is documented
+is_damageable was using is_rottable incorrectly
+charge for use of an unpaid tinning kit
+avoid impossible when water freezes while hero is hiding under water
+avoid impossible after eating the object the hero is hiding under
+failed attempt to eat floor gold while polymorphed would lose the gold
+running that stops for closed doors should stop at mimics mimicking closed doors
+allow wishing for magenta potions (ignoring the rank name 'mage')
+fix an uninitialized memory access in non-quick dolookup
+fix were changing message that wasn't being displayed
+immediate encumbrance feedback when removing gauntlets of power
+make deliberately flying down the Castle's trap doors consistent with falling
+give more explicit feedback for exploding bag of holding
+help display for "list of game options" misformats runmode and scroll_amount
+pit created by land mine explosion doesn't start out concealed
+update map display sooner when pushed boulder triggers land mine explosion
+prevent several QBUFSZ sized buffers from overflowing and triggering fatal 
+	errors inside window port prompt routines
+make sure that leashed monsters are released prior to shopkeeper inheriting
+	dead character's inventory
+attaching long named candle to long named candelabrum caused buffer overflow
+when polymorhed, only hand/weapon attack on disenchanter should result in
+	damage to weapon, gloves, etc.
+killer should say "the" when choking on unique monster's corpse
+allow applying polearm on monster you can see via infravision
+killer reason shouldn't use "a" or "an" prefix for multiple projectiles
+	scattered by land mine explosion
+killer reason for named missile could end up with garbage instead of the name
+make killer reason for various poisioning deaths be more consistent
+poison missiles were unintentionally more likely to inflict "deadly poison"
+	than in pre-3.4.1 releases
+provide feedback when going invisible after eating a stalker
+killer on tombstone had no prefix for starvation/exhaustion case
+ensure proper message ordering for boulder trap messages
+clean up data set by join_map that is overlaid by MAPs on special levels
+clarify disclose option default in opthelp, and support "all" as old help said
+add more calls to update_inventory as the inventory changes
+don't charge for items picked up from monster's interior while swallowed
+choking while eating non-food always called the food "quick snack"
+short swords are not throwing weapons
+several sit-in-trap cases were unreachable
+curse candelabrum in bones, like other similar artifacts
+detecting a trap in a chest while confused should not exercise wisdom
+any golem statue hit with stone-to-flesh spell animates as flesh golem
+correct invalid startup gender selection
+can no longer untrap floor containers during unskilled riding
+can no longer easily set land mines and bear traps during unskilled riding
+refine cmdassist handling for armor vs accessories
+prevent monsters from level teleporting out of the quest into the main dungeon
+prevent monsters from level teleporting into the Sanctum prior to invocation
+"m," command sequence would let you see all objects at a location even when 
+	they included a cockatrice corpse which hero was unequipped to handle
+use correct pronoun for unique monsters
+hostile monsters who follow you between levels won't do so if they're fleeing
+options for font_size for map, menu, message, status, and text all had the 
+	same description of "the size of the map font" in options.c
+when dismounting by choice and unimpaired, try not to land in a known trap
+when jousting a pudding into a polymorh trap, it was possible to end up
+	with two of the new type of monster
+don't allow polymorphed player to web over the stairs
+geographical shopkeeper updates
+stethoscope use should be free the first time it's use per player move
+travel command caches last position to make non-mouse less painful
+update pit trapped time when polymorphing to or from a monster that passes_walls
+show artifact hit message which affect the monster that swallowed the hero
+revived pet corpse from bones file should not be loyal to current player
+finding a statue trap you are about to dig should stop your occupation
+try to keep saddle at the same location as the steed corpse
+never display I symbol on the mounted hero/steed location
+pit digging is no longer stopped by a sleeping monster next to you
+ensure mksobj() always attaches timer to corpse, even if called with init FALSE
+only charge for eating one stacked tin, not all at once
+add flag to makemon() to allow monster to be created adjacent to the supplied 
+	coordinates if there is already a monster at the target location
+stone-to-flesh of spot with multiple statues can animate more than one
+use of stethoscope now deliberately impacted when hero is engulfed by whirly 
+	monster but fixed so it can sometimes work on your steed there too
+typos fixed in data.base
+add looting freehand() check to able_to_loot() to prevent opening container
+	only to be told that you can't loot anything
+Schroedinger's Cat could be placed at wrong location when its box is carried
+travel while polymorphed into a grid bug should not move diagonally
+refine cmdassist handling for grid bugs
+when casting force bolt spell while engulfed go ahead and use the engulfers 
+	name in the hit message rather than "it"
+a fog cloud shouldn't pummel you with debris
+do not let an attached iron ball drag the hero through a location that the hero
+	could not move normally
+hero's appearance should change immediately after mimicing completes
+avoid some uses of "it" in killer messages
+avoid "singular of null?" warning for info lookup of obscure user input
+there was no check for iron bars in dokick() so it defaulted to "empty space"
+if you couldn't see the rat created in a sink for some reason other than
+	blindness, you would get "Eek there's it in the sink."
+digging a pit while stuck in the floor should always free the player
+quest guardians can no longer be created via stone-to-flesh on their statue
+stone-to-flesh no longer silently ignored by a statue of a unique monster
+wishing for quest guardian corpse now gives a generic corpse of the species
+prevent quest guardians from other classes from talking to you as if they 
+	were your quest guardian
+wake up shopkeeper if a shop transaction is attempted while he's immobilized 
+statues created from monsters remember more monster attributes
+
+
+Platform- and/or Interface-Specific Fixes
+-----------------------------------------
+Gnome: compilation problems on Redhat 7.2 and 8.0
+unix: Makefile.utl would put OBJDIR objects in the wrong directory
+vms: create an empty paniclog file during playground installation
+win32tty: add subkeyvalue option to alter key values; Finnish keyboard fix
+win32tty: distinguish between black/gray/white (by Quietust)
+win32gui: prevent male Valkyrie and other incorrect startup settings
+win32gui: allow numeric quantity count on item selection during loot
+win32: some code in files.c was incorrectly assuming that a file
+	descriptor return value of 0 from open() was invalid but it 
+	could be valid on win32gui where stdin, stdout, stderr aren't open;
+	now it correctly checks for return value < 0 from open() 
+tiles: high priest tile had a couple bad pixels
+tiles: bad pixels in Croesus and Yeenoghu tiles
+FreeBSD: incorrect srandom declaration
+unix: don't autosave if hangup occurs after game is over
+linux: add example use of nroff on recent Linux distros
+linux: use random() by default instead of lrand48()
+OpenBSD: time() prototype and correct default Mail program
+Gnome: compilation problems on Solaris
+unix: better error message for .nethackrc access problems
+vms: during installation, warn if dlb file creation or non-dlb playground
+	setup is missing expected data files
+
+
+General New Features
+--------------------
+debug mode level teleport menu via '?'
+
+
+Platform- and/or Interface-Specific New Features
+------------------------------------------------
+win32tty: keystroke handlers can be dynamically loaded to assist in resolving
+	internationalization issues
+win32tty: add Ray Chason's code for international keyboard handling
+Solaris (and other SystemV variants): TIMED_DELAY support
+X11: NetHack.ad is now installed and used w/o user intervention
+

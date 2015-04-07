@@ -1,0 +1,199 @@
+NetHack History file for release 3.4
+
+Behold, mortal, the origins of NetHack...
+
+Jay Fenlason wrote the original Hack with help from Kenny Woodland,
+Mike Thome, and Jon Payne.
+
+Andries Brouwer did a major re-write, transforming Hack into a very different
+game, and published (at least) three versions (1.0.1, 1.0.2, and 1.0.3) for
+UNIX(tm) machines to the Usenet.
+
+Don G. Kneller ported Hack 1.0.3 to Microsoft(tm) C and MS-DOS(tm), producing
+PC HACK 1.01e, added support for DEC Rainbow graphics in version 1.03g, and
+went on to produce at least four more versions (3.0, 3.2, 3.51, and 3.6).
+
+R. Black ported PC HACK 3.51 to Lattice(tm) C and the Atari 520/1040ST,
+producing ST Hack 1.03.
+
+Mike Stephenson merged these various versions back together, incorporating
+many of the added features, and produced NetHack version 1.4.  He then
+coordinated a cast of thousands in enhancing and debugging NetHack 1.4 and
+released NetHack versions 2.2 and 2.3.
+ 
+Later, Mike coordinated a major rewrite of the game, heading a team which
+included Ken Arromdee, Jean-Christophe Collet, Steve Creps, Eric Hendrickson,
+Izchak Miller, Eric S. Raymond, John Rupley, Mike Threepoint, and Janet Walz,
+to produce NetHack 3.0c.  The same group subsequently released ten patch-
+level revisions and updates of 3.0.
+
+NetHack 3.0 was ported to the Atari by Eric R. Smith, to OS/2 by Timo
+Hakulinen, and to VMS by David Gentzel.  The three of them and Kevin Darcy
+later joined the main development team to produce subsequent revisions of
+3.0.
+
+Olaf Seibert ported NetHack 2.3 and 3.0 to the Amiga.  Norm Meluch, Stephen
+Spackman and Pierre Martineau designed overlay code for PC NetHack 3.0.
+Johnny Lee ported NetHack 3.0 to the Macintosh.  Along with various other
+Dungeoneers, they continued to enhance the PC, Macintosh, and Amiga ports
+through the later revisions of 3.0.
+ 
+Headed by Mike Stephenson and coordinated by Izchak Miller and Janet Walz,
+the development team which now included Ken Arromdee, David Cohrs,
+Jean-Christophe Collet, Kevin Darcy, Matt Day, Timo Hakulinen, Steve Linhart,
+Dean Luick, Pat Rankin, Eric Raymond, and Eric Smith undertook a radical
+revision of 3.0.  They re-structured the game's design, and re-wrote major
+parts of the code.  They added multiple dungeons, a new display, special
+individual character quests, a new endgame and many other new features, and
+produced NetHack 3.1.
+
+Ken Lorber, Gregg Wonderly and Greg Olson, with help from Richard Addison,
+Mike Passaretti, and Olaf Seibert, developed NetHack 3.1 for the Amiga.
+
+Norm Meluch and Kevin Smolkowski, with help from Carl Schelin, Stephen
+Spackman, Steve VanDevender, and Paul Winner, ported NetHack 3.1 to the PC.
+
+Jon W{tte and Hao-yang Wang, with help from Ross Brown, Mike Engber, David
+Hairston, Michael Hamel, Jonathan Handler, Johnny Lee, Tim Lennan, Rob Menke,
+and Andy Swanson developed NetHack 3.1 for the Macintosh, porting it for
+MPW.  Building on their development, Barton House added a Think C port.  
+
+Timo Hakulinen ported NetHack 3.1 to OS/2.  Eric Smith ported NetHack 3.1
+to the Atari.  Pat Rankin, with help from Joshua Delahunty, is responsible
+for the VMS version of NetHack 3.1.  Michael Allison ported NetHack 3.1 to
+Windows NT.
+
+Dean Luick, with help from David Cohrs, developed NetHack 3.1 for X11.
+Warwick Allison wrote a tiled version of NetHack for the Atari;
+he later contributed the tiles to the DevTeam and tile support was
+then added to other platforms.
+
+The 3.2 development team, comprised of Michael Allison, Ken Arromdee, David
+Cohrs, Jessie Collet, Steve Creps, Kevin Darcy, Timo Hakulinen, Steve
+Linhart, Dean Luick, Pat Rankin, Eric Smith, Mike Stephenson, Janet Walz, and
+Paul Winner, released version 3.2 in April of 1996.
+
+Version 3.2 marked the tenth anniversary of the formation of the development
+team.  In a testament to their dedication to the game, all thirteen members
+of the original development team remained on the team at the start of work
+on that release.  During the interval between the release of 3.1.3 and 3.2,
+one of the founding members of the development team, Dr. Izchak Miller,
+passed away.  That release of the game was dedicated to him by the
+development and porting teams.
+
+Version 3.2 proved to be more stable than previous versions.  Many bugs
+were fixed, abuses eliminated, and game features tuned for better game
+play.
+
+During the lifespan of NetHack 3.1 and 3.2, several enthusiasts of the game
+added their own modifications to the game and made these "variants" publicly
+available:
+
+Tom Proudfoot and Yuval Oren created NetHack++, which was quickly renamed
+NetHack--.  Working independently, Stephen White wrote NetHack Plus.
+Tom Proudfoot later merged NetHack Plus and his own NetHack-- to produce
+SLASH.  Larry Stewart-Zerba and Warwick Allison improved the spellcasting
+system with the Wizard Patch.  Warwick Allison also ported NetHack to use
+the Qt interface.
+
+Warren Cheung combined SLASH with the Wizard Patch to produce Slash'em, and
+with the help of Kevin Hugo, added more features.  Kevin later joined the
+DevTeam and incorporated the best of these ideas in NetHack 3.3.
+
+The final update to 3.2 was the bug fix release 3.2.3, which was released
+simultaneously with 3.3.0 in December 1999 just in time for the Year 2000.
+
+The 3.3 development team, consisting of Michael Allison, Ken Arromdee, 
+David Cohrs, Jessie Collet, Steve Creps, Kevin Darcy, Timo Hakulinen, 
+Kevin Hugo, Steve Linhart, Ken Lorber, Dean Luick, Pat Rankin, Eric Smith, 
+Mike Stephenson, Janet Walz, and Paul Winner, released 3.3.0 in 
+December 1999 and 3.3.1 in August of 2000.
+
+Version 3.3 offered many firsts. It was the first version to separate race 
+and profession. The Elf class was removed in preference to an elf race, 
+and the races of dwarves, gnomes, and orcs made their first appearance in 
+the game alongside the familiar human race.  Monk and Ranger roles joined 
+Archeologists, Barbarians, Cavemen, Healers, Knights, Priests, Rogues, 
+Samurai, Tourists, Valkyries and of course, Wizards.  It was also the first
+version to allow you to ride a steed, and was the first version to have a
+publicly available web-site listing all the bugs that had been discovered.
+Despite that constantly growing bug list, 3.3 proved stable enough to last
+for more than a year and a half.
+
+
+The 3.4 development team initially consisted of Michael Allison, Ken Arromdee,
+David Cohrs, Jessie Collet, Kevin Hugo, Ken Lorber, Dean Luick, Pat Rankin,
+Mike Stephenson, Janet Walz, and Paul Winner, with Warwick Allison joining
+just before the release of NetHack 3.4.0 in March 2002.
+
+As with version 3.3, various people contributed to the game as a whole as
+well as supporting ports on the different platforms that NetHack runs on:
+
+Pat Rankin maintained 3.4 for VMS.
+
+Michael Allison maintained NetHack 3.4 for the MS-DOS platform.  
+Paul Winner and Yitzhak Sapir provided encouragement.
+
+Dean Luick, Mark Modrall, and Kevin Hugo maintained and enhanced the
+Macintosh port of 3.4.
+
+Michael Allison, David Cohrs, Alex Kompel, Dion Nicolaas, and Yitzhak Sapir 
+maintained and enhanced 3.4 for the Microsoft Windows platform. Alex Kompel 
+contributed a new graphical interface for the Windows port. Alex Kompel also
+contributed a Windows CE port for 3.4.1.
+
+Ron Van Iwaarden maintained 3.4 for OS/2.
+
+Janne Salmijarvi and Teemu Suikki maintained and enhanced the 
+Amiga port of 3.4 after Janne Salmijarvi resurrected it for 3.3.1.
+
+Christian `Marvin' Bressler maintained 3.4 for the Atari after he
+resurrected it for 3.3.1.
+
+There is a NetHack web site maintained by Ken Lorber at http://www.nethack.org/.
+
+			   - - - - - - - - - -
+
+From time to time, some depraved individual out there in netland sends a
+particularly intriguing modification to help out with the game.  The Gods of
+the Dungeon sometimes make note of the names of the worst of these miscreants
+in this, the list of Dungeoneers:
+
+    Adam Aronow               Izchak Miller             Mike Stephenson
+    Alex Kompel               J. Ali Harlow             Norm Meluch
+    Andreas Dorn              Janet Walz                Olaf Seibert
+    Andy Church               Janne Salmijarvi          Pasi Kallinen
+    Andy Swanson              Jean-Christophe Collet    Pat Rankin
+    Ari Huttunen              Jochen Erwied             Paul Winner
+    Barton House              John Kallen               Pierre Martineau
+    Benson I. Margulies       John Rupley               Ralf Brown
+    Bill Dyer                 John S. Bien              Ray Chason
+    Boudewijn Waijers         Johnny Lee                Richard Addison
+    Bruce Cox                 Jon W{tte                 Richard Beigel
+    Bruce Holloway            Jonathan Handler          Richard P. Hughey
+    Bruce Mewborne            Joshua Delahunty          Rob Menke
+    Carl Schelin              Keizo Yamamoto            Robin Johnson
+    Chris Russo               Ken Arnold                Roderick Schertler
+    David Cohrs               Ken Arromdee              Roland McGrath
+    David Damerell            Ken Lorber                Ron Van Iwaarden
+    David Gentzel             Ken Washikita             Ronnen Miller
+    David Hairston            Kevin Darcy               Ross Brown
+    Dean Luick                Kevin Hugo                Sascha Wostmann
+    Del Lamb                  Kevin Sitze               Scott Bigham
+    Deron Meranda             Kevin Smolkowski          Scott R. Turner
+    Dion Nicolaas             Kevin Sweet               Stephen Spackman
+    Dylan O'Donnell           Lars Huttar               Stephen White
+    Eric Backus               Malcolm Ryan              Steve Creps
+    Eric Hendrickson          Mark Gooderum             Steve Linhart
+    Eric R. Smith             Mark Modrall              Steve VanDevender
+    Eric S. Raymond           Marvin Bressler           Teemu Suikki
+    Erik Andersen             Matthew Day               Tim Lennan
+    Frederick Roeber          Merlyn LeRoy              Timo Hakulinen
+    Gil Neiger                Michael Allison           Tom Almy
+    Greg Laskin               Michael Feir              Tom West
+    Greg Olson                Michael Hamel             Warren Cheung
+    Gregg Wonderly            Michael Sokolov           Warwick Allison
+    Hao-yang Wang             Mike Engber               Yitzhak Sapir
+    Helge Hafting             Mike Gallop               
+    Irina Rempt-Drijfhout     Mike Passaretti           
+

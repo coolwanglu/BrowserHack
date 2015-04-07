@@ -1,0 +1,107 @@
+NetHack 3.4.3 Linux Elf
+
+This README provides the instructions for using the official Linux binary,
+system platform requirements, as well as steps used to create that binary.
+The same steps can be used from the source distribution to create a similar
+binary.
+
+The official Linux binary has support for tty and X11 windowing systems, but
+not Qt.  This means you will need to have X11 libraries installed on your
+system to run this binary, even in its tty flavor.
+
+
+The Linux binary package assumes that you have a user and a group named
+"games" on your system.  If you do not, you can simplify installation by
+creating them first.
+
+Log in as or su to "root".  Then, cd /, gunzip and untar the package,
+preserving permissions to put the NetHack files in /usr/games/nethack and
+/usr/games/lib/nethackdir.   For example, if the package in in your
+home directory you might perform these steps.
+    % su
+    # cd /
+    # tar xpvzf ~yourlogin/nethack-343-linux-X11.tgz
+
+If you have old record and logfile entries from a previous NetHack version,
+you might want to save copies before they get overwritten by the new empty
+files; old saved games and bones files from 3.4.x will work with 3.4.3.
+If you are installing from the RPM, there is no need to save the old record
+and logfile; they are automatically preserved.
+
+In addition to data files for running the game, you will find other useful
+things in /usr/games/lib/nethackdir (such as a copy of this README :-).
+
+The general documentation Guidebook.txt and the processed man pages
+nethack.txt and recover.txt should provide an introduction to the game.
+
+The sample config file called dot.nethackrc can be used by copying
+it to your home directory as .nethackrc and modifying it to your liking.
+
+If you are running X11 copy the nh10.pcf and ibm.pcf font files from
+/usr/games/lib/nethackdir to a X11 fonts directory (such as
+/usr/X11/lib/X11/fonts/misc) and run "mkfontdir", then restart X
+windows to load them.  If you prefer to use the graphical tiles,
+add the following to your .Xdefaults or .Xresources file:
+	NetHack.tile_file: x11tiles
+You may need to run "xrdb -merge $HOME/.Xdefaults" (or .Xresources) after
+doing this.
+
+The official Linux binary is set up to run setgid games, which allows
+multiple users on your system to play the game and prevents cheating by
+unprivileged users.  The usual default for NetHack is setuid games, but
+this causes problems with accessing .nethackrc on distributions with
+restrictive default security on home directories and users who don't know
+the tradeoffs of various permission settings.
+
+
+If you have problems, send us some email.
+
+nethack-bugs@nethack.org
+
+
+
+Steps used to build this binary release, in addition to the basic
+instructions found in sys/unix/Install.unx.  The step numbers below
+correspond to the step numbers in sys/unix/Install.unx.
+
+System:  gcc-3.2, XFree86-libs-4.2.1, ncurses-5.2, glibc-2.3.2 (GLIBC_2.3)
+
+3.  Edit include/config.h and include/unixconf.h
+    config.h: define X11_GRAPHICS window support.
+              define USE_XPM support.
+              define COMPRESS as /bin/gzip as that is where it
+              seems to reside on newer Linux's.
+              define COMPRESS_EXTENSION as ".gz"
+              define DLB
+	      define AUTOPICKUP_EXCEPTIONS
+
+    unixconf.h: define LINUX
+                define TIMED_DELAY
+
+6.  Makefile.src: define modern, non-BSD Linux and linux options throughout
+		  CC = gcc
+		  LFLAGS = -L/usr/X11R6/lib
+		  WINSRC = $(WINTTYSRC) $(WINX11SRC)
+		  WINOBJ = $(WINTTYOBJ) $(WINX11OBJ)
+		  WINTTYLIB = /usr/lib/libncurses.a
+		  WINX11LIB = -lXaw -lXmu -lXext -lXt -lXpm -lX11
+		  WINLIB = $(WINTTYLIB) $(WINX11LIB)
+
+    Makefile.utl: define modern, non-BSD Linux and linux options throughout
+                  Use bison/flex instead of yacc/lex
+		  CC = gcc
+		  LFLAGS = -L/usr/X11R6/lib
+		  YACC = bison -y
+		  LEX = flex
+
+7.  Makefile.top: GAMEGRP = games
+		  GAMEPERM = 02755
+		  FILEPERM = 0664
+		  EXEPERM = 0755
+		  DIRPERM = 0775
+		  VARDATND = x11tiles NetHack.ad pet_mark.xbm rip.xpm
+
+    make all; su; make install
+
+9.  Additional step: As discussed in win/X11/Install.X11, convert nh10.bdf
+    and ibm.bdf to proper font files and place in font path.

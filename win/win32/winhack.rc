@@ -1,0 +1,380 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#if defined(__BORLANDC__)
+LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_NETHACKW            ICON    DISCARDABLE     "NETHACK.ICO"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_NETHACKW MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save and Exit",              IDM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Quit",                       IDM_EXIT
+    END
+    POPUP "&Map"
+    BEGIN
+        MENUITEM "&0 - Use Tiles",              IDM_MAP_TILES
+        MENUITEM "&1 - ASCII (4x6)",            IDM_MAP_ASCII4X6
+        MENUITEM "&2 - ASCII (6x8)",            IDM_MAP_ASCII6X8
+        MENUITEM "&3 - ASCII (8x8)",            IDM_MAP_ASCII8X8
+        MENUITEM "&4 - ASCII (16x8)",           IDM_MAP_ASCII16X8
+        MENUITEM "&5 - ASCII (7x12)",           IDM_MAP_ASCII7X12
+        MENUITEM "&6 - ASCII  (8x12)",          IDM_MAP_ASCII8X12
+        MENUITEM "&7 - ASCII (16x12)",          IDM_MAP_ASCII16X12
+        MENUITEM "&8 - ASCII (12x16)",          IDM_MAP_ASCII12X16
+        MENUITEM "&9 - ASCII  (10x18)",         IDM_MAP_ASCII10X18
+        MENUITEM SEPARATOR
+        MENUITEM "&Fit To Screen ",             IDM_MAP_FIT_TO_SCREEN
+    END
+    POPUP "Windows &Settings"
+    BEGIN
+        MENUITEM "NetHack Mode",                IDM_NHMODE
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear All Settings",         IDM_CLEARSETTINGS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About ...",                  IDM_ABOUT
+        MENUITEM "&Long description of the game", IDM_HELP_LONG
+        MENUITEM "List of &commands",           IDM_HELP_COMMANDS
+        MENUITEM "&History of NetHack",         IDM_HELP_HISTORY
+        MENUITEM "&Info on a character",        IDM_HELP_INFO_CHAR
+        MENUITEM "Info on what a given &key does", IDM_HELP_INFO_KEY
+        MENUITEM "List of game &options",       IDM_HELP_OPTIONS
+        MENUITEM "&Longer list of game options", IDM_HELP_OPTIONS_LONG
+        MENUITEM "List of e&xtended commands",  IDM_HELP_EXTCMD
+        MENUITEM "The &NetHack license",        IDM_HELP_LICENSE
+        MENUITEM "NetHack for &Windows help",   IDM_HELP_PORTHELP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_NETHACKW ACCELERATORS MOVEABLE PURE 
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  22, 17, 230, 75
+STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "System"
+BEGIN
+    LTEXT           "NetHack",IDC_ABOUT_VERSION,10,10,170,15,SS_NOPREFIX
+    LTEXT           "Copyright",IDC_ABOUT_COPYRIGHT,10,30,210,40
+    DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
+END
+
+IDD_NHTEXT DIALOGEX 0, 0, 172, 178
+STYLE DS_SETFOREGROUND | WS_CHILD | WS_THICKFRAME
+EXSTYLE WS_EX_STATICEDGE
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,54,163,50,14
+    EDITTEXT        IDC_TEXT_CONTROL,0,0,170,160,ES_MULTILINE | 
+                    ES_OEMCONVERT | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_MENU DIALOGEX 0, 0, 187, 153
+STYLE WS_CHILD | WS_CLIPSIBLINGS | WS_THICKFRAME
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_CONTROLPARENT | WS_EX_STATICEDGE
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,132,50,14,BS_FLAT
+    PUSHBUTTON      "Cancel",IDCANCEL,130,132,50,14,BS_FLAT
+    LISTBOX         IDC_MENU_LIST,10,10,170,55,LBS_SORT | WS_TABSTOP
+    EDITTEXT        IDC_MENU_TEXT,10,70,170,60,ES_MULTILINE | ES_OEMCONVERT | 
+                    ES_READONLY | WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_GETLIN DIALOG DISCARDABLE  0, 0, 131, 29
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Question?"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,0,15,65,14
+    PUSHBUTTON      "Cancel",IDCANCEL,65,15,65,14
+    EDITTEXT        IDC_GETLIN_EDIT,0,0,130,13,ES_AUTOHSCROLL
+END
+
+IDD_EXTCMD DIALOG DISCARDABLE  0, 0, 137, 117
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Extended Commands"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,80,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,80,24,50,14
+    LISTBOX         IDC_EXTCMD_LIST,7,7,65,103,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_PLAYER_SELECTOR DIALOG DISCARDABLE  0, 0, 152, 169
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "What are you?"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Play",IDOK,7,148,66,14
+    PUSHBUTTON      "Quit",IDCANCEL,79,148,66,14
+    LTEXT           "Name:",IDC_STATIC,7,8,25,10
+    EDITTEXT        IDC_PLSEL_NAME,40,7,105,12,ES_AUTOHSCROLL | ES_READONLY | 
+                    NOT WS_TABSTOP
+    GROUPBOX        "Role",IDC_STATIC,7,21,138,30
+    CONTROL         "Random",IDC_PLSEL_ROLE_RANDOM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,14,34,40,10
+    COMBOBOX        IDC_PLSEL_ROLE_LIST,63,33,75,50,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Race",IDC_STATIC,7,51,138,30
+    CONTROL         "Random",IDC_PLSEL_RACE_RANDOM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,14,63,40,10
+    COMBOBOX        IDC_PLSEL_RACE_LIST,63,62,75,45,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Gender",IDC_STATIC,7,81,138,30
+    CONTROL         "Random",IDC_PLSEL_GENDER_RANDOM,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,93,40,10
+    COMBOBOX        IDC_PLSEL_GENDER_LIST,63,92,75,40,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Alignment",IDC_STATIC,7,111,138,30
+    CONTROL         "Random",IDC_PLSEL_ALIGN_RANDOM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,123,40,10
+    COMBOBOX        IDC_PLSEL_ALIGN_LIST,63,122,75,45,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_NHRIP DIALOGEX 0, 0, 281, 209
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Here lies..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,82,188,50,14
+END
+
+IDD_SPLASH DIALOG DISCARDABLE  0, 0, 281, 257
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Welcome to NetHack"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,224,236,50,14
+    EDITTEXT        IDC_EXTRAINFO,7,176,267,52,ES_MULTILINE | ES_READONLY | 
+                    WS_VSCROLL
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#if defined(__BORLANDC__)\r\n"
+    "LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""resource.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_TILES               BITMAP  DISCARDABLE     "tiles.bmp"
+IDB_MENU_SEL            BITMAP  DISCARDABLE     "mnsel.bmp"
+IDB_MENU_UNSEL          BITMAP  DISCARDABLE     "mnunsel.bmp"
+IDB_PETMARK             BITMAP  DISCARDABLE     "petmark.bmp"
+IDB_MENU_SEL_COUNT      BITMAP  DISCARDABLE     "mnselcnt.bmp"
+IDB_RIP                 BITMAP  DISCARDABLE     "rip.bmp"
+IDB_SPLASH              BITMAP  DISCARDABLE     "splash.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_NHTEXT, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 177
+    END
+
+    IDD_MENU, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 146
+    END
+
+    IDD_GETLIN, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 22
+    END
+
+    IDD_EXTCMD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 130
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 110
+    END
+
+    IDD_PLAYER_SELECTOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 145
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 162
+    END
+
+    IDD_NHRIP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 274
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 202
+    END
+
+    IDD_SPLASH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 274
+        BOTTOMMARGIN, 250
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 3,4,3,0
+ PRODUCTVERSION 3,4,3,0
+ FILEFLAGSMASK 0x1fL
+#ifdef _DEBUG
+ FILEFLAGS 0x9L
+#else
+ FILEFLAGS 0x8L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "NetHack for Windows - Graphical Interface\0"
+            VALUE "FileVersion", "3.4.3\0"
+            VALUE "InternalName", "NetHackW\0"
+            VALUE "LegalCopyright", "Copyright (C) 1985 - 2003.  By Stichting Mathematisch Centrum and M. Stephenson.  See license for details.\0"
+            VALUE "OriginalFilename", "NetHackW.exe\0"
+            VALUE "PrivateBuild", "031014\0"
+            VALUE "ProductName", "NetHack\0"
+            VALUE "ProductVersion", "3.4.3\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_APP_TITLE           "NetHack for Windows - Graphical Interface"
+    IDC_NETHACKW            "NETHACKW"
+    IDS_APP_TITLE_SHORT     "NetHack for Windows"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

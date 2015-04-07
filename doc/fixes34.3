@@ -1,0 +1,146 @@
+$RCSfile: fixes34.3,v $ $Revision: 1.1.2.99 $ $Date: 2003/12/06 14:07:57 $
+
+General Fixes and Modified Features
+-----------------------------------
+monster draining the player using Stormbringer decreased monster's hitpoints
+polymorphing to a flaming sphere should cure slime like other flaming monsters
+grammar, spelling and other typos
+wishing for student corpse yielded a valkyrie one, not an archeologist one
+fix typo in bustling town down stairs declaration
+you could exceed the limits on nazgul and erinys counts via bones files
+fix inconsistency where you can't kick something out of a pit, but you can
+	escape the pit and still pick it up; items are now assumed to be at 
+	the bottom of pit
+room cleanup, eg on Bustling Town, could incorrectly truncate room bounds
+	for rooms that become L shared due to partial overlap with the MAP
+approaching Medusa while having reflection+invisibility+esp would cause her
+	to turn herself to stone if you happened to be blind at the time
+Master Kaen's death message was not appropriate
+missing fountain tag in minend-3
+do not pacify shopkeeper when the hero enters a shop if that hero previously
+	angered the shopkeeper without ever visibly entering the shop
+attempting to place migrating monsters onto a monster-saturated level no
+	longer triggers impossible()
+open_levelfile_exclusively() was showing the return value -1 in a panic message,
+	even though that was the only possible value; show errno instead
+it was inappropriate to have a ghost "appear" in desecrated temple when 
+	you were blind and without telepathy
+accept wish for "grey spell book" not just "grey spellbook"
+do not double credit when putting gold into an unpaid container
+manes are nonliving
+poles and grappling hook worked thru walls when wearing Eyes of the Overworld
+more tweaks to fog cloud behavior
+when dismounting by choice and unimpaired, try not to land on a boulder
+casting stone-to-flesh on self while wielding a statue caused problems
+add tab support to menu strings for control-x minimal_enlightenment()
+if the monster that a statue represents is not made of flesh then don't
+	allow stone_to_flesh to animate it, make a meatball instead
+attempting to saddle a cockatrice while wearing gloves shouldn't stone you
+kicking a closed drawbridge and dieing should not say "kicking a wall"
+cannot get blessed potions from sink, remove unreachable message
+couldn't insert gold into a container using full menu style if no other
+	objects in inventory unless compiling with GOLDOBJ
+nagas eat
+always have warriors on the Valkyrie quest be female
+be more consistent with sounds when dropping into water
+surface() returns "bottom" when Underwater
+bill for all discarded, opened tins
+monsters that cannot pick things up cannot throw things either
+eating an amulet of unchanging un-changes you
+Vlad won't waste time trying to use wand of digging in his own tower
+non-weapon iron objects should rust when dipped in fountains since
+	iron weapons rust
+suppress "turn to flee" message if monster is mfrozen
+don't silently interrupt monster's hold on you if Levitation/Flying ends
+	while over water
+you could specifiy '~' with crystal ball and have it try to detect monsters, 
+	but it never revealed anything; show the entire long worm now
+allow a crystal ball to detect ghosts-and-shades via space key,  and display
+	the results using detected_mon_to_glyph() so that they show up in 
+	inverse video
+allow a crystal ball to detect boulders using the user-defined boulder symbol
+allow a crystal ball to detect mimics via ']'
+prevent boulder option from accepting a symbol that matches a monster symbol
+traveling while standing on a trap would sometime step in the wrong direction
+avoid traveling into water/lava, using usual running rules
+unchanging iron golem would still rehumanize in a rust trap
+fix an impossible rndmonst: bad `mndx' bug
+pets should not try to go after objects that they can't reach
+cutting a shopkeeper polymorphed in to a long worm would generate strange
+	messages and could cause a crash
+reading a cursed scroll of light in a corridor wouldn't display correctly
+	if lit_corridor option was disabled
+barbarians can become export in short sword skill
+samurai are now limited to master in martial arts skill; barbarians and
+	cavemen are now limited to master in bare-handed combat skill
+tweak messages when werefoo summons help
+when polymorphed into a quantum mechanic, it was possible to jump into
+	the water on a no teleport level and instinctively teleport
+when polymorphed into a quantum mechanic on a no teleport level and swallowed,
+	no feedback was given when you teleported the swallower away
+allow Conflict-resistant monsters to respond to conflict attacks rather than
+	sitting there and taking the attacks until they die
+prefer herbivorous stone-to-flesh message when hero is a vegitarian
+try even harder to avoid incorrect map display while changing levels
+no "freaked" message by exploding black light, unless you really are
+sleeping monster could respond to attacks by other monsters
+sleeping shopkeeper responds to various events without waking
+rotting corpses grammar fix
+allow successful teleport to more locations on debug mode level teleport menu
+trapped monster repeatedly switched between ranged and hand-to-hand weapon
+silver items such as wands avoided all the silver checks in hmon_hitmon()
+resuming an interrupted 'A' command could cause crash if pending worn item(s)
+	were stolen or destroyed
+resuming interrupted 'A' sometimes ended with "You finished disrobing" twice
+when you're asleep you shouldn't "notice" monsters that have become undetected
+must be able to reach floor in order to use stethoscope on corpse or statue
+fix a few coordinate (y,y) -> (x,y) typos in apply.c, mon.c, and wizard.c
+killing a long worm on a drawbridge could produce a panic
+prevent "see it drop from your pack" when figurine monster becomes undetected
+attempting to drop a subset of a stack of multiple cursed loadstones could
+	corrupt inventory or cause a crash
+"miss" message was missing for thrown or kicked gold not caught by a monster
+prevent recursive impossible() and panic() calls from leading to a stack overflow
+tainted meat didn't invoke cannibalism
+shopkeepers can't act as porters for the Amulet
+dismissed monsters can't remove special items from play
+
+
+Platform- and/or Interface-Specific Fixes
+-----------------------------------------
+win32tty: fix visible CRLF characters during lockfile error message
+win32tty: switch to low level console routines
+win32tty: refrain from cursor movement until an input is pending (M. Lehotay)
+win32tty: distinguish blue, bright blue, cyan, and bright cyan (Nicholas Webb)
+win32tty: fix hanging problem when you ctrl-C at "Who are you?" prompt
+win32gui: you couldn't specify an alignment in defaults.nh and have it stick
+win32gui: allow race/gender/alignment selections beyond those specified in
+	defaults.nh, while still honoring defaults.nh choices
+unix: don't define errno if NHSTDC
+unix: save file permissions could be wrong in explore/debug mode
+X11: avoid a possible crash when using window manger to close a player
+	selection window
+Gnome: add Quiver menu item, fix outdated Quit menu item
+Gnome: key values on unsigned char platform could fail to compare correctly
+Gnome: real extended command menu so all extended commands can be entered
+Gnome: ignore interrupts to avoid infinite loop in gnome library
+tty: avoid crash displaying quit inventory if inventory was already displayed
+tty: use "bold" in menu heading if available and requested
+tty: differentiate between default unlit and lit corridor symbols
+winCE: ensure orphaned lockfile is always deleted on single-user handhelds
+
+
+General New Features
+--------------------
+bones file compatibility info is now written into the dat/options file
+extend autodig to work downwards via '>'
+make attribute that is used to distinguish headings in a menu configurable
+add experimental build option AUTOPICKUP_EXCEPTIONS for filtering pickup of
+	items by pattern matching against their doname() description
+include version number in paniclog entries
+add a section on "shops and shopping" to the Guidebook
+
+
+Platform- and/or Interface-Specific New Features
+------------------------------------------------
+

@@ -1,0 +1,185 @@
+# Sample config file for win32 NetHack
+# A '#' at the beginning of a line means the rest of the line is a comment.
+#
+# Some options MUST be set in this file, other options can be toggled while
+# playing.  For a list of options available see the <opthelp.> file.
+#
+# To change the configuration, comment out the unwanted lines, and
+# uncomment the configuration you want.
+
+# *** OPTIONS ***
+#
+# Use the IBM character set rather than just plain ascii characters
+# for tty window-port.
+OPTIONS=IBMGraphics
+
+# Keyboard handling
+# Different keyboard handlers can be loaded.
+# Default is nhdefkey.dll but you can override that.
+# Ray Chason's keyboard handler
+# OPTIONS=altkeyhandler:nhraykey.dll
+#
+# NetHack 3.4.0 keyboard handling
+# OPTIONS=altkeyhandler:nh340key.dll
+
+# *** Personal Preferences ***
+# Some options to set personal preferences.  Uncomment and change these to
+# suit your personal preference.  If several people are to use the same
+# configuration, options like these should not be set.
+#
+#OPTIONS=name:Janet,role:Valkyrie,race:Human,gender:female,align:lawful
+#OPTIONS=dogname:Fido,catname:Morris,fruit:guava
+#OPTIONS=horsename:Silver
+#OPTIONS=autopickup,pickup_types:$"=/!?+
+#OPTIONS=packorder:")[%?+/=!(*0_`
+#OPTIONS=scores:10 top/2 around/own
+#OPTIONS=nolegacy,noverbose
+#OPTIONS=menustyle:traditional
+
+#
+# General options.  You might also set "silent" so as not to attract
+# the boss's attention.
+#
+# number_pad option can have an optional value of 0 (off), 1 (on), 
+# or 2(on,legacy-mode) which causes 5='g', alt-5='G', alt-0='I'
+OPTIONS=time,noshowexp,number_pad:2,lit_corridor
+#
+# If you want to get rid of "use #quit to quit..." use:
+OPTIONS=suppress_alert:3.3.1
+#
+# Note: the rest_on_space in the next line may not be
+#       appropriate for a beginning NetHack player, since
+#       it could result in use of a turn unintentionally.
+#       If you're new to NetHack, leave it commented it out.
+#OPTIONS=rest_on_space
+#
+# Set some options to control graphical window-port (these will
+# be safely and silently ignored by the tty port)
+#
+# Map window settings
+# possible map_mode options include: tiles|ascii4x6|ascii6x8|ascii8x8|ascii16x8|
+#                                    ascii7x12|ascii8x12|ascii16x12|ascii12x16|
+#                                    ascii10x18|fit_to_screen
+OPTIONS=map_mode:tiles,scroll_margin:5
+
+# Message window settings
+OPTIONS=font_message:Arial,font_size_message:9,align_message:top
+
+# Menu settings
+OPTIONS=font_menu:Arial,font_size_menu:9
+
+# Text settings
+OPTIONS=font_text:Courier New,font_size_text:9
+
+# Status window settings
+OPTIONS=font_status:Courier New,font_size_status:9
+
+# Other
+OPTIONS=hilite_pet,!toptenwin
+#OPTIONS=!splash_screen,player_selection:prompts
+
+# Status/message window colors
+# Possible color options include:
+# six digit hexadecimal RGB color value ("#8F8F8F"), black, red, green, brown,
+# blue, magenta, cyan, gray (or grey), orange, brightgreen, yellow, brightblue,
+# brightmagenta, brightcyan, white, trueblack, purple, silver, maroon, fuchsia,
+# lime, olive, navy, teal, aqua, activeborder, activecaption, appworkspace,
+# background, btnface, btnshadow, btntext, captiontext, graytext, highlight,
+# highlighttext, inactiveborder, inactivecaption, menu, menutext, scrollbar,
+# window, windowframe, windowtext.
+#OPTIONS=windowcolors:status windowtext/window message windowtext/window
+
+# *** LOCATIONS ***
+# IMPORTANT: If you change any of these locations, the directories they
+# point at must exist.  NetHack will not create them for you.
+#
+# HACKDIR is the default location for everything.
+# Note: On Windows HACKDIR defaults to the location 
+#       of the NetHack.exe or NetHackw.exe file so
+#       setting HACKDIR below to override that is 
+#       not usually necessary or recommended.
+#HACKDIR=c:\games\nethack
+#
+# The location that level files in progress are stored (default=HACKDIR, writeable)
+#LEVELDIR=c:\nethack\levels
+#
+# The location where saved games are kept (default=HACKDIR, writeable)
+#SAVEDIR=c:\nethack\save
+#
+# The location that bones files are kept (default=HACKDIR, writeable)
+#BONESDIR=c:\nethack\save
+#
+# The location that file synchronization locks are stored (default=HACKDIR, writeable)
+#LOCKDIR=c:\nethack\levels
+#
+# The location that a record of game aborts and self-diagnosed game problems
+# is kept (default=HACKDIR, writeable)
+#TROUBLEDIR=c:\nethack\trouble
+
+# Finnish keyboards might need these modifications uncommented. 
+# For  \, @, $, [, |
+#OPTIONS=subkeyvalue:171/92
+#OPTIONS=subkeyvalue:178/64
+#OPTIONS=subkeyvalue:180/36
+#OPTIONS=subkeyvalue:184/91
+#OPTIONS=subkeyvalue:188/124
+
+#
+# *** CHARACTER GRAPHICS ***
+#
+# See the on-line help or the Guidebook for which symbols are in which
+# positions.
+#
+# If you merely set the IBMgraphics option as above, NetHack will use IBM
+# extended ASCII for dungeon characters.  If you don't like the selections,
+# you can make up your own via these graphics options, but you should still
+# set IBMgraphics if you are using IBM graphics characters to get the correct
+# processing.
+#
+# ================================================
+# An example using the IBM graphics character set:
+#DUNGEON=  032 179 196 218 191 192 217 197 193 194 \
+#	   180 195 249 239 239 254 254 240 241 249 \
+#	   177 177 060 062 060 062 220 124 190 035 \
+#	   244 247 249 247 042 042 186 205 046 035 \
+#	   247
+#
+#TRAPS=    094 094 094 094 094 094 094 094 094 094 \
+#	   094 094 094 094 232 232 232 157 094 094 \
+#	   094 094
+#
+#EFFECTS=  179 196 092 047 042 033 041 040	   \
+#	   048 035 064 042			   \
+#	   047 045 092 058 058 092 045 047	   \
+#	   047 045 092 058 032 058 092 045 047
+#
+# ================================================
+# Some alternatives:
+#DUNGEON=  032 186 205 201 187 200 188 206 202 203 \
+#	   185 204 249 239 239 254 254 240 241 249 \
+#	   177 177 060 062 060 062 095 124 092 035 \
+#	   244 247 249 247 042 042 179 196 046 035 \
+#	   247
+#
+#TRAPS=    094 094 094 094 094 094 094 094 094 094 \
+#	   094 094 094 094 094 034 094 094 094 094 \
+#	   094 094
+
+# ================================================
+# Here is a recommendation sent in by Michael Feir
+# for use by blind NetHack players.
+#
+#DUNGEON=  032 124 045 124 124 124 124 045 045 045 \
+#          124 124 046 045 124 043 043 046 035 035 \
+#          060 062 060 062 095 092 035 126 126 126 \
+#          126 042 042 035 035 032 035 126
+#
+#TRAPS=    094 094 094 094 094 094 094 094 094 094 \
+#          094 094 094 094 094 094 094 094 094 094 \
+#          094 094
+#
+#EFFECTS=  124 095 092 047 042 033 041 040         \
+#          048 035 064 042                         \
+#          047 045 092 058 058 092 045 047         \
+#          047 045 092 058 032 058 092 045 047
+

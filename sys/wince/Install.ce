@@ -1,0 +1,136 @@
+Copyright (c) Alex Kompel, 2002
+NetHack may be freely redistributed.  See license for details.
+========================================================================
+                 Instructions for compiling and installing
+             NetHack 3.4.3 on a Windows CE or PocketPC system
+========================================================================
+		      Last revision: $Date: 2003/10/14 01:31:21 $
+
+Credit for the porting of NetHack to Windows CE goes to Alex Kompel who 
+initially developed and contributed the port.
+
+In order to build NetHack for Windows CE, you need *both* of the following:
+
+  o A copy of Microsoft Visual C V6.0 SP3 or later.  Things may work with 
+    an earlier version of the compiler, but the current code has not been
+    tested with an earlier version.
+  o Embedded Visual C++ 3.0 or later
+
+
+FIRST STEP:
+
+The first step in building NetHack for Windows CE is to execute
+sys/wince/cesetup.bat.
+
+From the command prompt:
+	cd sys\wince
+	cesetup
+
+From a Windows explorer window:
+	double-click on cesetup.bat
+
+A "wince" directory will be created off the top of the NetHack source
+tree, and a Microsoft embedded C workspace file will be placed in the
+top of the NetHack source tree. 
+
+------------
+| BUILDING |
+------------
+
+Boostrapping the build process on Windows NT/2000/XP
+
+1. With the Visual C++ 6.0 tools in your path,
+   Run "nmake /f bootstrp.mak" from the wince folder.
+
+Compiling
+
+2. Start the Embedded Visual C IDE. In the Embedded Visual C IDE 
+       Menus, choose:
+           File | Open Workspace
+
+3.  Set up for the build.
+
+        o In the Visual C "Open Workspace" dialog box, navigate to the top
+            of  your NetHack source directory tree.
+ 
+            In there, highlight "wince.vcw" and click on Open.
+            Once the workspace has been opened, you should see the following
+            list in the Visual C selection window:
+              + nethack_hpc files
+              + nethack_palm_pc files
+              + nethack_pocket_pc files
+              + nethack_smartphone files
+
+        o On the Embedded Visual C menus, choose:
+              Build | Set Active Platform
+		Select the platform that corresponds to your device:
+		Palm-size PC 2.11  - palm size PC running Windows CE version 2.11
+		Pocket PC          - palm-size PC running Windows CE 3.0 and higher (PocketPC)
+		H/PC Pro 2.11      - handheld computers running Windows CE 2.11 anf higher
+		Smartphone 2002	 - Microsoft SmartPhone device
+
+        o On the Visual C menus again, choose either:
+              Build | Set Active Configuration 
+                where configuration is one of the following (make sure it matches the platform 
+                you have selected):
+		nethack_hpc - Win32 (WCE MIPS) HPCRelease  - H/PC Pro 2.11 MIPS processor release executable
+		nethack_hpc - Win32 (WCE x86em) HPCDebug   - H/PC Pro 2.11 x86 emulation debug executable
+		nethack_hpc - Win32 (WCE ARM) HPCRelease   - H/PC Pro 2.11 ARM processor release executable
+		nethack_hpc - Win32 (WCE SH3) HPCRelease   - H/PC Pro 2.11 SH3 processor release executable
+		nethack_hpc - Win32 (WCE x86em) HPCRelease - H/PC Pro 2.11 x86 emulation release executable
+		nethack_hpc - Win32 (WCE SH4) HPCRelease   - H/PC Pro 2.11 SH4 processor release executable
+		nethack_palm_pc - Win32 (WCE MIPS) PalmPCRelease  - Palm-size PC 2.11 MIPS processor release executable
+		nethack_palm_pc - Win32 (WCE x86em) PalmPCDebug   - Palm-size PC 2.11 x86 emulation debug executable
+		nethack_palm_pc - Win32 (WCE SH3) PalmPCRelease   - Palm-size PC 2.11 SH3 processor release executable
+		nethack_palm_pc - Win32 (WCE x86em) PalmPCRelease - Palm-size PC 2.11 x86 emulation release executable
+		nethack_pocket_pc - Win32 (WCE MIPS) PocketPCRelease  - Pocket PC MIPS processor release executable
+		nethack_pocket_pc - Win32 (WCE ARM) PocketPCRelease   - Pocket PC ARM processor release executable
+		nethack_pocket_pc - Win32 (WCE x86em) PocketPCRelease - Pocket PC x86 emulation release executable
+		nethack_pocket_pc - Win32 (WCE x86em) PocketPCDebug   - Pocket PC x86 emulation debug executable
+		nethack_pocket_pc - Win32 (WCE SH3) PocketPCRelease   - Pocket PC SH3 processor release executable
+		nethack_smartphone - Win32 (WCE ARM) SPhoneRelease   - Smartphone 2002 ARM processor release executable
+		nethack_smartphone - Win32 (WCE x86em) SPhoneDebug   - Smartphone 2002 x86 emulation debug executable
+
+Building
+    
+4.  Start your build.
+ 
+        o On the Embedded Visual C menus once again, choose:
+              Build | Build nethackm.exe
+          This starts the build.  It is likely that the IDE message window 
+          where you are doing the compiling will be occupied for a while.
+    Notes: 
+
+        o You may get a bunch of warnings regarding missing include files in the 
+          beginning of the build process - ignore them. For some reason the tool 
+          that produces these messages ignores preprocessor directives. The actual 
+          build will go just fine.
+        o Sometimes the compiler chokes on do_wear.c  Ignore that - let the build 
+          finish. Then run it again - it will compile just fine. (Seems to be some 
+          sort of bug in EVC++) 
+
+Transfer
+
+5.  Transfer the files and executables to your handheld by extracting the
+    files into some folder on the CE device - that should do it. 
+
+
+Notes
+
+    If you want to use IBMGraphics make sure that you have a proper 
+    font installed on the device that supports OEM character set 
+    (for example, Lucida Console)
+
+
+PROBLEMS
+
+
+    If you discover a bug and wish to report it, or if you have comments
+    or suggestions we recommend using our "Contact Us" web page at:
+        http://www.nethack.org/common/contact.html
+
+    If you don't have access to the web, or you want to send us a patch
+    to the NetHack source code feel free to drop us a line c/o:
+        DevTeam (at) nethack.org
+
+    Happy NetHacking!
