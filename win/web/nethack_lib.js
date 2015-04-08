@@ -132,14 +132,26 @@ var LibraryNetHack = {
   },
 
   Web_clear_nhwindow: function(win) {
-  },
-
-  Web_display_nhwindow: function(win, blocking) {
+    win = nethack.windows[win];
+    assert(win);
+    switch(win.type) {
+      case nethack.NHW_MESSAGE:
+        break;
+      case nethack.NHW_STATUS:
+        nethack.status_win.innerHTML = '';
+        break;
+      case nethack.NHW_MAP:
+        nethack.map_win_content.innerHTML = '';
+        nethack.maptiles = [];
+        break;
+      default:
+        console.log(win.type, 'TODO clear_nhwindow');
+    } 
   },
 
   Web_destroy_nhwindow: function(win) {
     win = nethack.windows[win];
-    console.log('TODO destory_nhwindow');
+    console.log('TODO destroy_nhwindow');
     nethack.windows[win] = null;
   },
 
