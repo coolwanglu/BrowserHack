@@ -1,12 +1,26 @@
 /* vim: set sw=2 ts=2 et ft=javascript */
 // Copyright (c) 2015 Lu Wang <coolwanglu@gmail.com>
-var LibraryVIM = {
+var LibraryNetHack = {
   $nethack: {
+    // window types
     NHW_MESSAGE: 1,
     NHW_STATUS: 2,
     NHW_MAP: 3,
     NHW_MENU: 4,
     NHW_TEXT: 5,
+
+    // text attributes
+    ATR_NONE: 0,
+    ATR_BOLD: 1,
+    ATR_DIM: 2,
+    ATR_ULINE: 4,
+    ATR_BLINK: 5,
+    ATR_INVERSE: 7,
+
+    // menu
+    PICK_NONE: 0,
+    PICK_ONE: 1,
+    PICK_ANY: 2,
 
     generate_default_tile_css: function() {
       var default_tile_image = 'default_tiles.png';
@@ -32,11 +46,13 @@ var LibraryVIM = {
       document.getElementsByTagName('head')[0].appendChild(style);
     },
 
-    raw_print: function(str, bold) {
-      var ele = document.getElementById('browserhack-msg');
+    add_message: function(ele, attr, str) {
       var msg = document.createElement('p');
-      msg.innerText = Pointer_stringify(str);
-      if(bold) msg.style.fontWeight = 'bold';
+      msg.textContent = str;
+      switch(attr) {
+        case nethack.ATR_BOLD:
+          msg.style.fontWeight = 'bold';
+      }
       ele.appendChild(msg);
       ele.scrollTop = ele.scrollHeight;
     },
@@ -46,9 +62,44 @@ var LibraryVIM = {
 
   Web_init: function(max_tile) {
     nethack.max_tile = max_tile;
-
     nethack.windows = [];
+    nethack.keybuffer = [];
+    nethack.mousebuffer = [];
+    nethack.map_win = document.getElementById('browserhack-map');
+    nethack.map_win_content = document.getElementById('browserhack-map-content');
+    nethack.message_win = document.getElementById('browserhack-message');
+    nethack.status_win = document.getElementById('browserhack-status');
     nethack.generate_default_tile_css();
+
+    document.addEventListener('keypress', function(e) {
+      e.preventDefault();
+      nethack.keybuffer.push(e.charCode);
+    });
+
+    var mouse_event_handler = function(e) {
+      var x = e.target.getAttribute('data-x');
+      var y = e.target.getAttribute('data-y');
+      if(x == null || y == null) return;
+
+      x = parseInt(x);
+      y = parseInt(y);
+       
+      var mod = 0;
+      if(e.type == 'click') mod = 1;
+      else if (e.type == 'dblclick') mod = 2;
+      else return;
+
+      nethack.mousebuffer.push({
+        x: x,
+        y: y,
+        mod: mod
+      });
+
+      e.preventDefault();
+    };
+
+    nethack.map_win.addEventListener('click', mouse_event_handler);
+    nethack.map_win.addEventListener('dblclick', mouse_event_handler);
   },
 
   Web_askname_helper: function(buf, len) {
@@ -88,7 +139,7 @@ var LibraryVIM = {
 
   Web_destroy_nhwindow: function(win) {
     win = nethack.windows[win];
-    if(win) win.destroy();
+    console.log('TODO destory_nhwindow');
     nethack.windows[win] = null;
   },
 
@@ -103,11 +154,16 @@ var LibraryVIM = {
     str = Pointer_stringify(str);
     win = nethack.windows[win];
     assert(win);
-    if(win.type == nethack.NHW_MESSAGE) {
-      nethack.raw_print(str);
-    } else {
-      console.log(win.type, 'TODO putstr');
-    }
+    switch(win.type) {
+      case nethack.NHW_MESSAGE:
+        nethack.add_message(nethack.message_win, attr, str);
+        break;
+      case nethack.NHW_STATUS:
+        nethack.add_message(nethack.status_win, attr, str);
+        break;
+      default:
+        console.log(win.type, 'TODO putstr');
+    } 
   },
 
   Web_display_file: function(str, complain) {
@@ -153,44 +209,57 @@ var LibraryVIM = {
     assert(win);
     assert(win.menu);
     return win.menu.length;
-  }
+  },
 
   Web_select_menu_helper: function(win, how, selected) {
     win = nethack.windows[win];
     assert(win);
     assert(win.menu);
-    console.log('TODO: select_menu', win.menu_prompt);
-    win.menu.forEach(function(menu) {
-      console.log(menu.str);
-    });
+    console.log('TODO: select_menu', win.menu_prompt, how);
     return 0;
   },
 
   Web_cliparound: function(x, y) {
-    var ele = document.getElementById('browserhack-map');
-    ele.scrollLeft = x * nethack.tile_width - ele.offsetWidth / 2;
-    ele.scrollTop = y * nethack.tile_height - ele.offsetHeight / 2;
+    nethack.map_win_content.style.left = (-(x + 0.5) * nethack.tile_width + nethack.map_win.offsetWidth / 2) + 'px';
+    nethack.map_win_content.style.top = (-(y + 0.5) * nethack.tile_height + nethack.map_win.offsetHeight / 2) + 'px';
   },
 
-  Web_print_glyph_helper: function(win, x, y, tile) {
+  Web_print_tile: function(win, x, y, tile) {
     win = nethack.windows[win];
     assert(win);
     assert(win.type == nethack.NHW_MAP);
-    if(!win.tiles) win.tiles = [];
-    if(!win.tiles[x]) win.tiles[x] = [];
-    if(!win.tiles[x][y]) {
-      var map_e = document.getElementById('browserhack-map');
+    if(!nethack.maptiles) nethack.maptiles = [];
+    if(!nethack.maptiles[x]) nethack.maptiles[x] = [];
+    if(!nethack.maptiles[x][y]) {
       var e = document.createElement('div');
       e.style.left = x * nethack.tile_width + 'px';
       e.style.top = y * nethack.tile_height + 'px';
-      map_e.appendChild(e);
-      win.tiles[x][y] = e;
+      e.setAttribute('data-x', x);
+      e.setAttribute('data-y', y);
+      nethack.map_win_content.appendChild(e);
+      nethack.maptiles[x][y] = e;
     }
-    win.tiles[x][y].className = 'tile tile' + tile.toString(16);
+    nethack.maptiles[x][y].className = 'tile tile' + tile.toString(16);
   },
 
   Web_raw_print_helper: function(str, bold) {
-    nethack.raw_print(str, bold);
+    nethack.add_message(nethack.message_win, bold ? nethack.ATR_BOLD : nethack.ATR_NONE, Pointer_stringify(str));
+  },
+
+  Web_keybuffer_empty: function() { return nethack.keybuffer.length == 0; },
+  Web_mousebuffer_empty: function() { return nethack.mousebuffer.length == 0; },
+  Web_getch: function() { 
+      // for keyboard events we enable the animation on the map
+      nethack.map_win_content.classList.add('animated');
+      return nethack.keybuffer.pop(0); 
+  },
+  Web_save_mouse: function(x, y, mod) {
+    // for mouse events we disable the animation on the map
+    nethack.map_win_content.classList.remove('animated');
+    var e = nethack.mousebuffer.pop(0);
+    {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
+    {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
+    {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
   },
 
   Web_getlin: function(quest, input) {
@@ -200,5 +269,5 @@ var LibraryVIM = {
 
   _: null
 };
-autoAddDeps(LibraryVIM, '$nethack');
-mergeInto(LibraryManager.library, LibraryVIM);
+autoAddDeps(LibraryNetHack, '$nethack');
+mergeInto(LibraryManager.library, LibraryNetHack);

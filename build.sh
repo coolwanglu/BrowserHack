@@ -8,6 +8,8 @@ stage1() {
 sh sys/unix/setup.sh
 make CC=$EMCC -j$JOBS
 make install CC=$EMCC PREFIX=$MYDIR/build
+rm $MYDIR/build/nethack/nethack
+rm $MYDIR/build/nethack/recover
 }
 
 stage2() {

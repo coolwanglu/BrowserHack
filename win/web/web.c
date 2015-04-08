@@ -67,22 +67,34 @@ void Web_cliparound(int x, int y); // in JS
 #ifdef POSITIONBAR
 void Web_update_positionbar(char * features) { }
 #endif
-void Web_print_glyph_helper(winid window, XCHAR_P x, XCHAR_P y, int tile); // in JS
-void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph) { Web_print_glyph_helper(window, x, y, glyph2tile[glyph]); }
+void Web_print_tile(winid window, XCHAR_P x, XCHAR_P y, int tile); // in JS
+void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph) { Web_print_tile(window, x, y, glyph2tile[glyph]); }
 void Web_raw_print_helper(const char * str, BOOLEAN_P bold); // in JS
 void Web_raw_print(const char * str) { Web_raw_print_helper(str, FALSE); }
 void Web_raw_print_bold(const char * str) { Web_raw_print_helper(str, TRUE); }
+int Web_keybuffer_empty(); // in JS
+int Web_getch(); // in JS
 int Web_nhgetch()
-{ }
+{ 
+    while(Web_keybuffer_empty()) emscripten_sleep(10);
+    return Web_getch();
+}
+int Web_mousebuffer_empty(); // in JS
+void Web_save_mouse(int * x, int * y, int * mod); // in JS
 int Web_nh_poskey(int * x, int * y, int * mod)
-{ }
+{ 
+    while(Web_keybuffer_empty() && Web_mousebuffer_empty()) emscripten_sleep(10);
+    if(!Web_keybuffer_empty()) return Web_getch();
+    Web_save_mouse(x, y, mod);
+    return 0;
+}
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
-char Web_yn_function(const char * ques, const char * choices, CHAR_P def)
-{ }
+char Web_yn_function(const char * ques, const char * choices, CHAR_P def) // TODO
+{ return def; }
 void Web_getlin(const char * ques, char * input); // in JS
-int Web_get_ext_cmd()
-{ }
+int Web_get_ext_cmd() // TODO
+{ return -1; } 
 void Web_number_pad(int state) { }
 void Web_delay_output() { emscripten_sleep(50); }
 #ifdef CHANGE_COLOR
@@ -95,7 +107,7 @@ char * Web_get_color_string() { return ""; }
 #endif
 void Web_start_screen() { }
 void Web_end_screen() { }
-void Web_outrip(winid window, int how) 
+void Web_outrip(winid window, int how) // TODO
 { }
 void Web_preference_update(const char * preference) { }
 
