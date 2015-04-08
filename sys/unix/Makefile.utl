@@ -89,8 +89,18 @@
 # flags for debugging:
 # CFLAGS = -g -I../include
 
-CFLAGS = -O -I../include
+CFLAGS = -O3 -I../include
 LFLAGS =
+
+# Lu Wang:
+# Utils were supposed to be compiled to binaries
+# then executed while building the project
+# now we want js, and we need to fix some ugly stuffs (e.g directories) by
+# putting extra code
+#
+# note that we cannot simply build the binaries and run them
+# as the size of structs and stuffs would mismatch
+UTIL_CFLAGS = --pre-js ../win/web/mount_nodefs.js 
 
 LIBS =
  
@@ -172,10 +182,11 @@ FLEXDIST =
 YACCDIST =
 
 
+
 #	dependencies for makedefs
 #
-makedefs:	$(MAKEOBJS)
-	$(CC) $(LFLAGS) -o makedefs $(MAKEOBJS)
+makedefs.js:	$(MAKEOBJS)
+	$(CC) $(LFLAGS) $(UTIL_CFLAGS) -o makedefs.js $(MAKEOBJS)
 
 makedefs.o: makedefs.c $(CONFIG_H) ../include/permonst.h \
 		../include/objclass.h ../include/monsym.h \
@@ -183,14 +194,14 @@ makedefs.o: makedefs.c $(CONFIG_H) ../include/permonst.h \
 		../include/monst.h ../include/you.h ../include/flag.h \
 		../include/dlb.h ../include/patchlevel.h ../include/qtext.h
 
-../include/onames.h: makedefs
-	./makedefs -o
-../include/pm.h: makedefs
-	./makedefs -p
-../src/monstr.c: makedefs
-	./makedefs -m
-../include/vis_tab.h: makedefs
-	./makedefs -z
+../include/onames.h: makedefs.js
+	js ./makedefs.js -o
+../include/pm.h: makedefs.js
+	js ./makedefs.js -p
+../src/monstr.c: makedefs.js
+	js ./makedefs.js -m
+../include/vis_tab.h: makedefs.js
+	js ./makedefs.js -z
 # makedefs -z makes both vis_tab.h and vis_tab.c, but writes the .h first
 ../src/vis_tab.c: ../include/vis_tab.h
 
@@ -295,7 +306,7 @@ TEXT_IO = tiletext.o tiletxt.o $(ONAMING)
 GIFREADERS = gifread.o $(OALLOC)
 PPMWRITERS = ppmwrite.o $(OALLOC)
 
-tileutils: tilemap gif2txt txt2ppm tile2x11
+tileutils: tilemap.js gif2txt txt2ppm tile2x11
 
 gif2txt: $(GIFREADERS) $(TEXT_IO)
 	$(CC) $(LFLAGS) -o gif2txt $(GIFREADERS) $(TEXT_IO) $(LIBS)
@@ -317,10 +328,10 @@ xpm2img.ttp: xpm2img.o bitmfile.o
 tile2beos: tile2beos.o $(TEXT_IO)
 	$(CC) $(LFLAGS) -o tile2beos tile2beos.o $(TEXT_IO) -lbe
 
-tilemap: ../win/share/tilemap.c $(HACK_H)
-	$(CC) $(CFLAGS) $(LFLAGS) -o tilemap ../win/share/tilemap.c $(LIBS)
-../src/tile.c: tilemap
-	./tilemap
+tilemap.js: ../win/share/tilemap.c $(HACK_H)
+	$(CC) $(CFLAGS) $(LFLAGS) $(UTIL_CFLAGS) -o tilemap.js ../win/share/tilemap.c $(LIBS)
+../src/tile.c: tilemap.js
+	js ./tilemap.js
 
 ../include/tile.h: ../win/share/tile.h
 	cp ../win/share/tile.h ../include/tile.h
@@ -395,8 +406,8 @@ spotless: clean
 	-rm -f lev_lex.c lev_yacc.c dgn_lex.c dgn_yacc.c
 	-rm -f ../include/lev_comp.h ../include/dgn_comp.h
 	-rm -f ../include/tile.h
-	-rm -f makedefs lev_comp dgn_comp recover dlb
-	-rm -f gif2txt txt2ppm tile2x11 tile2img.ttp xpm2img.ttp tilemap
+	-rm -f makedefs.js lev_comp dgn_comp recover dlb
+	-rm -f gif2txt txt2ppm tile2x11 tile2img.ttp xpm2img.ttp tilemap.js
 
 tileedit: tileedit.cpp $(TEXT_IO)
 	$(QTDIR)/bin/moc -o tileedit.moc tileedit.h
