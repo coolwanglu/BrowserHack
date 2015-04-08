@@ -220,8 +220,8 @@ panic.o:     panic.c $(CONFIG_H)
 
 #	dependencies for lev_comp
 #
-lev_comp:  $(SPLEVOBJS)
-	$(CC) $(LFLAGS) -o lev_comp $(SPLEVOBJS) $(LIBS)
+lev_comp.js:  $(SPLEVOBJS)
+	$(CC) $(LFLAGS) $(UTIL_CFLAGS) -o lev_comp.js $(SPLEVOBJS) $(LIBS)
 
 lev_yacc.o:  lev_yacc.c $(HACK_H) ../include/sp_lev.h
 lev_main.o:  lev_main.c $(HACK_H) ../include/sp_lev.h ../include/tcap.h \
@@ -253,8 +253,8 @@ lintlev:
 
 #	dependencies for dgn_comp
 #
-dgn_comp:  $(DGNCOMPOBJS)
-	$(CC) $(LFLAGS) -o dgn_comp $(DGNCOMPOBJS) $(LIBS)
+dgn_comp.js:  $(DGNCOMPOBJS)
+	$(CC) $(LFLAGS) $(UTIL_CFLAGS) -o dgn_comp.js $(DGNCOMPOBJS) $(LIBS)
 
 dgn_yacc.o:  dgn_yacc.c $(CONFIG_H) ../include/dgn_file.h ../include/date.h
 dgn_main.o:  dgn_main.c $(CONFIG_H) ../include/dlb.h
@@ -406,7 +406,7 @@ spotless: clean
 	-rm -f lev_lex.c lev_yacc.c dgn_lex.c dgn_yacc.c
 	-rm -f ../include/lev_comp.h ../include/dgn_comp.h
 	-rm -f ../include/tile.h
-	-rm -f makedefs.js lev_comp dgn_comp recover dlb
+	-rm -f makedefs.js lev_comp.js dgn_comp.js recover dlb
 	-rm -f gif2txt txt2ppm tile2x11 tile2img.ttp xpm2img.ttp tilemap.js
 
 tileedit: tileedit.cpp $(TEXT_IO)

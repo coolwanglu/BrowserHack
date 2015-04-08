@@ -8,9 +8,9 @@ MYDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 stage1() {
 sh sys/unix/setup.sh
 make CC=$EMCC -j$JOBS
+make install CC=$EMCC PREFIX=$MYDIR/build
 }
 
-# link JS
 stage2() {
 pushd build
   cp ../src/nethack nethack.bc 
@@ -29,5 +29,5 @@ cp build/browserhack.js.mem web/
 cp build/browserhack.data web/
 }
 
-stage1
-#stage2
+#stage1
+stage2
