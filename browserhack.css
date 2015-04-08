@@ -1,0 +1,87 @@
+/*  vim: set sw=2 ts=2 et : */
+/* Copyright (c) 2015 Lu Wang <coolwanglu@gmail.com> */
+
+body {
+  background-color: #1e292d;
+  /* http://philbit.com/svgpatterns/#crossstripes */
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNDAzYzNmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiMxZTI5MmQiPjwvcGF0aD4KPC9zdmc+");
+  color: #fff;
+}
+
+a:link { color: #fff; }
+a:visited { color: #fff; }
+
+#github-star {
+  position:absolute;
+  top: 32px;
+  right: 0px;
+}
+
+#browserhack-main {
+  border:1px solid; 
+  padding:0;
+  overflow:hidden;
+  width:800px;
+  height:600px;
+  line-height:1;
+  font: 12px monospace;
+  /* from bootstrap */
+  border-color: rgb(102, 175, 233);
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+  position:relative;
+  /* from Darkside */
+  background-color:#222324;
+}
+
+/* overrides some bootstrap styles */
+.jumbotron { 
+  padding-top: 32px;
+  padding-bottom: 16px;
+  margin-bottom: 0px;
+  background-color: transparent;
+  text-align: center;
+  text-shadow: 0px 0px 4px rgb(210, 225, 235);
+}
+.jumbotron h1 {
+  margin-top: 0px;
+}
+
+#browserhack-map {
+  position:absolute;
+  top: 7em;
+  left: 0;
+  right: 0;
+  bottom: 3em;
+  user-select: none;
+}
+
+#browserhack-map-content {
+  position: relative;
+  top:0;
+  left:0;
+}
+
+#browserhack-map-content.animated {
+  transition: top 2s, left 2s;
+}
+
+#browserhack-message {
+  position:absolute;
+  top: 0px;
+  left: 0px;
+  right: 0;
+  height: 7em;
+  background-color: #333;
+  padding: 0.5em;
+  overflow: auto;
+}
+
+#browserhack-status {
+  position:absolute;
+  height: 4em;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  padding: 0.5em;
+}
