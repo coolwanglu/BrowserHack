@@ -1,7 +1,6 @@
 #!/bin/bash
 
 EMCC=~/src/emscripten/emcc
-EMCCFLAGS=-O3 -Oz
 JOBS=4
 MYDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
@@ -16,7 +15,8 @@ pushd build
   cp ../src/nethack nethack.bc 
   $EMCC nethack.bc \
     -o browserhack.js \
-    $EMCCFLAGS \
+    -O3 \
+    -Oz \
     -s EMTERPRETIFY=1 \
     -s EMTERPRETIFY_ASYNC=1 \
     --memory-init-file 1 \
@@ -29,5 +29,5 @@ cp build/browserhack.js.mem web/
 cp build/browserhack.data web/
 }
 
-#stage1
+stage1
 stage2

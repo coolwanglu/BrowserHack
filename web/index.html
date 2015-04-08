@@ -5,9 +5,8 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>BrowserHack</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Source+Code+Pro'>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="browserhack.css">
   </head>
   <body>
@@ -19,7 +18,10 @@
       <div class="jumbotron">
         <h1>BrowserHack</h1>
       </div>
-      <div id="vimjs-container" class="container">
+      <div id="browserhack-main" class="container">
+        <div id="browserhack-map"></div>
+        <div id="browserhack-msg"></div>
+        <div id="browserhack-status"></div>
       </div>
       <div class="footer">
         <p>© <a target="_blank" href="http://coolwanglu.github.io/">Lu Wang</a> 2015</p>
@@ -29,7 +31,9 @@
       var Module = {
         noInitialRun: false,
         noExitRuntime: true,
-        preRun: [],
+        preRun: [ function() { 
+          ENV['USER'] = 'games'; // set to games such that nethack will ask for name
+        }],
         postRun: [],
         print: function() { 
           if (console.group !== undefined) {

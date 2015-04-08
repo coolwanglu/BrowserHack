@@ -12,7 +12,11 @@ struct window_procs Web_procs;
 // is the real deal
 #include <emscripten.h>
 
-void Web_init_nhwindows(int * argcp, char ** argv); // in JS
+extern short glyph2tile[];
+extern int total_tiles_used;
+
+void Web_init(int max_tile);
+void Web_init_nhwindows(int * argcp, char ** argv) { Web_init(total_tiles_used); }
 void Web_player_selection() 
 { 
     /* return a random choice */
@@ -44,9 +48,14 @@ void Web_add_menu(winid window,
                   const char * str, 
                   BOOLEAN_P preselected); // in JS
 void Web_end_menu(winid window, const char * prompt); // in JS
+int Web_get_menu_count(winid window); // in JS
+int Web_select_menu_helper(winid window, int how, MENU_ITEM_P ** selected); // in JS
 int Web_select_menu(winid window, int how, MENU_ITEM_P ** selected)
 {
-    return 0;
+    *selected = (MENU_ITEM_P*)alloc(sizeof(MENU_ITEM_P) * Web_get_menu_count(window));
+    int ret = Web_select_menu_helper(window, how, selected);
+    if(ret <= 0) free(*selected);
+    return ret;
 }
 char Web_message_menu(CHAR_P let, int how, const char *mesg) { return genl_message_menu(let, how, mesg); }
 void Web_update_inventory() { display_inventory(NULL, FALSE); }
@@ -58,9 +67,11 @@ void Web_cliparound(int x, int y); // in JS
 #ifdef POSITIONBAR
 void Web_update_positionbar(char * features) { }
 #endif
-void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph); // in JS
-void Web_raw_print(const char * str) { puts(str); }
-void Web_raw_print_bold(const char * str) { puts(str); }
+void Web_print_glyph_helper(winid window, XCHAR_P x, XCHAR_P y, int tile); // in JS
+void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph) { Web_print_glyph_helper(window, x, y, glyph2tile[glyph]); }
+void Web_raw_print_helper(const char * str, BOOLEAN_P bold); // in JS
+void Web_raw_print(const char * str) { Web_raw_print_helper(str, FALSE); }
+void Web_raw_print_bold(const char * str) { Web_raw_print_helper(str, TRUE); }
 int Web_nhgetch()
 { }
 int Web_nh_poskey(int * x, int * y, int * mod)
