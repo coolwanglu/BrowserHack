@@ -2,30 +2,22 @@
 
 EMCC=~/src/emscripten/emcc
 JOBS=4
+MYDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 stage1() {
 sh sys/unix/setup.sh
-pushd util
-  make makedefs
-  make tilemap
-popd
-pushd dat
-  make options
-popd
+make -j$JOBS
+make PREFIX=$MYDIR/web install
+rm $MYDIR/web/nethack/nethack
+rm $MYDIR/web/nethack/recover
 }
 
 stage2() {
 pushd src
-  make ../include/onames.h
-  make ../include/pm.h
-  make ../include/vis_tab.h
-  make monstr.c
-  make tile.c
   rm *.o
   make CC=$EMCC -j$JOBS
 popd
 }
 
-
-stage1
-#stage2
+#stage1
+stage2

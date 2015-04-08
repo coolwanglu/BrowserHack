@@ -35,9 +35,11 @@ DIRPERM  = 0755
 # therefore there should not be anything in GAMEDIR that you want to keep
 # (if there is, you'll have to do the installation by hand or modify the
 # instructions)
-GAMEDIR  = $(PREFIX)/games/lib/$(GAME)dir
+#GAMEDIR  = $(PREFIX)/games/lib/$(GAME)dir
+GAMEDIR = $(PREFIX)/nethack
 VARDIR  = $(GAMEDIR)
-SHELLDIR = $(PREFIX)/games
+#SHELLDIR = $(PREFIX)/games
+SHELLDIR = $(PREFIX)/nethack
 
 # per discussion in Install.X11 and Install.Qt
 VARDATND = 
@@ -64,8 +66,10 @@ VARDAT = $(VARDATD) $(VARDATND)
 # other permission-related reasons.  If that happens, you may want to set the
 # command to "true", which is a no-op. Note that disabling chown or chgrp
 # will only work if setuid (or setgid) behavior is not desired or required.
-CHOWN = chown
-CHGRP = chgrp
+#CHOWN = chown
+#CHGRP = chgrp
+CHOWN = true
+CHGRP = true
 
 #
 # end of configuration

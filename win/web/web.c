@@ -1,4 +1,8 @@
+#ifdef EMSCRIPTEN
 #include <emscripten.h>
+#else
+void emscripten_sleep(int _) { }
+#endif
 #include "hack.h"
 
 void Web_init_nhwindows(int * argcp, char ** argv) 
@@ -67,7 +71,7 @@ int Web_nhgetch()
 int Web_nh_poskey(int * x, int * y, int * mod)
 { }
 void Web_nhbell() { }
-int Web_doprev_message() { }
+int Web_doprev_message() { return 0; }
 char Web_yn_function(const char * ques, const char * choices, CHAR_P def)
 { }
 void Web_getlin(const char * ques, char * input)
@@ -86,7 +90,8 @@ char * Web_get_color_string() { return ""; }
 #endif
 void Web_start_screen() { }
 void Web_end_screen() { }
-void Web_outrip(winid window, int how) { genl_outrip(window, how); }
+void Web_outrip(winid window, int how) 
+{ }
 void Web_preference_update(const char * preference) { }
 
 struct window_procs Web_procs = {

@@ -59,6 +59,7 @@
 #ifdef WEB_GRAPHICS
 #define DEFAULT_WINDOW_SYS "Web"
 #define GRAPHIC_TOMBSTONE
+#define HACKDIR "/nethack"
 #endif
 
 /* MAC also means MAC windows */
