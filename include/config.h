@@ -200,7 +200,7 @@
  */
 #define INSURANCE	/* allow crashed game recovery */
 
-#if !defined(MAC) && !defined(WEB_GRAPHICS)
+#ifndef MAC
 # define CHDIR		/* delete if no chdir() available */
 #endif
 

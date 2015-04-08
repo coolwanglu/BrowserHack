@@ -1,13 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
 EMCC=~/src/emscripten/emcc
 JOBS=4
 
+stage1() {
 sh sys/unix/setup.sh
 pushd util
   make makedefs
   make tilemap
 popd
+pushd dat
+  make options
+popd
+}
+
+stage2() {
 pushd src
   make ../include/onames.h
   make ../include/pm.h
@@ -17,3 +24,8 @@ pushd src
   rm *.o
   make CC=$EMCC -j$JOBS
 popd
+}
+
+
+stage1
+#stage2
