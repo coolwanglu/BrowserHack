@@ -1,15 +1,27 @@
 /*  vim: set sw=2 ts=2 et : */
 /* Copyright (c) 2015 Lu Wang <coolwanglu@gmail.com> */
 
-body {
-  background-color: #1e292d;
+body,
+#browserhack-loading,
+.modal-content {
   /* http://philbit.com/svgpatterns/#crossstripes */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNDAzYzNmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiMxZTI5MmQiPjwvcGF0aD4KPC9zdmc+");
+}
+
+body {
   color: #fff;
 }
 
-a:link { color: #fff; }
-a:visited { color: #fff; }
+a:link,
+a:visited { 
+  color: #fff; 
+}
+
+a.list-group-item,
+a.list-group-item:link,
+a.list-group-item:visited { 
+  color: inherit; 
+}
 
 #github-star {
   position: absolute;
@@ -82,31 +94,82 @@ a:visited { color: #fff; }
   overflow: hidden;
 }
 
-#browserhack-inventory {
+#browserhack-sidebar {
   position: absolute;
   top: 0;
   bottom:0;
   right:0;
   width: 200px;
   padding: 1em;
+  overflow: visible;
   /* http://philbit.com/svgpatterns/#specklednoise */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCI+CjxmaWx0ZXIgaWQ9Im4iIHg9IjAiIHk9IjAiPgo8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC43IiBudW1PY3RhdmVzPSIxMCIgc3RpdGNoVGlsZXM9InN0aXRjaCI+PC9mZVR1cmJ1bGVuY2U+CjwvZmlsdGVyPgo8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzAwMCI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjQiPjwvcmVjdD4KPC9zdmc+");
 }
 
 #browserhack-loading {
-  position: relative;
-  padding: 1em;
-  margin: auto;
+  position: absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
 }
 
-.tile.tile-inline {
+.inventory-item {
   position: relative;
   display: inline-block;
-  margin: 3px;
+  margin: 1px;
+  padding: 2px;
+  border-radius: 5px;
+  font-size: 0px;
+}
+
+.inventory-item.equipped {
+  background-color: rgb(215, 233, 102);
+}
+
+.inventory-item .tile{
+  position: relative;
+  display: inline-block;
+  border: 0;
+  border-radius: 5px;
 }
 
 .tile.tile-empty {
   background-color: black;
+}
+
+.inventory-item-accelerator {
+  position: absolute;
+  top:0;
+  right:0;
+  width:auto;
+  color: #fff;
+  background-color: rgba(0,0,0,0.5);
+  font-size: 13px;
+  padding: 1px;
+}
+
+.inventory-item-description {
+  display:none;
+  font-size: 13px;
+  position:absolute;
+  width: 150px;
+  background-color: rgba(0,0,0,0.7);
+  padding: 0.5em;
+  border-radius: 10px;
+  left: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.inventory-item:hover .inventory-item-description {
+  display:block;
+}
+
+.text-container {
+  max-height: 600px;
+  width: 100%;
+  overflow: auto;
 }
 
 /* overrides some bootstrap styles */
@@ -133,10 +196,10 @@ a:visited { color: #fff; }
 .modal-content {
   font-family: monospace;
   white-space: pre;
-  background-color: #1e292d;
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
   box-shadow: 0 5px 15px rgba(255,255,255,.5);
   color: #aaa;
+  background-color: rgba(0,0,0,0.5);
 }
 
 .close, 

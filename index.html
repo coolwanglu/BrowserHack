@@ -25,6 +25,7 @@
     <div class="container">
       <div class="jumbotron">
         <h1>BrowserHack<sup>alpha</sup></h1>
+        <p>press <kbd>?</kbd> for help</p>
       </div>
       <div id="browserhack-main" class="container">
         <div id="browserhack-wrapper">
@@ -33,14 +34,22 @@
           </div>
           <div id="browserhack-message"></div>
           <div id="browserhack-status"></div>
-          <div id="browserhack-inventory">
+          <div id="browserhack-sidebar">
             <h4><strong>Inventory</strong></h4>
             <br/>
-            <div id="browserhack-inventory-content"></div>
+            <div id="browserhack-inventory"></div>
           </div>
-          <div id="browserhack-loading">
-            <h3>Loading...</h3>
+        </div>
+        <div id="browserhack-loading" class="bg-crossstripes">
+          <div class="jumbotron">
+            <br>
+            <br>
+            <h2>Loading...</h2>
             <h5>This may take a while.</h5>
+            <br>
+            <div class="progress">
+              <div id="browserhack-loading-progress-bar" class="progress-bar progress-bar-striped active" class="progress-bar" style="width: 0%;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -57,6 +66,23 @@
           ENV['USER'] = 'YOU';
         }],
         postRun: [],
+        setStatus: function() {
+          try {
+            var loaded = 0;
+            var total = 0;
+            for(var f in Module.dataFileDownloads) {
+              var info = Module.dataFileDownloads[f];
+              total += info.total;
+              loaded += info.loaded;
+            }
+            var percent = loaded / total * 100 + '%';
+            console.log(percent);
+            var ele = document.getElementById('browserhack-loading-progress-bar');
+            ele.style.width = percent;
+          } catch(e) {
+            console.log(e);
+          }
+        },
         print: function() { 
           if (console.group !== undefined) {
             console.group.apply(console, arguments); 
@@ -74,7 +100,7 @@
             // IE
             console.log(arguments);
           }
-        },
+        }
       };
     </script>
     <script src="browserhack.js"></script>
