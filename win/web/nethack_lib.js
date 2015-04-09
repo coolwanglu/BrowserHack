@@ -96,9 +96,12 @@ var LibraryNetHack = {
     show_text_window: function(lines) {
        var win = nethack.create_window({
         make_body: function(body) {
+          var ele = document.createElement('div');
+          ele.className = 'container text-container';
           lines.forEach(function(line){
-            body.appendChild(nethack.create_text_element(line.attr, line.str));
+            ele.appendChild(nethack.create_text_element(line.attr, line.str));
           });
+          body.appendChild(ele);
         },
         onclose: function() {
           nethack.input_disabled = false;
@@ -541,6 +544,10 @@ var LibraryNetHack = {
   Web_getlin: function(quest, input) {
     str = window.prompt(Pointer_stringify(quest));
     writeStringToMemory(str, input); // TODO: check length
+  },
+
+  Web_outrip: function(win, how) {
+    console.log('TODO rip');
   },
 
   _: null

@@ -165,8 +165,7 @@ char * Web_get_color_string() { return ""; }
 #endif
 void Web_start_screen() { }
 void Web_end_screen() { }
-void Web_outrip(winid window, int how) // TODO
-{ }
+void Web_outrip(winid window, int how); // in JS
 void Web_preference_update(const char * preference) { }
 
 struct window_procs Web_procs = {

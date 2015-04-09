@@ -166,6 +166,12 @@ a.list-group-item:visited {
   display:block;
 }
 
+.text-container {
+  max-height: 600px;
+  width: 100%;
+  overflow: auto;
+}
+
 /* overrides some bootstrap styles */
 .jumbotron { 
   padding-top: 32px;
