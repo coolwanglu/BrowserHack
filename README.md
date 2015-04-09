@@ -2,7 +2,9 @@
 
 NetHack ported to the Web by Lu Wang
 
-[Play Online](http://coolwanglu.github.io/BrowserHack/)
+[Start your adventure](http://coolwanglu.github.io/BrowserHack/)
+
+![Screenshot](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot.png)
 
 Most porting stuffs go to `win/web/*` and `web/*`.
 
