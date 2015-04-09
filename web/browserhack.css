@@ -12,8 +12,16 @@ body {
   color: #fff;
 }
 
-a:link { color: #fff; }
-a:visited { color: #fff; }
+a:link,
+a:visited { 
+  color: #fff; 
+}
+
+a.list-group-item,
+a.list-group-item:link,
+a.list-group-item:visited { 
+  color: inherit; 
+}
 
 #github-star {
   position: absolute;
@@ -143,10 +151,7 @@ a:visited { color: #fff; }
 
 .inventory-item-description {
   display:none;
-}
-
-.inventory-item:hover .inventory-item-description {
-  display:block;
+  font-size: 13px;
   position:absolute;
   width: 150px;
   background-color: rgba(0,0,0,0.7);
@@ -155,6 +160,10 @@ a:visited { color: #fff; }
   left: 100%;
   top: 0;
   z-index: 1000;
+}
+
+.inventory-item:hover .inventory-item-description {
+  display:block;
 }
 
 /* overrides some bootstrap styles */
@@ -184,6 +193,7 @@ a:visited { color: #fff; }
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
   box-shadow: 0 5px 15px rgba(255,255,255,.5);
   color: #aaa;
+  background-color: rgba(0,0,0,0.5);
 }
 
 .close, 

@@ -20,6 +20,7 @@ void Web_init_nhwindows(int * argcp, char ** argv)
 { 
     // in JS we treat ANY_P as integer
     if(sizeof(ANY_P) != 4) { EM_ASM( throw new Error('sizeof ANY_P is not 4!'); ); }
+    if(sizeof(ANY_P) != sizeof(int)) { EM_ASM( throw new Error('sizeof ANY_P is not sizeof int!'); ); }
     Web_init(total_tiles_used, 
             &WIN_MESSAGE, &WIN_STATUS, &WIN_MAP, &WIN_INVEN); 
 }
@@ -53,7 +54,13 @@ void Web_display_nhwindow(winid window, BOOLEAN_P blocking)
 void Web_destroy_nhwindow(winid window); // in JS
 void Web_curs(winid window, int x, int y); // in JS
 void Web_putstr(winid window, int attr, const char* str); // in JS
-void Web_display_file(const char * str, BOOLEAN_P complain); // in JS
+void Web_display_file_helper(const char * str, BOOLEAN_P complain); // in JS
+void Web_display_file(const char * str, BOOLEAN_P complain)
+{
+    Web_display_file_helper(str, complain);
+    while(Web_modal_window_opened())
+        emscripten_sleep(10); 
+}
 void Web_start_menu(winid window); // in JS
 void Web_add_menu_helper(winid window, 
                   int tile, 
@@ -82,13 +89,30 @@ void Web_add_menu(winid window,
                        preselected);
 }
 void Web_end_menu(winid window, const char * prompt); // in JS
-int Web_get_menu_count(winid window); // in JS
+int Web_get_last_menu_selection_count(); // in JS
+int Web_get_last_menu_selection_identifier(int idx); // in JS
 int Web_select_menu_helper(winid window, int how, MENU_ITEM_P ** selected); // in JS
 int Web_select_menu(winid window, int how, MENU_ITEM_P ** selected)
 {
-    *selected = (MENU_ITEM_P*)alloc(sizeof(MENU_ITEM_P) * Web_get_menu_count(window));
     int ret = Web_select_menu_helper(window, how, selected);
-    if(ret <= 0) free(*selected);
+    if(how == PICK_ONE || how == PICK_ANY) 
+    {
+      while((ret = Web_get_last_menu_selection_count()) == -2) // still waiting for user input
+      {
+        emscripten_sleep(10);
+      }
+      if(ret > 0) 
+      {
+        MENU_ITEM_P * cur_item = *selected = (MENU_ITEM_P*)alloc(ret * sizeof(MENU_ITEM_P));
+
+        for(int i = 0; i < ret; ++i) 
+        {
+            cur_item->item.a_int = Web_get_last_menu_selection_identifier(i);
+            cur_item->count = -1; // TODO
+            ++cur_item;
+        }
+      }
+    }
     return ret;
 }
 char Web_message_menu(CHAR_P let, int how, const char *mesg) { return genl_message_menu(let, how, mesg); }

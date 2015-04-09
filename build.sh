@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 EMCC=~/src/emscripten/emcc
 JOBS=4

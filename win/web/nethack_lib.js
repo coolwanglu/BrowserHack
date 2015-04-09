@@ -62,46 +62,121 @@ var LibraryNetHack = {
     },
 
     add_message: function(ele, attr, str) {
-      ele.appendChild(this.create_text_element(attr, str));
+      ele.appendChild(nethack.create_text_element(attr, str));
       ele.scrollTop = ele.scrollHeight;
     },
 
-    create_text_window: function(lines, onclose) {
-      // show text 
-      var e1 = document.createElement('div'); e1.className = 'modal fade';
-        var e2 = document.createElement('div'); e2.className = 'modal-dialog';
-          var e3 = document.createElement('div'); e3.className = 'modal-content';
-            /*
-            var e4 = document.createElement('div'); e4.className = 'modal-header';
-            e3.appendChild(e4);
-            */
-            var e6 = document.createElement('div'); e6.className = 'modal-body';
-              var e5 = document.createElement('button'); e5.className = 'close'; 
-              e5.type = 'button';
-              e5.innerHTML = '<span>&times;</span>';
-              e5.addEventListener('click', function(e) {
-                e1.classList.remove('in');
-                e1.classList.add('out');
-                if(onclose) onclose();
-                // set display:none after the transition, or it will block the mouse events
-                var transition_end_handler = function(e) {
-                  e1.style.display = 'none';
-                }
-                e1.addEventListener('transitionend', transition_end_handler);
-                e1.addEventListener('webkitTransitionEnd', transition_end_handler);
+    create_window: function(obj) {
+      var onclose = obj.onclose;
+      var win_e = document.createElement('div'); win_e.className = 'modal fade';
+        var dialog_e = document.createElement('div'); dialog_e.className = 'modal-dialog';
+          var content_e = document.createElement('div'); content_e.className = 'modal-content';
+            var button_e = document.createElement('button'); button_e.className = 'close'; 
+            button_e.type = 'button';
+            button_e.innerHTML = '<span>&times;</span>';
+            button_e.addEventListener('click', function(e) {
+              if(onclose) onclose();
+              nethack.destroy_window(win_e);
+            });
+            if('title' in obj) {
+              var header_e = document.createElement('div'); header_e.className = 'modal-header';
+              header_e.textContent = obj.title;
+              header_e.appendChild(button_e);
+              content_e.appendChild(header_e);
+            }
+            var body_e = document.createElement('div'); body_e.className = 'modal-body';
+            if(!('title' in obj)) body_e.appendChild(button_e);
+            if(obj.make_body) obj.make_body(body_e);
+          content_e.appendChild(body_e);
+        dialog_e.appendChild(content_e);
+      win_e.appendChild(dialog_e);
+      return win_e;
+    },
+
+    show_text_window: function(lines) {
+       var win = nethack.create_window({
+        make_body: function(body) {
+          lines.forEach(function(line){
+            body.appendChild(nethack.create_text_element(line.attr, line.str));
+          });
+        },
+        onclose: function() {
+          nethack.input_disabled = false;
+        }
+      });
+      nethack.input_disabled = true;
+      nethack.show_window(win);
+    },
+
+    show_menu_window: function(items, title, how) {
+      var list_items = [];
+      var onclose = function() {
+        nethack.input_disabled = false;
+        nethack.last_menu_selection = [];
+        list_items.forEach(function(item) {
+          if(item.classList.contains('active'))
+            nethack.last_menu_selection.push(parseInt(item.getAttribute('data-identifier')));
+        });
+        list_items = [];
+      };
+      nethack.last_menu_selection = null;
+      var win = nethack.create_window({
+        title: title,
+        make_body: function(body) {
+
+          var list = document.createElement('div');
+          list.className = 'list-group'
+          items.forEach(function(item) {
+            var li = document.createElement('a');
+            li.href = '#';
+            li.className = 'list-group-item';
+            if(item.preselected)
+              li.className += ' active';
+            li.appendChild(nethack.create_text_element(item.attr, item.str));
+            li.setAttribute('data-identifier', item.identifier);
+            if(item.identifier != 0) {
+              if(how == nethack.PICK_ONE) {
+                li.addEventListener('click', function(e) {
+                  e.currentTarget.classList.add('active');
+                  onclose();
+                  nethack.destroy_window(win);
+                });
+              } else if (how == nethack.PICK_ANY) {
+                li.addEventListener('click', function(e) {
+                  e.currentTarget.classList.toggle('active');
+                });
+              } else {
+                console.log('ERR, unknown `how` for select_menu');
+              }
+            }
+            list_items.push(li);
+            list.appendChild(li);
+
+            if(how == nethack.PICK_ANY) {
+              var button_e = document.createElement('button'); 
+              button_e.className = 'btn btn-primary'; 
+              button_e.type = 'button';
+              button_e.textContent = 'OK';
+              button_e.addEventListener('click', function(e) {
+                onclose();
+                nethack.destroy_window(win);
               });
-              e6.appendChild(e5);
-              lines.forEach(function(line){
-                e6.appendChild(nethack.create_text_element(line.attr, line.str));
-              });
-            e3.appendChild(e6);
-          e2.appendChild(e3);
-        e1.appendChild(e2);
-        return e1;
+            }
+          });
+          body.appendChild(list);
+        },
+        onclose: function() {
+          nethack.input_disabled = false;
+          nethack.last_menu_selection = 'canceled';
+        } 
+      });
+      nethack.input_disabled = true;
+      nethack.last_menu_selection = 'waiting';
+      nethack.show_window(win);
     },
 
     create_inventory_element: function(item) {
-      var ele = document.createElement('span');
+       var ele = document.createElement('span');
       ele.className = 'inventory-item';
       if(item.str.indexOf('(weapon in hand)') > -1 || item.str.indexOf('(being worn)') > -1)
           ele.className += ' equipped'
@@ -129,7 +204,7 @@ var LibraryNetHack = {
       return ele;
     },
 
-    show_inventory_window: function(items) {
+    update_inventory_window: function(items) {
       // show inventory window
       nethack.inventory_win.innerHTML = '';
       var cur_row = null;
@@ -146,6 +221,25 @@ var LibraryNetHack = {
           cur_row.appendChild(ele);
         }
       });
+    },
+
+    show_window: function(ele) {
+      document.body.appendChild(ele);
+      ele.style.display = 'block';
+      setTimeout(function() {
+        ele.classList.add('in');
+      },1);
+    },
+
+    destroy_window: function(ele) {
+      ele.classList.remove('in');
+      ele.classList.add('out');
+      // set display:none after the transition, or it will block the mouse events
+      var transition_end_handler = function(e) {
+        ele.style.display = 'none';
+      }
+      ele.addEventListener('transitionend', transition_end_handler);
+      ele.addEventListener('webkitTransitionEnd', transition_end_handler);
     },
 
     _: null
@@ -269,21 +363,18 @@ var LibraryNetHack = {
       case nethack.NHW_STATUS:
       case nethack.NHW_MESSAGE:
         break;
+      case nethack.NHW_TEXT:
+        nethack.show_text_window(win.lines);
+        break;
       case nethack.NHW_MENU:
         if(!blocking) console.log(win.type, 'TODO display_nhwindow', blocking);
         if(win.lines) {
-          var ele = nethack.create_text_window(win.lines, function(){
-            nethack.input_disabled = false;
-          });
-          win.element_to_remove = ele;
-          ele.style.display = 'block';
-          document.body.appendChild(ele);
-          setTimeout(function() {
-            ele.classList.add('in');
-          },1);
-          if(blocking) nethack.input_disabled = true;
-        } else {
+          nethack.show_text_window(win.lines);
+        } else if(win.menu) {
           // show menu
+          console.log(win.type, 'TODO display_nhwindow (menu)', blocking);
+        } else {
+          console.log(win.type, 'ERROR nothing to display!');
         }
         break;
       default:
@@ -295,7 +386,6 @@ var LibraryNetHack = {
     old_win = nethack.windows[win];
     assert(old_win);
     nethack.windows[win] = null;
-    if(old_win.element_to_remove) old_win.element_to_remove.parentNode.removeChild(old_win.element_to_remove);
   },
 
   Web_curs: function(win, x, y) {
@@ -304,11 +394,11 @@ var LibraryNetHack = {
     win.x = x;
     win.y = y;
     switch(win.type) {
-        case nethack.NHW_MAP:
-        case nethack.NHW_STATUS:
-            break;
-        default:
-            console.log(win.type, 'DEBUG curs', x, y);
+      case nethack.NHW_MAP:
+      case nethack.NHW_STATUS:
+        break;
+      default:
+        break;
     }
   },
 
@@ -326,6 +416,7 @@ var LibraryNetHack = {
         nethack.add_message(nethack.status_win, attr, str);
         break;
       case nethack.NHW_MENU:
+      case nethack.NHW_TEXT:
         if(!win.lines) win.lines = [];
         win.lines.push({ attr: attr, str: str });
         break;
@@ -334,16 +425,17 @@ var LibraryNetHack = {
     } 
   },
 
-  Web_display_file: function(str, complain) {
+  Web_display_file_helper: function(str, complain) {
     fn = Pointer_stringify(str);
     var data = '';
     try {
       data = FS.readFile(fn);
+      data = UTF8ArrayToString(data, 0) 
     } catch (e) {
       if (!complain) return;
       data = 'File not found: ' + fn;
     }
-    console.log('display_file', data);
+    nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }]);
   },
 
   Web_start_menu: function(win) {
@@ -372,11 +464,15 @@ var LibraryNetHack = {
     win.menu_prompt = Pointer_stringify(prmpt);
   },
 
-  Web_get_menu_count: function(win) {
-    win = nethack.windows[win];
-    assert(win);
-    assert(win.menu);
-    return win.menu.length;
+  Web_get_last_menu_selection_count: function() {
+    if(nethack.last_menu_selection == 'waiting') return -2;
+    if(nethack.last_menu_selection == 'canceled') return -1;
+    assert(nethack.last_menu_selection instanceof Array);
+    return nethack.last_menu_selection.length;
+  },
+
+  Web_get_last_menu_selection_identifier: function(idx) {
+    return nethack.last_menu_selection[idx];
   },
 
   Web_select_menu_helper: function(win, how, selected) {
@@ -386,9 +482,9 @@ var LibraryNetHack = {
     switch(win.type) {
       case nethack.NHW_MENU:
         if(win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) {
-          nethack.show_inventory_window(win.menu);
+          nethack.update_inventory_window(win.menu);
         } else {
-          console.log(win.type, 'TODO: select_menu', win.menu_prompt, how, win.menu);
+          nethack.show_menu_window(win.menu, win.menu_prompt, how, selected);
         }
         break;
       default:
