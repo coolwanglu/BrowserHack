@@ -66,6 +66,88 @@ var LibraryNetHack = {
       ele.scrollTop = ele.scrollHeight;
     },
 
+    create_text_window: function(lines, onclose) {
+      // show text 
+      var e1 = document.createElement('div'); e1.className = 'modal fade';
+        var e2 = document.createElement('div'); e2.className = 'modal-dialog';
+          var e3 = document.createElement('div'); e3.className = 'modal-content';
+            /*
+            var e4 = document.createElement('div'); e4.className = 'modal-header';
+            e3.appendChild(e4);
+            */
+            var e6 = document.createElement('div'); e6.className = 'modal-body';
+              var e5 = document.createElement('button'); e5.className = 'close'; 
+              e5.type = 'button';
+              e5.innerHTML = '<span>&times;</span>';
+              e5.addEventListener('click', function(e) {
+                e1.classList.remove('in');
+                e1.classList.add('out');
+                if(onclose) onclose();
+                // set display:none after the transition, or it will block the mouse events
+                var transition_end_handler = function(e) {
+                  e1.style.display = 'none';
+                }
+                e1.addEventListener('transitionend', transition_end_handler);
+                e1.addEventListener('webkitTransitionEnd', transition_end_handler);
+              });
+              e6.appendChild(e5);
+              lines.forEach(function(line){
+                e6.appendChild(nethack.create_text_element(line.attr, line.str));
+              });
+            e3.appendChild(e6);
+          e2.appendChild(e3);
+        e1.appendChild(e2);
+        return e1;
+    },
+
+    create_inventory_element: function(item) {
+      var ele = document.createElement('span');
+      ele.className = 'inventory-item';
+      if(item.str.indexOf('(weapon in hand)') > -1 || item.str.indexOf('(being worn)') > -1)
+          ele.className += ' equipped'
+
+      var tile = document.createElement('span');
+      tile.className = 'tile';
+      if(item.tile == -1) {
+        console.log('TODO no tile in inventory!');
+        tile.className += ' tile-empty';
+      } else {
+        tile.className += ' tile' + item.tile.toString(16);
+      }
+      ele.appendChild(tile);
+
+      var acc = document.createElement('div');
+      acc.className = 'inventory-item-accelerator';
+      acc.textContent = String.fromCharCode(item.accelerator);  
+      ele.appendChild(acc);
+
+      var des = document.createElement('div');
+      des.className = 'inventory-item-description';
+      des.textContent = item.str;
+      ele.appendChild(des);
+      
+      return ele;
+    },
+
+    show_inventory_window: function(items) {
+      // show inventory window
+      nethack.inventory_win.innerHTML = '';
+      var cur_row = null;
+      items.forEach(function(item) {
+        if(item.identifier == 0) {
+          nethack.inventory_win.appendChild(nethack.create_text_element(nethack.ATR_NONE, item.str));
+          cur_row = null;
+        } else {
+          if(!cur_row) {
+            cur_row = document.createElement('p');
+            nethack.inventory_win.appendChild(cur_row);
+          } 
+          var ele = nethack.create_inventory_element(item);
+          cur_row.appendChild(ele);
+        }
+      });
+    },
+
     _: null
   },
 
@@ -89,7 +171,6 @@ var LibraryNetHack = {
     nethack.message_win = document.getElementById('browserhack-message');
     nethack.status_win = document.getElementById('browserhack-status');
     nethack.inventory_win = document.getElementById('browserhack-inventory');
-    nethack.inventory_win_content = document.getElementById('browserhack-inventory-content');
     nethack.generate_default_tile_css();
 
     document.addEventListener('keypress', function(e) {
@@ -191,44 +272,16 @@ var LibraryNetHack = {
       case nethack.NHW_MENU:
         if(!blocking) console.log(win.type, 'TODO display_nhwindow', blocking);
         if(win.lines) {
-          // show text 
-          var e1 = document.createElement('div'); e1.className = 'modal fade in';
-            var e2 = document.createElement('div'); e2.className = 'modal-dialog';
-              var e3 = document.createElement('div'); e3.className = 'modal-content';
-                /*
-                var e4 = document.createElement('div'); e4.className = 'modal-header';
-                e3.appendChild(e4);
-                */
-                var e6 = document.createElement('div'); e6.className = 'modal-body';
-                  var e5 = document.createElement('button'); e5.className = 'close'; 
-                  e5.type = 'button';
-                  e5.innerHTML = '<span>&times;</span>';
-                  e5.addEventListener('click', function(e) {
-                    e1.classList.remove('in');
-                    e1.classList.add('out');
-                    nethack.input_disabled = false;
-
-                    // set display:none after the transition, or it will block the mouse events
-                    var transition_end_handler = function(e) {
-                      e1.style.display = 'none';
-                    }
-                    e1.addEventListener('transitionend', transition_end_handler);
-                    e1.addEventListener('webkitTransitionEnd', transition_end_handler);
-                  });
-                  e6.appendChild(e5);
-                  win.lines.forEach(function(line){
-                    e6.appendChild(nethack.create_text_element(line.attr, line.str));
-                  });
-                e3.appendChild(e6);
-              e2.appendChild(e3);
-            e1.appendChild(e2);
-
-            e1.style.display = 'block';
-            document.body.appendChild(e1);
-
-            win.element_to_remove = e1;
-
-            if(blocking) nethack.input_disabled = true;
+          var ele = nethack.create_text_window(win.lines, function(){
+            nethack.input_disabled = false;
+          });
+          win.element_to_remove = ele;
+          ele.style.display = 'block';
+          document.body.appendChild(ele);
+          setTimeout(function() {
+            ele.classList.add('in');
+          },1);
+          if(blocking) nethack.input_disabled = true;
         } else {
           // show menu
         }
@@ -333,29 +386,7 @@ var LibraryNetHack = {
     switch(win.type) {
       case nethack.NHW_MENU:
         if(win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) {
-          // show inventory window
-          nethack.inventory_win_content.innerHTML = '';
-          var cur_row = null;
-          win.menu.forEach(function(item) {
-            if(item.identifier == 0) {
-              nethack.inventory_win_content.appendChild(nethack.create_text_element(item.attr, item.str));
-              cur_row = null;
-            } else {
-              if(!cur_row) {
-                cur_row = document.createElement('p');
-                cur_row.className = 'tile-row';
-                nethack.inventory_win_content.appendChild(cur_row);
-              } 
-              var tile = document.createElement('span');
-              tile.className = 'tile tile-inline';
-              if(item.tile == -1) {
-                console.log('TODO no tile in inventory!');
-              } else {
-                tile.className += ' tile' + item.tile.toString(16);
-              }
-              cur_row.appendChild(tile);
-            }
-          });
+          nethack.show_inventory_window(win.menu);
         } else {
           console.log(win.type, 'TODO: select_menu', win.menu_prompt, how, win.menu);
         }
