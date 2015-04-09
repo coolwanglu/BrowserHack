@@ -15,8 +15,14 @@ struct window_procs Web_procs;
 extern short glyph2tile[];
 extern int total_tiles_used;
 
-void Web_init(int max_tile);
-void Web_init_nhwindows(int * argcp, char ** argv) { Web_init(total_tiles_used); }
+void Web_init(int max_tile, int *win_message, int *win_status, int *win_map, int *win_inven);
+void Web_init_nhwindows(int * argcp, char ** argv) 
+{ 
+    // in JS we treat ANY_P as integer
+    if(sizeof(ANY_P) != 4) { EM_ASM( throw new Error('sizeof ANY_P is not 4!'); ); }
+    Web_init(total_tiles_used, 
+            &WIN_MESSAGE, &WIN_STATUS, &WIN_MAP, &WIN_INVEN); 
+}
 void Web_player_selection() 
 { 
     /* return a random choice */
@@ -33,12 +39,30 @@ void Web_suspend_nhwindows(const char * str) { }
 void Web_resume_nhwindows() { }
 winid Web_create_nhwindow(int type); // in JS
 void Web_clear_nhwindow(winid window); // in JS
-void Web_display_nhwindow(winid window, BOOLEAN_P blocking) { emscripten_sleep(1); }
+int Web_modal_window_opened(); // in JS
+void Web_display_nhwindow_helper(winid window, BOOLEAN_P blocking); // in JS
+void Web_display_nhwindow(winid window, BOOLEAN_P blocking)
+{
+    Web_display_nhwindow_helper(window, blocking);
+    if(blocking)
+    {
+        while(Web_modal_window_opened())
+            emscripten_sleep(10); 
+    }
+}
 void Web_destroy_nhwindow(winid window); // in JS
 void Web_curs(winid window, int x, int y); // in JS
 void Web_putstr(winid window, int attr, const char* str); // in JS
 void Web_display_file(const char * str, BOOLEAN_P complain); // in JS
 void Web_start_menu(winid window); // in JS
+void Web_add_menu_helper(winid window, 
+                  int tile, 
+                  const ANY_P * identifier, 
+                  CHAR_P accelerator, 
+                  CHAR_P groupacc, 
+                  int attr, 
+                  const char * str, 
+                  BOOLEAN_P preselected); // in JS
 void Web_add_menu(winid window, 
                   int glyph, 
                   const ANY_P * identifier, 
@@ -46,7 +70,17 @@ void Web_add_menu(winid window,
                   CHAR_P groupacc, 
                   int attr, 
                   const char * str, 
-                  BOOLEAN_P preselected); // in JS
+                  BOOLEAN_P preselected)
+{
+    Web_add_menu_helper(window, 
+                       ((glyph == NO_GLYPH) ? (-1) : glyph2tile[glyph]),
+                       identifier,
+                       accelerator,
+                       groupacc,
+                       attr,
+                       str,
+                       preselected);
+}
 void Web_end_menu(winid window, const char * prompt); // in JS
 int Web_get_menu_count(winid window); // in JS
 int Web_select_menu_helper(winid window, int how, MENU_ITEM_P ** selected); // in JS

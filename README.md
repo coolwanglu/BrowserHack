@@ -6,7 +6,7 @@ NetHack ported to the Web by Lu Wang
 
 Most porting stuffs go to `win/web/*` and `web/*`.
 
-Do NOT attempt to build this project unless you are ready to enter the endless abyss of PAIN.
+Do NOT attempt to build this project unless you are ready to enter the abyss of PAIN.
 Some found their pain was eased with `build.sh`, while some others said it brought more pain.
 
 Only minimum features are supported while I'm rushing to make it work, but more features are coming.

@@ -46,37 +46,60 @@ var LibraryNetHack = {
       document.getElementsByTagName('head')[0].appendChild(style);
     },
 
-    add_message: function(ele, attr, str) {
-      var msg = document.createElement('p');
-      msg.textContent = str;
+    create_text_element: function(attr, str) {
+      var ele = document.createElement('p');
+      ele.textContent = str;
       switch(attr) {
+        case nethack.ATR_NONE:
+          break;
         case nethack.ATR_BOLD:
-          msg.style.fontWeight = 'bold';
+          ele.style.fontWeight = 'bold';
+          break;
+        default:
+          console.log('TODO attr', attr);
       }
-      ele.appendChild(msg);
+      return ele;
+    },
+
+    add_message: function(ele, attr, str) {
+      ele.appendChild(this.create_text_element(attr, str));
       ele.scrollTop = ele.scrollHeight;
     },
 
     _: null
   },
 
-  Web_init: function(max_tile) {
+  Web_init: function(max_tile, win_message_p, win_status_p, win_map_p, win_inven_p) {
+    document.getElementById('browserhack-loading').style.display = 'none';
+
     nethack.max_tile = max_tile;
+    nethack.win_message_p = win_message_p;
+    nethack.win_status_p = win_status_p;
+    nethack.win_map_p = win_map_p;
+    nethack.win_inven_p = win_inven_p;
+
     nethack.windows = [];
+
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
+    nethack.input_disabled = false;
+
     nethack.map_win = document.getElementById('browserhack-map');
     nethack.map_win_content = document.getElementById('browserhack-map-content');
     nethack.message_win = document.getElementById('browserhack-message');
     nethack.status_win = document.getElementById('browserhack-status');
+    nethack.inventory_win = document.getElementById('browserhack-inventory');
+    nethack.inventory_win_content = document.getElementById('browserhack-inventory-content');
     nethack.generate_default_tile_css();
 
     document.addEventListener('keypress', function(e) {
+      if(nethack.input_disabled) return;
       e.preventDefault();
       nethack.keybuffer.push(e.charCode);
     });
 
     var mouse_event_handler = function(e) {
+      if(nethack.input_disabled) return;
       var x = e.target.getAttribute('data-x');
       var y = e.target.getAttribute('data-y');
       if(x == null || y == null) return;
@@ -124,7 +147,8 @@ var LibraryNetHack = {
         nethack.windows[i] = {
           type: type,
           x: 0,
-          y: 0
+          y: 0,
+          id: i
         };
         return i;
       }
@@ -136,11 +160,14 @@ var LibraryNetHack = {
     assert(win);
     switch(win.type) {
       case nethack.NHW_MESSAGE:
+        if(win.id != {{{ makeGetValue('nethack.win_message_p', '0', 'i32') }}}) console.log('TODO: extra message window');
         break;
       case nethack.NHW_STATUS:
+        if(win.id != {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}) console.log('TODO: extra status window');
         nethack.status_win.innerHTML = '';
         break;
       case nethack.NHW_MAP:
+        if(win.id != {{{ makeGetValue('nethack.win_map_p', '0', 'i32') }}}) console.log('TODO: extra map window');
         nethack.map_win_content.innerHTML = '';
         nethack.maptiles = [];
         break;
@@ -149,10 +176,73 @@ var LibraryNetHack = {
     } 
   },
 
-  Web_destroy_nhwindow: function(win) {
+  Web_modal_window_opened: function() {
+    return nethack.input_disabled;
+  },
+
+  Web_display_nhwindow_helper: function(win, blocking) {
     win = nethack.windows[win];
-    console.log('TODO destroy_nhwindow');
+    assert(win);
+    switch(win.type) {
+      case nethack.NHW_MAP:
+      case nethack.NHW_STATUS:
+      case nethack.NHW_MESSAGE:
+        break;
+      case nethack.NHW_MENU:
+        if(!blocking) console.log(win.type, 'TODO display_nhwindow', blocking);
+        if(win.lines) {
+          // show text 
+          var e1 = document.createElement('div'); e1.className = 'modal fade in';
+            var e2 = document.createElement('div'); e2.className = 'modal-dialog';
+              var e3 = document.createElement('div'); e3.className = 'modal-content';
+                /*
+                var e4 = document.createElement('div'); e4.className = 'modal-header';
+                e3.appendChild(e4);
+                */
+                var e6 = document.createElement('div'); e6.className = 'modal-body';
+                  var e5 = document.createElement('button'); e5.className = 'close'; 
+                  e5.type = 'button';
+                  e5.innerHTML = '<span>&times;</span>';
+                  e5.addEventListener('click', function(e) {
+                    e1.classList.remove('in');
+                    e1.classList.add('out');
+                    nethack.input_disabled = false;
+
+                    // set display:none after the transition, or it will block the mouse events
+                    var transition_end_handler = function(e) {
+                      e1.style.display = 'none';
+                    }
+                    e1.addEventListener('transitionend', transition_end_handler);
+                    e1.addEventListener('webkitTransitionEnd', transition_end_handler);
+                  });
+                  e6.appendChild(e5);
+                  win.lines.forEach(function(line){
+                    e6.appendChild(nethack.create_text_element(line.attr, line.str));
+                  });
+                e3.appendChild(e6);
+              e2.appendChild(e3);
+            e1.appendChild(e2);
+
+            e1.style.display = 'block';
+            document.body.appendChild(e1);
+
+            win.element_to_remove = e1;
+
+            if(blocking) nethack.input_disabled = true;
+        } else {
+          // show menu
+        }
+        break;
+      default:
+        console.log(win.type, 'TODO display_nhwindow', blocking);
+    }
+  },
+
+  Web_destroy_nhwindow: function(win) {
+    old_win = nethack.windows[win];
+    assert(old_win);
     nethack.windows[win] = null;
+    if(old_win.element_to_remove) old_win.element_to_remove.parentNode.removeChild(old_win.element_to_remove);
   },
 
   Web_curs: function(win, x, y) {
@@ -160,6 +250,13 @@ var LibraryNetHack = {
     assert(win);
     win.x = x;
     win.y = y;
+    switch(win.type) {
+        case nethack.NHW_MAP:
+        case nethack.NHW_STATUS:
+            break;
+        default:
+            console.log(win.type, 'DEBUG curs', x, y);
+    }
   },
 
   Web_putstr: function(win, attr, str) {
@@ -168,13 +265,19 @@ var LibraryNetHack = {
     assert(win);
     switch(win.type) {
       case nethack.NHW_MESSAGE:
+        if(win.id != {{{ makeGetValue('nethack.win_message_p', '0', 'i32') }}}) console.log('TODO: extra message window');
         nethack.add_message(nethack.message_win, attr, str);
         break;
       case nethack.NHW_STATUS:
+        if(win.id != {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}) console.log('TODO: extra status window');
         nethack.add_message(nethack.status_win, attr, str);
         break;
+      case nethack.NHW_MENU:
+        if(!win.lines) win.lines = [];
+        win.lines.push({ attr: attr, str: str });
+        break;
       default:
-        console.log(win.type, 'TODO putstr');
+        console.log(win.type, 'TODO putstr', attr, str);
     } 
   },
 
@@ -196,12 +299,12 @@ var LibraryNetHack = {
     win.menu = [];
   },
 
-  Web_add_menu: function(win, glyph, identifier, accelerator, groupacc, attr, str, preselected) {
+  Web_add_menu_helper: function(win, tile, identifier, accelerator, groupacc, attr, str, preselected) {
     win = nethack.windows[win];
     assert(win);
     win.menu.push({
-      glyph: glyph,
-      identifier: identifier,
+      tile: tile,
+      identifier: {{{ makeGetValue('identifier', '0', 'i32') }}},
       accelerator: accelerator,
       groupacc: groupacc,
       attr: attr,
@@ -227,7 +330,40 @@ var LibraryNetHack = {
     win = nethack.windows[win];
     assert(win);
     assert(win.menu);
-    console.log('TODO: select_menu', win.menu_prompt, how);
+    switch(win.type) {
+      case nethack.NHW_MENU:
+        if(win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) {
+          // show inventory window
+          nethack.inventory_win_content.innerHTML = '';
+          var cur_row = null;
+          win.menu.forEach(function(item) {
+            if(item.identifier == 0) {
+              nethack.inventory_win_content.appendChild(nethack.create_text_element(item.attr, item.str));
+              cur_row = null;
+            } else {
+              if(!cur_row) {
+                cur_row = document.createElement('p');
+                cur_row.className = 'tile-row';
+                nethack.inventory_win_content.appendChild(cur_row);
+              } 
+              var tile = document.createElement('span');
+              tile.className = 'tile tile-inline';
+              if(item.tile == -1) {
+                console.log('TODO no tile in inventory!');
+              } else {
+                tile.className += ' tile' + item.tile.toString(16);
+              }
+              cur_row.appendChild(tile);
+            }
+          });
+        } else {
+          console.log(win.type, 'TODO: select_menu', win.menu_prompt, how, win.menu);
+        }
+        break;
+      default:
+        console.log(win.type, 'ERROR: select_menu called on a non-menu window');
+    }
+
     return 0;
   },
 
@@ -240,6 +376,7 @@ var LibraryNetHack = {
     win = nethack.windows[win];
     assert(win);
     assert(win.type == nethack.NHW_MAP);
+    if(win.id != {{{ makeGetValue('nethack.win_map_p', '0', 'i32') }}}) console.log('TODO: extra map window');
     if(!nethack.maptiles) nethack.maptiles = [];
     if(!nethack.maptiles[x]) nethack.maptiles[x] = [];
     if(!nethack.maptiles[x][y]) {
