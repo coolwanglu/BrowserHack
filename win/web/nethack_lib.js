@@ -80,8 +80,12 @@ var LibraryNetHack = {
             });
             if('title' in obj) {
               var header_e = document.createElement('div'); header_e.className = 'modal-header';
-              header_e.textContent = obj.title;
               header_e.appendChild(button_e);
+
+              var title_e = document.createElement('h4'); title_e.className = 'modal-title';
+              title_e.textContent = obj.title;
+              header_e.appendChild(title_e);
+
               content_e.appendChild(header_e);
             }
             var body_e = document.createElement('div'); body_e.className = 'modal-body';
@@ -97,7 +101,7 @@ var LibraryNetHack = {
        var win = nethack.create_window({
         make_body: function(body) {
           var ele = document.createElement('div');
-          ele.className = 'container text-container';
+          ele.className = 'container modal-content-wrapper';
           lines.forEach(function(line){
             ele.appendChild(nethack.create_text_element(line.attr, line.str));
           });
@@ -126,47 +130,50 @@ var LibraryNetHack = {
       var win = nethack.create_window({
         title: title,
         make_body: function(body) {
-
-          var list = document.createElement('div');
-          list.className = 'list-group'
-          items.forEach(function(item) {
-            var li = document.createElement('a');
-            li.href = '#';
-            li.className = 'list-group-item';
-            if(item.preselected)
-              li.className += ' active';
-            li.appendChild(nethack.create_text_element(item.attr, item.str));
-            li.setAttribute('data-identifier', item.identifier);
-            if(item.identifier != 0) {
-              if(how == nethack.PICK_ONE) {
-                li.addEventListener('click', function(e) {
-                  e.currentTarget.classList.add('active');
-                  onclose();
-                  nethack.destroy_window(win);
-                });
-              } else if (how == nethack.PICK_ANY) {
-                li.addEventListener('click', function(e) {
-                  e.currentTarget.classList.toggle('active');
-                });
-              } else {
-                console.log('ERR, unknown `how` for select_menu');
+          var ele = document.createElement('div');
+          ele.className = 'container modal-content-wrapper';
+            var list = document.createElement('div');
+            list.className = 'list-group'
+            items.forEach(function(item) {
+              var li = document.createElement('a');
+              li.href = '#';
+              li.className = 'list-group-item';
+              if(item.preselected)
+                li.className += ' active';
+              li.appendChild(nethack.create_text_element(item.attr, item.str));
+              li.setAttribute('data-identifier', item.identifier);
+              if(item.identifier != 0) {
+                if(how == nethack.PICK_ONE) {
+                  li.addEventListener('click', function(e) {
+                    e.currentTarget.classList.add('active');
+                    onclose();
+                    nethack.destroy_window(win);
+                  });
+                } else if (how == nethack.PICK_ANY) {
+                  li.addEventListener('click', function(e) {
+                    e.currentTarget.classList.toggle('active');
+                  });
+                } else {
+                  console.log('ERR, unknown `how` for select_menu');
+                }
               }
-            }
-            list_items.push(li);
-            list.appendChild(li);
+              list_items.push(li);
+              list.appendChild(li);
+            });
+          ele.appendChild(list);
+          body.appendChild(ele);
 
-            if(how == nethack.PICK_ANY) {
-              var button_e = document.createElement('button'); 
-              button_e.className = 'btn btn-primary'; 
-              button_e.type = 'button';
-              button_e.textContent = 'OK';
-              button_e.addEventListener('click', function(e) {
-                onclose();
-                nethack.destroy_window(win);
-              });
-            }
-          });
-          body.appendChild(list);
+          if(how == nethack.PICK_ANY) {
+            var button_e = document.createElement('button'); 
+            button_e.className = 'btn btn-primary'; 
+            button_e.type = 'button';
+            button_e.textContent = 'OK';
+            button_e.addEventListener('click', function(e) {
+              onclose();
+              nethack.destroy_window(win);
+            });
+            body.appendChild(button_e);
+          }
         },
         onclose: function() {
           nethack.input_disabled = false;

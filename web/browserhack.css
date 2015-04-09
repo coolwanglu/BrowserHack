@@ -166,7 +166,7 @@ a.list-group-item:visited {
   display:block;
 }
 
-.text-container {
+.modal-content-wrapper {
   max-height: 600px;
   width: 100%;
   overflow: auto;
