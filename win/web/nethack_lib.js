@@ -2,6 +2,7 @@
 // Copyright (c) 2015 Lu Wang <coolwanglu@gmail.com>
 var LibraryNetHack = {
   $nethack: {
+    // Macros from NetHack source code
     // window types
     NHW_MESSAGE: 1,
     NHW_STATUS: 2,
@@ -192,7 +193,7 @@ var LibraryNetHack = {
     },
 
     create_inventory_element: function(item) {
-       var ele = document.createElement('span');
+      var ele = document.createElement('span');
       ele.className = 'inventory-item';
       if( item.str.indexOf('(wielded)') > -1 
          || item.str.indexOf('(weapon in hand)') > -1 
@@ -215,10 +216,39 @@ var LibraryNetHack = {
       acc.textContent = String.fromCharCode(item.accelerator);  
       ele.appendChild(acc);
 
+      // parse description
+      var description = item.str;
+      var count = null;
+      var idx = description.indexOf(' ');
+      if(idx > -1) {
+        var prefix = description.substr(0, idx);
+        if((prefix == 'a') || (prefix == 'an')) {
+          count = 1;
+        } else {
+          count = parseInt(prefix);
+          if(isNaN(count)) count = null;
+        }
+        if(count != null) {
+          description = description.substr(idx + 1);
+        }
+      }
+      
+      if(count == null) {
+        console.log('TODO cannot parse description', description);
+        count = 1;
+      }
+
       var des = document.createElement('div');
       des.className = 'inventory-item-description';
-      des.textContent = item.str;
+      des.textContent = description;
       ele.appendChild(des);
+
+      if(count > 1) {
+        var cnt = document.createElement('div');
+        cnt.className = 'inventory-item-count';
+        cnt.textContent = count;
+        ele.appendChild(cnt);
+      }
       
       return ele;
     },
@@ -532,7 +562,7 @@ var LibraryNetHack = {
     assert(win.menu);
     switch(win.type) {
       case nethack.NHW_MENU:
-        if(win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) {
+        if((win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) && (how == nethack.PICK_NONE)) {
           nethack.update_inventory_window(win.menu);
         } else {
           win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how, selected);

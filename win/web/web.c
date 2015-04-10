@@ -180,7 +180,7 @@ void Web_end_screen() { }
 void Web_outrip_helper(char **lines, int line_count); // in JS
 void Web_outrip(winid window, int how)
 {
-// Code from X11 windowport
+    // Code from X11 windowport
 #define STONE_LINE_LEN 16    /* # chars that fit on one line */
 #define NAME_LINE 0	/* line # for player name */
 #define GOLD_LINE 1	/* line # for amount of gold */
