@@ -97,7 +97,7 @@ var LibraryNetHack = {
       return win_e;
     },
 
-    show_text_window: function(lines) {
+    show_text_window: function(lines, auto_remove) {
        var win = nethack.create_window({
         make_body: function(body) {
           var ele = document.createElement('div');
@@ -109,10 +109,14 @@ var LibraryNetHack = {
         },
         onclose: function() {
           nethack.input_disabled = false;
+          if(auto_remove)
+            win.parentNode.removeChild(win);
         }
       });
       nethack.input_disabled = true;
       nethack.show_window(win);
+
+      return win;
     },
 
     show_menu_window: function(items, title, how) {
@@ -183,13 +187,18 @@ var LibraryNetHack = {
       nethack.input_disabled = true;
       nethack.last_menu_selection = 'waiting';
       nethack.show_window(win);
+
+      return win;
     },
 
     create_inventory_element: function(item) {
        var ele = document.createElement('span');
       ele.className = 'inventory-item';
-      if(item.str.indexOf('(weapon in hand)') > -1 || item.str.indexOf('(being worn)') > -1)
-          ele.className += ' equipped'
+      if( item.str.indexOf('(wielded)') > -1 
+         || item.str.indexOf('(weapon in hand)') > -1 
+         || item.str.indexOf('(weapon in hands)') > -1 
+         || item.str.indexOf('(being worn)') > -1)
+          ele.className += ' active'
 
       var tile = document.createElement('span');
       tile.className = 'tile';
@@ -243,26 +252,21 @@ var LibraryNetHack = {
 
     destroy_window: function(ele) {
       ele.classList.remove('in');
-      ele.classList.add('out');
-      // set display:none after the transition, or it will block the mouse events
-      var transition_end_handler = function(e) {
-        ele.style.display = 'none';
-      }
-      ele.addEventListener('transitionend', transition_end_handler);
-      ele.addEventListener('webkitTransitionEnd', transition_end_handler);
     },
 
     _: null
   },
 
-  Web_init: function(max_tile, win_message_p, win_status_p, win_map_p, win_inven_p) {
+  Web_init: function(max_tile, win_message_p, win_status_p, win_map_p, win_inven_p, yn_number_p) {
     document.getElementById('browserhack-loading').style.display = 'none';
 
     nethack.max_tile = max_tile;
+    // pointer to global variables
     nethack.win_message_p = win_message_p;
     nethack.win_status_p = win_status_p;
     nethack.win_map_p = win_map_p;
     nethack.win_inven_p = win_inven_p;
+    nethack.yn_number_p = yn_number_p;
 
     nethack.windows = [];
 
@@ -275,12 +279,44 @@ var LibraryNetHack = {
     nethack.message_win = document.getElementById('browserhack-message');
     nethack.status_win = document.getElementById('browserhack-status');
     nethack.inventory_win = document.getElementById('browserhack-inventory');
+    nethack.yn_area = document.getElementById('browserhack-yn-area');
     nethack.generate_default_tile_css();
 
     document.addEventListener('keypress', function(e) {
-      if(nethack.input_disabled) return;
-      e.preventDefault();
-      nethack.keybuffer.push(e.charCode);
+      if(nethack.yn_arg) { // pending a yn question
+        var key = e.charCode;
+        var choices = nethack.yn_arg.choices;
+        var ch = String.fromCharCode(key); 
+        if(choices == '') { // accept any 
+          nethack.yn_result = ch;
+        } else {
+          ch = ch.toLowerCase();
+          if(key == 27) { // ESC
+            nethack.yn_result = (choices.indexOf('q') > -1) ? 'q'
+                                  : (choices.indexOf('n') > -1) ? 'n'
+                                  : nethack.yn_arg.def;
+          } else if (' \n\r'.indexOf(ch) > -1) {
+            nethack.yn_result = nethack.yn_arg.def;
+          } else if (choices.indexOf(ch) > -1) {
+            if (ch == '#') {
+              var num = NaN;
+              while(isNan(num)) num = parseInt(window.prompt('Enter a number'));
+              {{{ makeSetValue('nethack.yn_number_p', '0', 'num', 'i32'); }}};
+            }
+            nethack.yn_result = ch;
+          }
+        }
+        if (nethack.yn_result != null) {
+          nethack.input_disabled = false;
+          nethack.yn_area.classList.remove('in');
+          nethack.yn_arg = null;
+        }
+      } else {
+        if(nethack.input_disabled) return;
+        e.preventDefault();
+        if(e.ctrlKey) console.log(e.charCode);
+        nethack.keybuffer.push(e.ctrlKey ? e.charCode : e.charCode);
+      }
     });
 
     var mouse_event_handler = function(e) {
@@ -308,6 +344,8 @@ var LibraryNetHack = {
 
     nethack.map_win.addEventListener('click', mouse_event_handler);
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
+
+    document.getElementById('browserhack-replay-btn').addEventListener('click', function() { window.location.reload(); });
   },
 
   Web_askname_helper: function(buf, len) {
@@ -374,12 +412,12 @@ var LibraryNetHack = {
       case nethack.NHW_MESSAGE:
         break;
       case nethack.NHW_TEXT:
-        nethack.show_text_window(win.lines);
+        win.element_to_remove = nethack.show_text_window(win.lines);
         break;
       case nethack.NHW_MENU:
         if(!blocking) console.log(win.type, 'TODO display_nhwindow', blocking);
         if(win.lines) {
-          nethack.show_text_window(win.lines);
+          win.element_to_remove = nethack.show_text_window(win.lines);
         } else if(win.menu) {
           // show menu
           console.log(win.type, 'TODO display_nhwindow (menu)', blocking);
@@ -394,6 +432,8 @@ var LibraryNetHack = {
 
   Web_destroy_nhwindow: function(win) {
     old_win = nethack.windows[win];
+    if(old_win.element_to_remove)
+      old_win.element_to_remove.parentNode.removeChild(old_win.element_to_remove);
     assert(old_win);
     nethack.windows[win] = null;
   },
@@ -445,7 +485,8 @@ var LibraryNetHack = {
       if (!complain) return;
       data = 'File not found: ' + fn;
     }
-    nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }]);
+    // TODO remove the window
+    nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }], true);
   },
 
   Web_start_menu: function(win) {
@@ -494,7 +535,7 @@ var LibraryNetHack = {
         if(win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) {
           nethack.update_inventory_window(win.menu);
         } else {
-          nethack.show_menu_window(win.menu, win.menu_prompt, how, selected);
+          win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how, selected);
         }
         break;
       default:
@@ -528,10 +569,6 @@ var LibraryNetHack = {
     nethack.maptiles[x][y].className = 'tile tile' + tile.toString(16);
   },
 
-  Web_raw_print_helper: function(str, bold) {
-    nethack.add_message(nethack.message_win, bold ? nethack.ATR_BOLD : nethack.ATR_NONE, Pointer_stringify(str));
-  },
-
   Web_keybuffer_empty: function() { return nethack.keybuffer.length == 0; },
   Web_mousebuffer_empty: function() { return nethack.mousebuffer.length == 0; },
   Web_getch: function() { 
@@ -548,13 +585,52 @@ var LibraryNetHack = {
     {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
   },
 
+  Web_get_yn_result: function() {
+    assert(nethack.yn_result != null);
+    return nethack.yn_result.charCodeAt(0);
+  },
+
+  Web_yn_function_helper: function(ques, choices, def) {
+    ques = Pointer_stringify(ques);
+    choices = Pointer_stringify(choices);   
+    def = String.fromCharCode(def & 0xff);
+
+    var i = choices.indexOf(String.fromCharCode(27)); //ESC
+    if(i > -1) choices = choices.substr(0, i);
+    
+    var yn_area_text = ques;
+    if(choices != '') yn_area_text += ' [' + choices + ']';
+    nethack.yn_area.textContent = yn_area_text;
+    nethack.yn_area.classList.add('in');
+
+    nethack.yn_arg = {
+      ques: ques,
+      choices: choices,
+      def: def
+    };
+    nethack.yn_result = null;
+    
+    nethack.input_disabled = true;
+  },
+
   Web_getlin: function(quest, input) {
     str = window.prompt(Pointer_stringify(quest));
     writeStringToMemory(str, input); // TODO: check length
   },
 
-  Web_outrip: function(win, how) {
-    console.log('TODO rip');
+  Web_outrip_helper: function(lines, line_count) {
+    var ele = document.getElementById('browserhack-rip-text');
+    ele.innerHTML = '';
+    for(var i = 0; i < line_count; ++i) {
+      var str = Pointer_stringify({{{ makeGetValue('lines', 'i*4', 'i32'); }}});
+      var cur_line = document.createElement('p');
+      cur_line.textContent = str;
+      ele.appendChild(cur_line);
+    }
+        
+    document.getElementById('browserhack-rip').classList.add('in');
+    
+    nethack.input_disabled = true; 
   },
 
   _: null

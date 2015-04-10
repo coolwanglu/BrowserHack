@@ -14,6 +14,10 @@ struct window_procs Web_procs;
 
 extern short glyph2tile[];
 extern int total_tiles_used;
+extern const char *killed_by_prefix[];
+
+// forward declaration
+winid Web_create_nhwindow(int type);
 
 void Web_init(int max_tile, int *win_message, int *win_status, int *win_map, int *win_inven);
 void Web_init_nhwindows(int * argcp, char ** argv) 
@@ -21,8 +25,10 @@ void Web_init_nhwindows(int * argcp, char ** argv)
     // in JS we treat ANY_P as integer
     if(sizeof(ANY_P) != 4) { EM_ASM( throw new Error('sizeof ANY_P is not 4!'); ); }
     if(sizeof(ANY_P) != sizeof(int)) { EM_ASM( throw new Error('sizeof ANY_P is not sizeof int!'); ); }
-    Web_init(total_tiles_used, 
-            &WIN_MESSAGE, &WIN_STATUS, &WIN_MAP, &WIN_INVEN); 
+    Web_init(total_tiles_used, &WIN_MESSAGE, &WIN_STATUS, &WIN_MAP, &WIN_INVEN); 
+
+    WIN_MESSAGE = Web_create_nhwindow(NHW_MESSAGE);
+    iflags.window_inited = 1;
 }
 void Web_player_selection() 
 { 
@@ -127,9 +133,8 @@ void Web_update_positionbar(char * features) { }
 #endif
 void Web_print_tile(winid window, XCHAR_P x, XCHAR_P y, int tile); // in JS
 void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph) { Web_print_tile(window, x, y, glyph2tile[glyph]); }
-void Web_raw_print_helper(const char * str, BOOLEAN_P bold); // in JS
-void Web_raw_print(const char * str) { Web_raw_print_helper(str, FALSE); }
-void Web_raw_print_bold(const char * str) { Web_raw_print_helper(str, TRUE); }
+void Web_raw_print(const char * str) { puts(str); }
+void Web_raw_print_bold(const char * str) { puts(str); }
 int Web_keybuffer_empty(); // in JS
 int Web_getch(); // in JS
 int Web_nhgetch()
@@ -148,8 +153,15 @@ int Web_nh_poskey(int * x, int * y, int * mod)
 }
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
+char Web_get_yn_result(); // in JS
+void Web_yn_function_helper(const char * ques, const char * choices, CHAR_P def); // in JS
 char Web_yn_function(const char * ques, const char * choices, CHAR_P def) // TODO
-{ return def; }
+{ 
+    Web_yn_function_helper(ques, choices, def);
+    while(Web_modal_window_opened())
+        emscripten_sleep(10); 
+    return Web_get_yn_result();
+}
 void Web_getlin(const char * ques, char * input); // in JS
 int Web_get_ext_cmd() // TODO
 { return -1; } 
@@ -165,12 +177,87 @@ char * Web_get_color_string() { return ""; }
 #endif
 void Web_start_screen() { }
 void Web_end_screen() { }
-void Web_outrip(winid window, int how); // in JS
+void Web_outrip_helper(char **lines, int line_count); // in JS
+void Web_outrip(winid window, int how)
+{
+// Code from X11 windowport
+#define STONE_LINE_LEN 16    /* # chars that fit on one line */
+#define NAME_LINE 0	/* line # for player name */
+#define GOLD_LINE 1	/* line # for amount of gold */
+#define DEATH_LINE 2	/* line # for death description */
+#define YEAR_LINE 6	/* line # for year */
+
+    static char** rip_line=0;
+    if (!rip_line) {
+        rip_line = (char**)malloc(sizeof(char*) * (YEAR_LINE+1));
+        for (int i=0; i<YEAR_LINE+1; i++) {
+            rip_line[i]=(char*)malloc(sizeof(char) * STONE_LINE_LEN+1);
+        }
+    }
+
+    /* Follows same algorithm as genl_outrip() */
+    char buf[BUFSZ];
+    char *dpx;
+    int line;
+
+    /* Put name on stone */
+    Sprintf(rip_line[NAME_LINE], "%s", plname);
+
+    /* Put $ on stone */
+#ifndef GOLDOBJ
+    Sprintf(rip_line[GOLD_LINE], "%ld Au", u.ugold);
+#else
+    Sprintf(rip_line[GOLD_LINE], "%ld Au", done_money);
+#endif
+
+    /* Put together death description */
+    switch (killer_format) {
+	default: impossible("bad killer format?");
+	case KILLED_BY_AN:
+	    Strcpy(buf, killed_by_prefix[how]);
+	    Strcat(buf, an(killer));
+	    break;
+	case KILLED_BY:
+	    Strcpy(buf, killed_by_prefix[how]);
+	    Strcat(buf, killer);
+	    break;
+	case NO_KILLER_PREFIX:
+	    Strcpy(buf, killer);
+	    break;
+    }
+
+    /* Put death type on stone */
+    for (line=DEATH_LINE, dpx = buf; line<YEAR_LINE; line++) {
+        register int i,i0;
+        char tmpchar;
+
+        if ( (i0=strlen(dpx)) > STONE_LINE_LEN) {
+            for(i = STONE_LINE_LEN;
+            ((i0 > STONE_LINE_LEN) && i); i--)
+            if(dpx[i] == ' ') i0 = i;
+            if(!i) i0 = STONE_LINE_LEN;
+        }
+        tmpchar = dpx[i0];
+        dpx[i0] = 0;
+        strcpy(rip_line[line], dpx);
+        if (tmpchar != ' ') {
+            dpx[i0] = tmpchar;
+            dpx= &dpx[i0];
+        } else  dpx= &dpx[i0+1];
+    }
+
+    /* Put year on stone */
+    Sprintf(rip_line[YEAR_LINE], "%4d", getyear());
+
+    Web_outrip_helper(rip_line,YEAR_LINE+1);
+    // should not be reachable
+    while(1) emscripten_sleep(1000); 
+}
 void Web_preference_update(const char * preference) { }
 
 struct window_procs Web_procs = {
     "Web",
-    0L, // wincap1
+    WC_COLOR | WC_MOUSE_SUPPORT,
     0L, // wincap2
     Web_init_nhwindows,
     Web_player_selection,

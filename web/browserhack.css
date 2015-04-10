@@ -3,6 +3,7 @@
 
 body,
 #browserhack-loading,
+#browserhack-rip,
 .modal-content {
   /* http://philbit.com/svgpatterns/#crossstripes */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNDAzYzNmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiMxZTI5MmQiPjwvcGF0aD4KPC9zdmc+");
@@ -57,7 +58,7 @@ a.list-group-item:visited {
   top: 7em;
   left: 0;
   right: 200px;
-  bottom: 3em;
+  bottom: 4em;
   user-select: none;
   overflow: hidden;
 }
@@ -92,6 +93,7 @@ a.list-group-item:visited {
   background-color: #333;
   padding: 0.5em;
   overflow: hidden;
+  font-family: monospace;
 }
 
 #browserhack-sidebar {
@@ -106,7 +108,8 @@ a.list-group-item:visited {
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCI+CjxmaWx0ZXIgaWQ9Im4iIHg9IjAiIHk9IjAiPgo8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC43IiBudW1PY3RhdmVzPSIxMCIgc3RpdGNoVGlsZXM9InN0aXRjaCI+PC9mZVR1cmJ1bGVuY2U+CjwvZmlsdGVyPgo8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzAwMCI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjQiPjwvcmVjdD4KPC9zdmc+");
 }
 
-#browserhack-loading {
+#browserhack-loading,
+#browserhack-rip {
   position: absolute;
   top:0;
   bottom:0;
@@ -114,16 +117,59 @@ a.list-group-item:visited {
   right:0;
 }
 
+.fade:not(.in) {
+  pointer-events: none;
+}
+
+#browserhack-yn-area {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: auto;
+}
+
+#browserhack-rip img {
+  position: absolute;
+  margin: auto;
+  margin-top: 50px;
+  width: 600px;
+  height: auto;
+}
+
+#browserhack-rip-text {
+  position: absolute;
+  left: 180px;
+  top: 170px;
+  font: 13px monospace;
+  color: rgb(75, 75, 57);
+  text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67);
+}
+
+#browserhack-rip-text p {
+  margin-bottom: 7px;
+}
+
+#browserhack-replay-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  margin: auto;
+  display: block;
+  width: 100px;
+  margin-left: -50px;
+}
+
 .inventory-item {
   position: relative;
   display: inline-block;
   margin: 1px;
   padding: 2px;
-  border-radius: 5px;
+  border-radius: 7px;
   font-size: 0px;
 }
 
-.inventory-item.equipped {
+.inventory-item.active {
   background-color: rgb(215, 233, 102);
 }
 

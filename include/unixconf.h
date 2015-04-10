@@ -98,6 +98,7 @@
 #ifdef WEB_GRAPHICS
 #define NO_FILE_LINKS
 #define LOCKDIR HACKDIR
+#define NO_SIGNAL
 #endif
 /* #define NO_FILE_LINKS */	/* if no hard links */
 /* #define LOCKDIR "/usr/games/lib/nethackdir" */	/* where to put locks */
