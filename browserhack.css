@@ -208,6 +208,16 @@ a.list-group-item:visited {
   z-index: 1000;
 }
 
+.inventory-item-count {
+  position: absolute;
+  bottom:0;
+  right:0;
+  width:auto;
+  color: #fff;
+  font-size: 13px;
+  text-shadow: 1px 1px 1px #000;
+}
+
 .inventory-item:hover .inventory-item-description {
   display:block;
 }
