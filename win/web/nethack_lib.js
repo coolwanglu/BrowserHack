@@ -337,6 +337,7 @@ var LibraryNetHack = {
           }
         }
         if (nethack.yn_result != null) {
+          e.preventDefault();
           nethack.input_disabled = false;
           nethack.yn_area.classList.remove('in');
           nethack.yn_arg = null;
@@ -344,8 +345,16 @@ var LibraryNetHack = {
       } else {
         if(nethack.input_disabled) return;
         e.preventDefault();
-        if(e.ctrlKey) console.log(e.charCode);
-        nethack.keybuffer.push(e.ctrlKey ? e.charCode : e.charCode);
+        var code = e.charCode;
+        if(e.ctrlKey) {
+          // some browsers do not `apply` the control key to charCode
+          if((code <= 65) && (code <= 90)) { // A~Z
+            code = code - 64;
+          } else if ((code >= 97) && (code <= 122)) {
+            code = code - 96;
+          }
+        }
+        nethack.keybuffer.push(code);
       }
     });
 
