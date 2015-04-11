@@ -44,6 +44,16 @@ a.list-group-item:visited {
   background-color:#222324;
 }
 
+#browserhack-main.fullscreen {
+  position: fixed;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  width: auto;
+  height: auto;
+}
+
 #browserhack-wrapper {
   margin: 5px;
   position: absolute;
@@ -51,6 +61,7 @@ a.list-group-item:visited {
   left:0;
   bottom:0;
   right:0;
+  background-color:#222324;
 }
 
 #browserhack-map {
@@ -70,7 +81,7 @@ a.list-group-item:visited {
 }
 
 #browserhack-map-content.animated {
-  transition: top 2s, left 2s;
+  transition: top 1s ease-out, left 1s ease-out;
 }
 
 #browserhack-message {
@@ -159,6 +170,24 @@ a.list-group-item:visited {
   display: block;
   width: 100px;
   margin-left: -50px;
+}
+
+#browserhack-toggle-fullscreen {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#browserhack-toggle-fullscreen.btn:hover,
+#browserhack-toggle-fullscreen.btn:focus {
+  color: rgb(102, 175, 233);
+}
+
+#browserhack-main.fullscreen .glyphicon-resize-full {
+  display: none;
+}
+#browserhack-main:not(.fullscreen) .glyphicon-resize-small {
+  display: none;
 }
 
 .inventory-item {
