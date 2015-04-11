@@ -3,7 +3,7 @@
 
 body,
 #browserhack-loading,
-#browserhack-rip,
+#browserhack-map-overlay,
 .modal-content {
   /* http://philbit.com/svgpatterns/#crossstripes */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNDAzYzNmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiMxZTI5MmQiPjwvcGF0aD4KPC9zdmc+");
@@ -120,7 +120,7 @@ a.list-group-item:visited {
 }
 
 #browserhack-loading,
-#browserhack-rip {
+#browserhack-map-overlay {
   position: absolute;
   top:0;
   bottom:0;
@@ -141,10 +141,34 @@ a.list-group-item:visited {
   padding: 5px 1em;
 }
 
-#browserhack-rip img {
-  position: absolute;
+#browserhack-rip {
+  position: relative;
+  display:none;
   margin: auto;
   margin-top: 50px;
+  width: 600px;
+}
+
+#browserhack-map-overlay.rip #browserhack-rip {
+  display: block;
+}
+
+#browserhack-exited {
+  position: relative;
+  display:none;
+  margin: auto;
+  margin-top: 50px;
+  text-align: center;
+}
+
+#browserhack-map-overlay.exited #browserhack-exited {
+  display:block;
+}
+
+#browserhack-rip img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 600px;
   height: auto;
 }
@@ -152,7 +176,7 @@ a.list-group-item:visited {
 #browserhack-rip-text {
   position: absolute;
   left: 180px;
-  top: 170px;
+  top: 120px;
   font: 13px monospace;
   color: rgb(75, 75, 57);
   text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67);
@@ -236,6 +260,7 @@ a.list-group-item:visited {
   left: 100%;
   top: 0;
   z-index: 1000;
+  pointer-events: none;
 }
 
 .inventory-item-count {

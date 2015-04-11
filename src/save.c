@@ -6,6 +6,10 @@
 #include "lev.h"
 #include "quest.h"
 
+#ifdef WEB_GRAPHICS
+#include <emscripten.h>
+#endif
+
 #ifndef NO_SIGNAL
 #include <signal.h>
 #endif
@@ -266,6 +270,10 @@ dosave0()
 	delete_levelfile(ledger_no(&u.uz));
 	delete_levelfile(0);
 	compress(fq_save);
+#ifdef WEB_GRAPHICS
+    /* need manual sync for emscripten */
+    EM_ASM( FS.syncfs(function (err) { assert(!err); }););
+#endif
 	return(1);
 }
 

@@ -314,10 +314,13 @@ var LibraryNetHack = {
 
     nethack.map_win = document.getElementById('browserhack-map');
     nethack.map_win_content = document.getElementById('browserhack-map-content');
+    nethack.map_win_overlay = document.getElementById('browserhack-map-overlay');
     nethack.message_win = document.getElementById('browserhack-message');
     nethack.status_win = document.getElementById('browserhack-status');
     nethack.inventory_win = document.getElementById('browserhack-inventory');
     nethack.yn_area = document.getElementById('browserhack-yn-area');
+    nethack.replay_btn = document.getElementById('browserhack-replay-btn');
+
     nethack.generate_default_tile_css();
 
     document.addEventListener('keypress', function(e) {
@@ -694,8 +697,9 @@ var LibraryNetHack = {
       ele.appendChild(cur_line);
     }
         
-    document.getElementById('browserhack-rip').classList.add('in');
-    document.getElementById('browserhack-replay-btn').focus();
+    nethack.map_win_overlay.classList.add('in');
+    nethack.map_win_overlay.classList.add('rip');
+    nethack.replay_btn.focus();
     
     nethack.input_disabled = true; 
   },
@@ -710,6 +714,13 @@ var LibraryNetHack = {
       });
     }
     nethack.show_menu_window(items, null, nethack.PICK_ONE, true);
+  },
+
+  nethack_exit: function(status) {
+    nethack.input_disabled = true; 
+    nethack.map_win_overlay.classList.add('in');
+    nethack.map_win_overlay.classList.add('exited');
+    nethack.replay_btn.focus();
   },
 
   _: null
