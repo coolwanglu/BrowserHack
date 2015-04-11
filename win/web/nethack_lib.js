@@ -393,6 +393,11 @@ var LibraryNetHack = {
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
 
     document.getElementById('browserhack-replay-btn').addEventListener('click', function() { window.location.reload(); });
+
+    var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
+    btn_toggle_fullscreen.addEventListener('click', function() {
+      document.getElementById('browserhack-main').classList.toggle('fullscreen');
+    });
   },
 
   Web_askname_helper: function(buf, len) {
