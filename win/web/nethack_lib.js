@@ -356,7 +356,7 @@ var LibraryNetHack = {
         var code = e.charCode;
         if(e.ctrlKey) {
           // some browsers do not `apply` the control key to charCode
-          if((code <= 65) && (code <= 90)) { // A~Z
+          if((code >= 65) && (code <= 90)) { // A~Z
             code = code - 64;
           } else if ((code >= 97) && (code <= 122)) {
             code = code - 96;
