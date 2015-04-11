@@ -9,6 +9,10 @@
 #include "wintty.h" /* more() */
 #endif
 
+#ifdef WEB_GRAPHICS
+#include <emscripten.h>
+#endif
+
 #include <ctype.h>
 
 #if !defined(MAC) && !defined(O_WRONLY) && !defined(AZTEC_C)
@@ -1212,6 +1216,10 @@ void
 compress(filename)
 const char *filename;
 {
+#ifdef WEB_GRAPHICS
+    /* need manual sync for emscripten */
+    EM_ASM( FS.syncfs(function (err) { assert(!err); }););
+#endif
 #ifndef COMPRESS
 #if (defined(macintosh) && (defined(__SC__) || defined(__MRC__))) || defined(__MWERKS__)
 # pragma unused(filename)

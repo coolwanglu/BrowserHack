@@ -127,6 +127,7 @@ a.list-group-item:visited {
   top: 0;
   right: 0;
   height: auto;
+  padding: 5px 1em;
 }
 
 #browserhack-rip img {

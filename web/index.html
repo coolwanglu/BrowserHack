@@ -69,7 +69,13 @@
         noInitialRun: false,
         noExitRuntime: true,
         preRun: [ function() { 
-          ENV['USER'] = 'YOU';
+          ENV['USER'] = 'player'; // set to `player` such that NetHack will ask for a name
+          // mount and load the save dir
+          try {
+            FS.mkdir('/nethack/save');
+          } catch(e) { }
+          FS.mount(IDBFS, {}, '/nethack/save');
+          FS.syncfs(true, function(err) { assert(!err); });
         }],
         postRun: [],
         setStatus: function() {

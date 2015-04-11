@@ -77,9 +77,9 @@ var LibraryNetHack = {
             button_e.innerHTML = '<span>&times;</span>';
             button_e.addEventListener('click', function(e) {
               if(onclose) onclose();
-              nethack.destroy_window(win_e);
+              nethack.hide_window(win_e);
             });
-            if('title' in obj) {
+            if(obj.title) {
               var header_e = document.createElement('div'); header_e.className = 'modal-header';
               header_e.appendChild(button_e);
 
@@ -90,7 +90,7 @@ var LibraryNetHack = {
               content_e.appendChild(header_e);
             }
             var body_e = document.createElement('div'); body_e.className = 'modal-body';
-            if(!('title' in obj)) body_e.appendChild(button_e);
+            if(!obj.title) body_e.appendChild(button_e);
             if(obj.make_body) obj.make_body(body_e);
           content_e.appendChild(body_e);
         dialog_e.appendChild(content_e);
@@ -110,8 +110,7 @@ var LibraryNetHack = {
         },
         onclose: function() {
           nethack.input_disabled = false;
-          if(auto_remove)
-            win.parentNode.removeChild(win);
+          if(auto_remove) win.parentNode.removeChild(win);
         }
       });
       nethack.input_disabled = true;
@@ -120,10 +119,9 @@ var LibraryNetHack = {
       return win;
     },
 
-    show_menu_window: function(items, title, how) {
+    show_menu_window: function(items, title, how, auto_remove) {
       var list_items = [];
-      var onclose = function() {
-        nethack.input_disabled = false;
+      var save_menu_selection = function() {
         nethack.last_menu_selection = [];
         list_items.forEach(function(item) {
           if(item.classList.contains('active'))
@@ -151,13 +149,17 @@ var LibraryNetHack = {
                 if(how == nethack.PICK_ONE) {
                   li.addEventListener('click', function(e) {
                     e.currentTarget.classList.add('active');
-                    onclose();
-                    nethack.destroy_window(win);
+                    save_menu_selection();
+                    nethack.input_disabled = false;
+                    nethack.hide_window(win);
+                    if(auto_remove)  win.parentNode.removeChild(win);
                   });
                 } else if (how == nethack.PICK_ANY) {
                   li.addEventListener('click', function(e) {
                     e.currentTarget.classList.toggle('active');
                   });
+                } else if (how == nethack.PICK_NONE) {
+                   // do nothing
                 } else {
                   console.log('ERR, unknown `how` for select_menu');
                 }
@@ -174,8 +176,10 @@ var LibraryNetHack = {
             button_e.type = 'button';
             button_e.textContent = 'OK';
             button_e.addEventListener('click', function(e) {
-              onclose();
-              nethack.destroy_window(win);
+              save_menu_selection();
+              nethack.input_disabled = false;
+              nethack.hide_window(win);
+              if(auto_remove) win.parentNode.removeChild(win);
             });
             body.appendChild(button_e);
           }
@@ -183,6 +187,7 @@ var LibraryNetHack = {
         onclose: function() {
           nethack.input_disabled = false;
           nethack.last_menu_selection = 'canceled';
+          if(auto_remove) win.parentNode.removeChild(win);
         } 
       });
       nethack.input_disabled = true;
@@ -275,12 +280,15 @@ var LibraryNetHack = {
     show_window: function(ele) {
       document.body.appendChild(ele);
       ele.style.display = 'block';
+      try {
+        ele.getElementsByClassName('close')[0].focus();
+      } catch(e) { }
       setTimeout(function() {
         ele.classList.add('in');
       },1);
     },
 
-    destroy_window: function(ele) {
+    hide_window: function(ele) {
       ele.classList.remove('in');
     },
 
@@ -388,7 +396,11 @@ var LibraryNetHack = {
   },
 
   Web_askname_helper: function(buf, len) {
-    str = window.prompt('Who are you?');
+    var storage_key = 'BrowserHack_LastPlayerName';
+    var last_name = '';
+    if(typeof localStorage !== 'undefined') last_name = localStorage[storage_key] || '';
+    var str = window.prompt('Who are you?', last_name);
+    if(typeof localStorage !== 'undefined') localStorage[storage_key] = str;
     if (str == '') str = 'Unnamed Player';
     writeStringToMemory(str, buf); // TODO: check length
   },
@@ -471,10 +483,21 @@ var LibraryNetHack = {
 
   Web_destroy_nhwindow: function(win) {
     old_win = nethack.windows[win];
-    if(old_win.element_to_remove)
+    if(old_win.element_to_remove) {
       old_win.element_to_remove.parentNode.removeChild(old_win.element_to_remove);
+      old_win.element_to_remove = null;
+    }
     assert(old_win);
-    nethack.windows[win] = null;
+    switch(win) {
+      case {{{ makeGetValue('nethack.win_message_p', '0', 'i32') }}}:
+      case {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}:
+      case {{{ makeGetValue('nethack.win_map_p', '0', 'i32') }}}:
+      case {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}:
+        // do not destroy standard windows
+        break;
+      default:
+        nethack.windows[win] = null;
+    }
   },
 
   Web_curs: function(win, x, y) {
@@ -524,7 +547,6 @@ var LibraryNetHack = {
       if (!complain) return;
       data = 'File not found: ' + fn;
     }
-    // TODO remove the window
     nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }], true);
   },
 
@@ -574,7 +596,7 @@ var LibraryNetHack = {
         if((win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) && (how == nethack.PICK_NONE)) {
           nethack.update_inventory_window(win.menu);
         } else {
-          win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how, selected);
+          win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how);
         }
         break;
       default:
@@ -668,8 +690,21 @@ var LibraryNetHack = {
     }
         
     document.getElementById('browserhack-rip').classList.add('in');
+    document.getElementById('browserhack-replay-btn').focus();
     
     nethack.input_disabled = true; 
+  },
+
+  Web_get_ext_cmd_helper: function(commands, command_count) {
+    var items = [];
+    for(var i = 0; i < command_count; ++i) {
+      items.push({
+        identifier: i + 1, // 0 means not selectable, so have to plus one here, will get it removed in the C code
+        attr: nethack.ATR_NONE,
+        str: Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}})
+      });
+    }
+    nethack.show_menu_window(items, null, nethack.PICK_ONE, true);
   },
 
   _: null

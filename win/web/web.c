@@ -1,4 +1,5 @@
 #include "hack.h"
+#include "func_tab.h"
 
 // this file will be compiled twice
 // one with EMSCRIPTEN and one without
@@ -101,7 +102,12 @@ int Web_select_menu_helper(winid window, int how, MENU_ITEM_P ** selected); // i
 int Web_select_menu(winid window, int how, MENU_ITEM_P ** selected)
 {
     int ret = Web_select_menu_helper(window, how, selected);
-    if(how == PICK_ONE || how == PICK_ANY) 
+    if (how == PICK_NONE) 
+    {
+        while(Web_modal_window_opened())
+            emscripten_sleep(10); 
+    }
+    else if(how == PICK_ONE || how == PICK_ANY) 
     {
       while((ret = Web_get_last_menu_selection_count()) == -2) // still waiting for user input
       {
@@ -163,8 +169,40 @@ char Web_yn_function(const char * ques, const char * choices, CHAR_P def) // TOD
     return Web_get_yn_result();
 }
 void Web_getlin(const char * ques, char * input); // in JS
-int Web_get_ext_cmd() // TODO
-{ return -1; } 
+void Web_get_ext_cmd_helper(const char ** command_list, int num_commands); // in JS
+int Web_get_ext_cmd()
+{ 
+    // from X11 port
+    int i, num_commands;
+    const char **command_list;
+
+    /* count commands */
+    for (num_commands = 0; extcmdlist[num_commands].ef_txt; num_commands++)
+    { }	/* do nothing */
+
+    /* If the last entry is "help", don't use it. */
+    if (strcmp(extcmdlist[num_commands-1].ef_txt, "?") == 0)
+        --num_commands;
+
+    command_list = (const char **) alloc((unsigned)num_commands * sizeof(char *));
+
+    for (i = 0; i < num_commands; i++)
+        command_list[i] = extcmdlist[i].ef_txt;
+
+    Web_get_ext_cmd_helper(command_list, num_commands);
+    while(Web_modal_window_opened())
+        emscripten_sleep(10); 
+    free((char *)command_list);
+
+    int ret = -2;
+    while((ret = Web_get_last_menu_selection_count()) == -2) // still waiting for user input
+        emscripten_sleep(10);
+    if (ret <= 0) return -1;
+
+    // in Web_ext_cmd_helper, we use `idx+1` as the identifier 
+    // now correct it back
+    return Web_get_last_menu_selection_identifier(0) - 1;
+} 
 void Web_number_pad(int state) { }
 void Web_delay_output() { emscripten_sleep(50); }
 #ifdef CHANGE_COLOR
