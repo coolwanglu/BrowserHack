@@ -175,7 +175,7 @@ a.list-group-item:visited {
 
 #browserhack-rip-text {
   position: absolute;
-  left: 180px;
+  left: 170px;
   top: 120px;
   font: 13px monospace;
   color: rgb(75, 75, 57);
@@ -196,14 +196,20 @@ a.list-group-item:visited {
   margin-left: -50px;
 }
 
-#browserhack-toggle-fullscreen {
+#browserhack-toolbar {
   position: absolute;
   top: 0;
   right: 0;
+  padding-right: 3px;
 }
 
-#browserhack-toggle-fullscreen.btn:hover,
-#browserhack-toggle-fullscreen.btn:focus {
+#browserhack-toolbar .btn {
+  padding-left: 0;
+  padding-right: 6px;
+}
+
+#browserhack-toolbar .btn:hover,
+#browserhack-toolbar .btn:focus {
   color: rgb(102, 175, 233);
 }
 

@@ -23,28 +23,46 @@ var LibraryNetHack = {
     PICK_ONE: 1,
     PICK_ANY: 2,
 
-    generate_default_tile_css: function() {
-      var default_tile_image = 'default_tiles.png';
-      var tile_width = nethack.tile_width = 32;
-      var tile_height = nethack.tile_height = 32;
+    apply_tileset: function(tile_file, tile_width, tile_height) {
       var tile_per_row = 40;
 
-      // preload it
-      var img = new Image();
-      img.src = default_tile_image;
+      nethack.tile_file = tile_file;
+      nethack.tile_width = tile_width;
+      nethack.tile_height = tile_height;
 
       // generate styles
       var css_string = [];
-      css_string.push('.tile{width:' + tile_width + 'px;height:' + tile_height + 'px;background-image:url(\'' + default_tile_image + '\');background-repeat:no-repeat;position:absolute;}');
+      css_string.push('.tile{width:' + tile_width + 'px;height:' + tile_height + 'px;background-image:url(\'' + tile_file + '\');background-repeat:no-repeat;position:absolute;}');
       for(var i = 0; i < nethack.max_tile; ++i) {
         css_string.push('.tile' + i.toString(16) + '{background-position:' + -((i % tile_per_row) * tile_width) + 'px '+ -(((i / tile_per_row)|0) * tile_height) + 'px;}');
       }
 
+      // remove old styles
+      var ele = document.getElementById('browserhack-tileset-style');
+      if(ele) ele.parentNode.removeChild(ele);
+
       // enable the styles
       var style = document.createElement('style');
+      style.id = 'browserhack-tileset-style';
       style.type = 'text/css';
       style.innerHTML = css_string.join('\n');
       document.getElementsByTagName('head')[0].appendChild(style);
+
+      // move existing tiles
+      if(nethack.maptiles) {
+        for(var x = 0; x < nethack.length; ++x) {
+          var col = nethack[x];
+          if(col) {
+            for(var y = 0; y < col.length; ++y) {
+              if(col[y]) {
+                var cell = col[y];
+                cell.style.left = x * nethack.tile_width + 'px';
+                cell.style.top = y * nethack.tile_height + 'px';
+              }
+            }
+          }
+        }
+      }         
     },
 
     create_text_element: function(attr, str) {
@@ -201,6 +219,7 @@ var LibraryNetHack = {
       var ele = document.createElement('span');
       ele.className = 'inventory-item';
       if( item.str.indexOf('(wielded)') > -1 
+         || item.str.indexOf('(in quiver)') > -1 
          || item.str.indexOf('(weapon in hand)') > -1 
          || item.str.indexOf('(weapon in hands)') > -1 
          || item.str.indexOf('(being worn)') > -1)
@@ -321,7 +340,7 @@ var LibraryNetHack = {
     nethack.yn_area = document.getElementById('browserhack-yn-area');
     nethack.replay_btn = document.getElementById('browserhack-replay-btn');
 
-    nethack.generate_default_tile_css();
+    nethack.apply_tileset('Default_32.png', 32, 32);
 
     document.addEventListener('keypress', function(e) {
       if(nethack.yn_arg) { // pending a yn question
@@ -396,6 +415,14 @@ var LibraryNetHack = {
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
 
     document.getElementById('browserhack-replay-btn').addEventListener('click', function() { window.location.reload(); });
+
+    var btn_toggle_tileset = document.getElementById('browserhack-toggle-tileset');
+    btn_toggle_tileset.addEventListener('click', function() {
+      if(nethack.tile_file != 'Default_32.png')
+        nethack.apply_tileset('Default_32.png', 32, 32);
+      else
+        nethack.apply_tileset('DawnHack_32.png', 32, 32);
+    });
 
     var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
     btn_toggle_fullscreen.addEventListener('click', function() {
