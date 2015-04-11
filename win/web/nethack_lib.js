@@ -466,7 +466,7 @@ var LibraryNetHack = {
         win.element_to_remove = nethack.show_text_window(win.lines);
         break;
       case nethack.NHW_MENU:
-        if(!blocking) console.log(win.type, 'TODO display_nhwindow', blocking);
+        if(!blocking) console.log('TODO windows are always blocking');
         if(win.lines) {
           win.element_to_remove = nethack.show_text_window(win.lines);
         } else if(win.menu) {

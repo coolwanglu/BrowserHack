@@ -52,11 +52,9 @@ void Web_display_nhwindow_helper(winid window, BOOLEAN_P blocking); // in JS
 void Web_display_nhwindow(winid window, BOOLEAN_P blocking)
 {
     Web_display_nhwindow_helper(window, blocking);
-    if(blocking)
-    {
-        while(Web_modal_window_opened())
-            emscripten_sleep(10); 
-    }
+    // always blocking
+    while(Web_modal_window_opened())
+        emscripten_sleep(10); 
 }
 void Web_destroy_nhwindow(winid window); // in JS
 void Web_curs(winid window, int x, int y); // in JS
