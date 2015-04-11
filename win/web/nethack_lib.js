@@ -434,7 +434,7 @@ var LibraryNetHack = {
     var storage_key = 'BrowserHack_LastPlayerName';
     var last_name = '';
     if(typeof localStorage !== 'undefined') last_name = localStorage[storage_key] || '';
-    var str = window.prompt('Who are you?', last_name);
+    var str = window.prompt('Who are you?', last_name) || '';
     if(typeof localStorage !== 'undefined') localStorage[storage_key] = str;
     if (str == '') str = 'Unnamed Player';
     writeStringToMemory(str, buf); // TODO: check length
