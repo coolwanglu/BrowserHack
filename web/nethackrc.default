@@ -5,4 +5,4 @@
 # For more details, read http://nethack.wikia.com/wiki/Options
 # Note that not all the NetHack options are supported by BrowserHack
 
-OPTIONS=cmdassit, hilite_pet, autopickup, autoquiver
+OPTIONS=cmdassist, hilite_pet, autopickup, autoquiver
