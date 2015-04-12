@@ -167,6 +167,7 @@ char Web_yn_function(const char * ques, const char * choices, CHAR_P def) // TOD
     return Web_get_yn_result();
 }
 void Web_getlin(const char * ques, char * input); // in JS
+int Web_get_last_ext_cmd(); // in JS
 void Web_get_ext_cmd_helper(const char ** command_list, int num_commands); // in JS
 int Web_get_ext_cmd()
 { 
@@ -178,10 +179,6 @@ int Web_get_ext_cmd()
     for (num_commands = 0; extcmdlist[num_commands].ef_txt; num_commands++)
     { }	/* do nothing */
 
-    /* If the last entry is "help", don't use it. */
-    if (strcmp(extcmdlist[num_commands-1].ef_txt, "?") == 0)
-        --num_commands;
-
     command_list = (const char **) alloc((unsigned)num_commands * sizeof(char *));
 
     for (i = 0; i < num_commands; i++)
@@ -192,14 +189,7 @@ int Web_get_ext_cmd()
         emscripten_sleep(10); 
     free((char *)command_list);
 
-    int ret = -2;
-    while((ret = Web_get_last_menu_selection_count()) == -2) // still waiting for user input
-        emscripten_sleep(10);
-    if (ret <= 0) return -1;
-
-    // in Web_ext_cmd_helper, we use `idx+1` as the identifier 
-    // now correct it back
-    return Web_get_last_menu_selection_identifier(0) - 1;
+    return Web_get_last_ext_cmd();
 } 
 void Web_number_pad(int state) { }
 void Web_delay_output() { emscripten_sleep(50); }

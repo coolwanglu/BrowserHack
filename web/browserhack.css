@@ -80,7 +80,7 @@ a.list-group-item:visited {
   left:0;
 }
 
-#browserhack-map-content.animated {
+#browserhack-map-content.smooth-scrolling {
   transition: top 1s ease-out, left 1s ease-out;
 }
 
@@ -132,13 +132,28 @@ a.list-group-item:visited {
   pointer-events: none;
 }
 
-#browserhack-yn-area {
+#browserhack-input-area {
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
   height: auto;
   padding: 5px 1em;
+  width: 100%;
+  display: table;
+}
+
+#browserhack-input-area label {
+  width: 1%;
+  display: table-cell;
+}
+
+#browserhack-input-area input {
+  display: table-cell;
+  width: 100%;
+  background-color: transparent;
+  border:none;
+  outline:none;
 }
 
 #browserhack-rip {

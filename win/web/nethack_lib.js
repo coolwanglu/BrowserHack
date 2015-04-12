@@ -222,6 +222,8 @@ var LibraryNetHack = {
          || item.str.indexOf('(in quiver)') > -1 
          || item.str.indexOf('(weapon in hand)') > -1 
          || item.str.indexOf('(weapon in hands)') > -1 
+         || item.str.indexOf('(on left hand)') > -1 
+         || item.str.indexOf('(on right hand)') > -1 
          || item.str.indexOf('(being worn)') > -1)
           ele.className += ' active'
 
@@ -329,7 +331,7 @@ var LibraryNetHack = {
 
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
-    nethack.input_disabled = false;
+    nethack.input_disabled = false; // used to block C code
 
     nethack.map_win = document.getElementById('browserhack-map');
     nethack.map_win_content = document.getElementById('browserhack-map-content');
@@ -337,13 +339,15 @@ var LibraryNetHack = {
     nethack.message_win = document.getElementById('browserhack-message');
     nethack.status_win = document.getElementById('browserhack-status');
     nethack.inventory_win = document.getElementById('browserhack-inventory');
-    nethack.yn_area = document.getElementById('browserhack-yn-area');
+    nethack.input_area = document.getElementById('browserhack-input-area');
     nethack.replay_btn = document.getElementById('browserhack-replay-btn');
 
     nethack.apply_tileset('Default_32.png', 32, 32);
 
     document.addEventListener('keypress', function(e) {
-      if(nethack.yn_arg) { // pending a yn question
+      if(nethack.ext_cmds) { // waiting for an ext command
+        // do nothing
+      } else if(nethack.yn_arg) { // pending a yn question
         var key = e.charCode;
         var choices = nethack.yn_arg.choices;
         var ch = String.fromCharCode(key); 
@@ -369,7 +373,7 @@ var LibraryNetHack = {
         if (nethack.yn_result != null) {
           e.preventDefault();
           nethack.input_disabled = false;
-          nethack.yn_area.classList.remove('in');
+          nethack.input_area.classList.remove('in');
           nethack.yn_arg = null;
         }
       } else {
@@ -669,12 +673,12 @@ var LibraryNetHack = {
   Web_mousebuffer_empty: function() { return nethack.mousebuffer.length == 0; },
   Web_getch: function() { 
       // for keyboard events we enable the animation on the map
-      nethack.map_win_content.classList.add('animated');
+      nethack.map_win_content.classList.add('smooth-scrolling');
       return nethack.keybuffer.pop(0); 
   },
   Web_save_mouse: function(x, y, mod) {
     // for mouse events we disable the animation on the map
-    nethack.map_win_content.classList.remove('animated');
+    nethack.map_win_content.classList.remove('smooth-scrolling');
     var e = nethack.mousebuffer.pop(0);
     {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
     {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
@@ -696,8 +700,8 @@ var LibraryNetHack = {
     
     var yn_area_text = ques;
     if(choices != '') yn_area_text += ' [' + choices + ']';
-    nethack.yn_area.textContent = yn_area_text;
-    nethack.yn_area.classList.add('in');
+    nethack.input_area.textContent = yn_area_text;
+    nethack.input_area.classList.add('in');
 
     nethack.yn_arg = {
       ques: ques,
@@ -731,16 +735,51 @@ var LibraryNetHack = {
     nethack.input_disabled = true; 
   },
 
+  Web_get_last_ext_cmd: function() {
+    return nethack.last_ext_cmd;
+  },
+
   Web_get_ext_cmd_helper: function(commands, command_count) {
-    var items = [];
-    for(var i = 0; i < command_count; ++i) {
-      items.push({
-        identifier: i + 1, // 0 means not selectable, so have to plus one here, will get it removed in the C code
-        attr: nethack.ATR_NONE,
-        str: Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}})
-      });
-    }
-    nethack.show_menu_window(items, null, nethack.PICK_ONE, true);
+    nethack.ext_cmds = [];
+    for(var i = 0; i < command_count; ++i) 
+      nethack.ext_cmds.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+
+    nethack.input_area.innerHTML = '';
+    var label = document.createElement('label');
+    label.textContent = '#';
+    nethack.input_area.appendChild(label);
+    var input = document.createElement('input');
+    input.type = 'text';
+    var select_ext_cmd = function(cmd) {
+      // keyboard events may be fired while input-area is disappearing
+      if(!nethack.ext_cmds) return;
+
+      nethack.input_disabled = false;
+      nethack.input_area.classList.remove('in');
+      nethack.last_ext_cmd = nethack.ext_cmds.indexOf(cmd);
+      if((nethack.last_ext_cmd == -1) && (cmd != ''))
+        nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + cmd);
+      nethack.ext_cmds = null;
+    };
+    input.addEventListener('keyup', function(e) {
+      if(e.keyCode == 13) { // Enter
+        e.preventDefault();
+        select_ext_cmd(input.value);
+      } else if (e.keyCode == 27) { // ESC
+        e.preventDefault();
+        select_ext_cmd('');
+      } else if (e.keyCode == 9) { // Tab
+        // prevent losing focus
+        e.preventDefault();
+      }
+    });
+    input.addEventListener('blur', function(e) {
+      select_ext_cmd('');
+    });
+    nethack.input_area.appendChild(input);
+    nethack.input_area.classList.add('in');
+    nethack.input_disabled = true;
+    input.focus();
   },
 
   nethack_exit: function(status) {
