@@ -93,7 +93,7 @@
             FS.mkdir('/nethack/save');
           } catch(e) { }
           FS.mount(IDBFS, {}, '/nethack/save');
-          FS.syncfs(true, function(err) { assert(!err); });
+          FS.syncfs(true, function(err) { if(err) console.log('Cannot sync fs, savegame may not work!'); });
         }],
         postRun: [],
         setStatus: function() {

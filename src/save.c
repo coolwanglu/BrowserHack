@@ -272,7 +272,7 @@ dosave0()
 	compress(fq_save);
 #ifdef WEB_GRAPHICS
     /* need manual sync for emscripten */
-    EM_ASM( FS.syncfs(function (err) { assert(!err); }););
+    EM_ASM( FS.syncfs(function (err) { if(err) console.log('Cannot sync FS, savegame may not work!'); }););
 #endif
 	return(1);
 }

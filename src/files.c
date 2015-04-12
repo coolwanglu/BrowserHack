@@ -916,7 +916,7 @@ delete_savefile()
 	(void) unlink(fqname(SAVEF, SAVEPREFIX, 0));
 #ifdef WEB_GRAPHICS
     /* need manual sync for emscripten */
-    EM_ASM( FS.syncfs(function (err) { assert(!err); }););
+    EM_ASM( FS.syncfs(function (err) { if(err) console.log('Cannot sync FS, savegame may not work!'); }););
 #endif
 	return 0;	/* for restore_saved_game() (ex-xxxmain.c) test */
 }
