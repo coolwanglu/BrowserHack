@@ -191,7 +191,7 @@ a.list-group-item:visited {
 #browserhack-rip-text {
   position: absolute;
   left: 170px;
-  top: 120px;
+  top: 110px;
   font: 13px monospace;
   color: rgb(75, 75, 57);
   text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67);
@@ -257,6 +257,25 @@ a.list-group-item:visited {
 
 .tile.tile-empty {
   background-color: black;
+}
+
+.pet-icon {
+  position: absolute;
+  top:1px;
+  right:1px;
+  color:#ff6060;
+  font-size: 10px;
+}
+
+.map-cursor {
+  position: absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
+  /* from bootstrap */
+  border: 1px solid rgb(102, 175, 233);
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
 }
 
 .inventory-item-accelerator {

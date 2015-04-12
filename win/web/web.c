@@ -135,8 +135,13 @@ void Web_cliparound(int x, int y); // in JS
 #ifdef POSITIONBAR
 void Web_update_positionbar(char * features) { }
 #endif
-void Web_print_tile(winid window, XCHAR_P x, XCHAR_P y, int tile); // in JS
-void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph) { Web_print_tile(window, x, y, glyph2tile[glyph]); }
+void Web_print_tile(winid window, XCHAR_P x, XCHAR_P y, int tile, int is_pet); // in JS
+void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph) 
+{ 
+    Web_print_tile(window, x, y, 
+                   glyph2tile[glyph], 
+                   (glyph_is_pet(glyph) && iflags.hilite_pet)); 
+}
 void Web_raw_print(const char * str) { puts(str); }
 void Web_raw_print_bold(const char * str) { puts(str); }
 int Web_keybuffer_empty(); // in JS
@@ -283,7 +288,7 @@ void Web_preference_update(const char * preference) { }
 
 struct window_procs Web_procs = {
     "Web",
-    WC_COLOR | WC_MOUSE_SUPPORT,
+    WC_HILITE_PET | WC_MOUSE_SUPPORT,
     0L, // wincap2
     Web_init_nhwindows,
     Web_player_selection,

@@ -313,6 +313,16 @@ var LibraryNetHack = {
       ele.classList.remove('in');
     },
 
+    update_map_cursor: function(x, y) {
+      if(nethack.map_cursor_ele.parentNode)
+        nethack.map_cursor_ele.parentNode.removeChild(nethack.map_cursor_ele);
+
+      if(!nethack.maptiles[x]) return;
+      if(!nethack.maptiles[x][y]) return;
+
+      nethack.maptiles[x][y].appendChild(nethack.map_cursor_ele);
+    },
+
     _: null
   },
 
@@ -328,6 +338,7 @@ var LibraryNetHack = {
     nethack.yn_number_p = yn_number_p;
 
     nethack.windows = [];
+    nethack.maptiles = [];
 
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
@@ -443,6 +454,9 @@ var LibraryNetHack = {
     btn_toggle_fullscreen.addEventListener('click', function() {
       document.getElementById('browserhack-main').classList.toggle('fullscreen');
     });
+
+    nethack.map_cursor_ele = document.createElement('div');
+    nethack.map_cursor_ele.className = 'map-cursor';
   },
 
   Web_askname_helper: function(buf, len) {
@@ -553,10 +567,12 @@ var LibraryNetHack = {
   Web_curs: function(win, x, y) {
     win = nethack.windows[win];
     assert(win);
-    win.x = x;
-    win.y = y;
+    win.curs_x = x;
+    win.curs_y = y;
     switch(win.type) {
       case nethack.NHW_MAP:
+        nethack.update_map_cursor(x, y);
+        break;
       case nethack.NHW_STATUS:
         break;
       default:
@@ -661,12 +677,11 @@ var LibraryNetHack = {
     nethack.map_win_content.style.top = (-(y + 0.5) * nethack.tile_height + nethack.map_win.offsetHeight / 2) + 'px';
   },
 
-  Web_print_tile: function(win, x, y, tile) {
+  Web_print_tile: function(win, x, y, tile, is_pet) {
     win = nethack.windows[win];
     assert(win);
     assert(win.type == nethack.NHW_MAP);
     if(win.id != {{{ makeGetValue('nethack.win_map_p', '0', 'i32') }}}) console.log('TODO: extra map window');
-    if(!nethack.maptiles) nethack.maptiles = [];
     if(!nethack.maptiles[x]) nethack.maptiles[x] = [];
     if(!nethack.maptiles[x][y]) {
       var e = document.createElement('div');
@@ -677,7 +692,15 @@ var LibraryNetHack = {
       nethack.map_win_content.appendChild(e);
       nethack.maptiles[x][y] = e;
     }
-    nethack.maptiles[x][y].className = 'tile tile' + tile.toString(16);
+    var tile_ele = nethack.maptiles[x][y];
+    tile_ele.className = 'tile tile' + tile.toString(16);
+    tile_ele.innerHTML = '';
+    if(is_pet) {
+      var pet_icon_ele = document.createElement('div');
+      pet_icon_ele.className = 'glyphicon glyphicon-heart pet-icon';
+      tile_ele.appendChild(pet_icon_ele);
+    }
+    if((x == win.curs_x) && (y == win.curs_y)) nethack.update_map_cursor(x, y);
   },
 
   Web_keybuffer_empty: function() { return nethack.keybuffer.length == 0; },
