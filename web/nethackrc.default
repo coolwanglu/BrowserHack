@@ -1,0 +1,8 @@
+# Default options for BrowserHack
+# Clear everything (and reload the game) to restore to default
+# Will be applied after the game is reloaded (you can save & quit)
+
+# For more details, read http://nethack.wikia.com/wiki/Options
+# Note that not all the NetHack options are supported by BrowserHack
+
+OPTIONS=cmdassit, hilite_pet, autopickup, autoquiver

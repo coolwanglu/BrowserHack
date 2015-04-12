@@ -140,7 +140,7 @@ void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph)
 { 
     Web_print_tile(window, x, y, 
                    glyph2tile[glyph], 
-                   (glyph_is_pet(glyph) && iflags.hilite_pet)); 
+                   (glyph_is_pet(glyph) && iflags.wc_hilite_pet)); 
 }
 void Web_raw_print(const char * str) { puts(str); }
 void Web_raw_print_bold(const char * str) { puts(str); }

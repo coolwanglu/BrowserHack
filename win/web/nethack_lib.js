@@ -329,7 +329,6 @@ var LibraryNetHack = {
   Web_init: function(max_tile, win_message_p, win_status_p, win_map_p, win_inven_p, yn_number_p) {
     document.getElementById('browserhack-loading').style.display = 'none';
 
-    nethack.max_tile = max_tile;
     // pointer to global variables
     nethack.win_message_p = win_message_p;
     nethack.win_status_p = win_status_p;
@@ -337,13 +336,16 @@ var LibraryNetHack = {
     nethack.win_inven_p = win_inven_p;
     nethack.yn_number_p = yn_number_p;
 
+    nethack.max_tile = max_tile;
     nethack.windows = [];
     nethack.maptiles = [];
 
+    // input buffers
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
     nethack.input_disabled = false; // used to block C code
 
+    // commonly used elements
     nethack.map_win = document.getElementById('browserhack-map');
     nethack.map_win_content = document.getElementById('browserhack-map-content');
     nethack.map_win_overlay = document.getElementById('browserhack-map-overlay');
@@ -353,10 +355,14 @@ var LibraryNetHack = {
     nethack.input_area = document.getElementById('browserhack-input-area');
     nethack.replay_btn = document.getElementById('browserhack-replay-btn');
 
-    nethack.apply_tileset('Default_32.png', 32, 32);
+    nethack.map_cursor_ele = document.createElement('div');
+    nethack.map_cursor_ele.className = 'map-cursor';
 
+    // input handlers
     document.addEventListener('keypress', function(e) {
-      if(nethack.ext_cmds) { // waiting for an ext command
+      if(nethack.editing_options) { // editing user options
+        // do nothing
+      } else if(nethack.ext_cmds) { // waiting for an ext command
         // do nothing
       } else if(nethack.yn_arg) { // pending a yn question
         var key = e.charCode;
@@ -429,6 +435,7 @@ var LibraryNetHack = {
     nethack.map_win.addEventListener('click', mouse_event_handler);
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
 
+    // ui logics
     document.getElementById('browserhack-replay-btn').addEventListener('click', function() { window.location.reload(); });
 
     nethack.builtin_tilesets = [
@@ -436,6 +443,7 @@ var LibraryNetHack = {
         { file: 'DawnHack_32.png', width: 32, height: 32 },
         { file: 'Absurd_32.png', width: 32, height: 32 }
     ];
+    nethack.apply_tileset('Default_32.png', 32, 32);
 
     var btn_toggle_tileset = document.getElementById('browserhack-toggle-tileset');
     btn_toggle_tileset.addEventListener('click', function() {
@@ -455,8 +463,34 @@ var LibraryNetHack = {
       document.getElementById('browserhack-main').classList.toggle('fullscreen');
     });
 
-    nethack.map_cursor_ele = document.createElement('div');
-    nethack.map_cursor_ele.className = 'map-cursor';
+    var btn_options = document.getElementById('browserhack-options');
+    if(typeof localStorage === 'undefined') {
+      btn_options.style.display = 'none';
+    } else {
+      // try to load user .nethackrc 
+      var storage_key = 'BrowserHack_Options'; // the key is load used in index.html
+      var textarea = document.createElement('textarea');
+      textarea.className = 'form-control';
+      textarea.rows = '20';
+      textarea.value = localStorage[storage_key] || '';
+      btn_options.addEventListener('click', function() {
+        if(!nethack.editing_options) {
+          var win = nethack.create_window({
+            make_body: function(body) {
+              body.appendChild(textarea);
+            },
+            onclose: function() {
+              localStorage[storage_key] = textarea.value;
+              nethack.editing_options = false;
+              nethack.input_disabled = false;
+            }
+          });
+          nethack.show_window(win);
+          nethack.editing_options = true;
+          nethack.input_disabled = true;
+        }
+      });
+    }
   },
 
   Web_askname_helper: function(buf, len) {
@@ -607,7 +641,7 @@ var LibraryNetHack = {
     fn = Pointer_stringify(str);
     var data = '';
     try {
-      data = FS.readFile(fn);
+      data = FS.readFile(fn, { encoding: 'utf8' });
       data = UTF8ArrayToString(data, 0) 
     } catch (e) {
       if (!complain) return;

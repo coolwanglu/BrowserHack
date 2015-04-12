@@ -6,11 +6,12 @@ JOBS=4
 MYDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 stage1() {
-sh sys/unix/setup.sh
+sh $MYDIR/sys/unix/setup.sh
 make CC=$EMCC -j$JOBS
 make install CC=$EMCC PREFIX=$MYDIR/build
 rm $MYDIR/build/nethack/nethack
 rm $MYDIR/build/nethack/recover
+cp $MYDIR/web/nethackrc.default $MYDIR/build/nethack/
 }
 
 stage2() {
