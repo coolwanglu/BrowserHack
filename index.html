@@ -54,7 +54,9 @@
         </div>
         <div id="browserhack-toolbar">
           <div id="browserhack-toggle-tileset" class="btn" title="Toggle tileset">
-            <span class="glyphicon glyphicon-picture"></span>
+            <span class="glyphicon glyphicon-th-large"></span>
+          </div><div id="browserhack-options" class="btn" title="Options">
+            <span class="glyphicon glyphicon-cog"></span>
           </div><div id="browserhack-toggle-fullscreen" class="btn" title="Toggle fullscreen">
             <span class="glyphicon glyphicon-resize-full"></span>
             <span class="glyphicon glyphicon-resize-small"></span>
@@ -90,12 +92,30 @@
         noExitRuntime: true,
         preRun: [ function() { 
           ENV['USER'] = 'player'; // set to `player` such that NetHack will ask for a name
+          ENV['HOME'] = '/home/nethack_player';
+          try { FS.mkdir('/home/nethack_player'); } catch(e) { }
+
           // mount and load the save dir
-          try {
-            FS.mkdir('/nethack/save');
-          } catch(e) { }
+          try { FS.mkdir('/nethack/save'); } catch(e) { }
           FS.mount(IDBFS, {}, '/nethack/save');
           FS.syncfs(true, function(err) { if(err) console.log('Cannot sync fs, savegame may not work!'); });
+
+          // load user options
+          if(typeof localStorage !== 'undefined') {
+            var storage_key = 'BrowserHack_Options'; // the key is load used in JS
+            var user_options = localStorage[storage_key];
+            if(!user_options) {
+              // load default options
+              try {
+                user_options = FS.readFile('/nethack/nethackrc.default', { encoding: 'utf8' });
+                localStorage[storage_key] = user_options;
+              } catch (e) {
+                user_options = '';
+              }
+            }
+            // save to home dir
+            FS.writeFile(ENV['HOME'] + '/.nethackrc', user_options, { encoding: 'utf8' });
+          }
         }],
         postRun: [],
         setStatus: function() {
