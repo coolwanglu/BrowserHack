@@ -441,7 +441,8 @@ var LibraryNetHack = {
     nethack.builtin_tilesets = [
         { file: 'Default_32.png', width: 32, height: 32 },
         { file: 'DawnHack_32.png', width: 32, height: 32 },
-        { file: 'Absurd_32.png', width: 32, height: 32 }
+        { file: 'Absurd_32.png', width: 32, height: 32 },
+        { file: 'Nevanda_32.png', width: 32, height: 32 }
     ];
     nethack.apply_tileset('Default_32.png', 32, 32);
 

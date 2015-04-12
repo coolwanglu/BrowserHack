@@ -26,4 +26,6 @@ Need help for game testing, implementing more features and designing the interfa
 - `Absurd_32.png`
   - By John Shaw
   - http://nethack.wikia.com/wiki/The_Absurd_NetHack_Tileset
-
+- `Nevanda_32.png`
+  - By Nevanda
+  - http://nevanda.deviantart.com/art/nethack-tiles-32x32px-416691316
