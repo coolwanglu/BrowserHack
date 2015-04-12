@@ -21,7 +21,9 @@ Need help for game testing, implementing more features and designing the interfa
   - http://nethack.wikia.com/wiki/Default_tileset_scaled_to_32x32
 - `DawnHack_32.png`
   - By DragonDePlatino
-  - Under Creative Commons Attribution 3.0 License
+  - Creative Commons Attribution 3.0 License
   - http://dragondeplatino.deviantart.com/art/DawnHack-NetHack-3-4-3-UnNetHack-5-1-0-416312313
-
+- `Absurd_32.png`
+  - By John Shaw
+  - http://nethack.wikia.com/wiki/The_Absurd_NetHack_Tileset
 
