@@ -819,9 +819,11 @@ var LibraryNetHack = {
     nethack.input_area.appendChild(label);
     var input = document.createElement('input');
     input.type = 'text';
+    var done = false; // prevent select_ext_cmd from being called twice (once via enter & once via onblur)
     var select_ext_cmd = function(cmd) {
-      // keyboard events may be fired while input-area is disappearing
-      if(!nethack.ext_cmds) return;
+      if(done) return;
+      done = true;
+      assert(nethack.ext_cmds);
 
       nethack.input_disabled = false;
       nethack.input_area.classList.remove('in');
