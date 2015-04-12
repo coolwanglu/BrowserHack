@@ -31,7 +31,8 @@
         <div id="browserhack-wrapper">
           <div id="browserhack-map">
             <div id="browserhack-map-content"></div>
-            <div id="browserhack-yn-area" class="alert alert-info fade"></div>
+            <div id="browserhack-input-area" class="alert alert-info fade">
+            </div>
             <div id="browserhack-map-overlay" class="fade">
               <div id="browserhack-rip">
                 <img src="rip.png">
@@ -51,18 +52,6 @@
             <div id="browserhack-inventory"></div>
           </div>
         </div>
-        <div id="browserhack-loading">
-          <div class="jumbotron">
-            <br>
-            <br>
-            <h2>Loading...</h2>
-            <h5>This may take a while.</h5>
-            <br>
-            <div class="progress">
-              <div id="browserhack-loading-progress-bar" class="progress-bar progress-bar-striped active" class="progress-bar" style="width: 0%;"></div>
-            </div>
-          </div>
-        </div>
         <div id="browserhack-toolbar">
           <div id="browserhack-toggle-tileset" class="btn" title="Toggle tileset">
             <span class="glyphicon glyphicon-picture"></span>
@@ -71,10 +60,28 @@
             <span class="glyphicon glyphicon-resize-small"></span>
           </div>
         </div>
+        <div id="browserhack-loading">
+          <div class="jumbotron">
+            <br>
+            <br>
+            <h2>Loading...</h2>
+            <h5>This may take a while for the first time.</h5>
+            <br>
+            <div class="progress">
+              <div id="browserhack-loading-progress-bar" class="progress-bar progress-bar-striped active" class="progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
       </div>
       <br/>
       <div class="footer">
         <p>© <a target="_blank" href="http://coolwanglu.github.io/">Lu Wang</a> 2015</p>
+      </div>
+      <!-- Preload images, use inline styles just in case the images are loaded before CSS -->
+      <div style="position:fixed;top:200%;left:200%">
+        <img src="Default_32.png">
+        <img src="DawnHack_32.png">
+        <img src="Absurd_32.png">
       </div>
     </div>
     <script>
@@ -88,7 +95,7 @@
             FS.mkdir('/nethack/save');
           } catch(e) { }
           FS.mount(IDBFS, {}, '/nethack/save');
-          FS.syncfs(true, function(err) { assert(!err); });
+          FS.syncfs(true, function(err) { if(err) console.log('Cannot sync fs, savegame may not work!'); });
         }],
         postRun: [],
         setStatus: function() {
