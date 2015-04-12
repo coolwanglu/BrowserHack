@@ -98,7 +98,11 @@
           // mount and load the save dir
           try { FS.mkdir('/nethack/save'); } catch(e) { }
           FS.mount(IDBFS, {}, '/nethack/save');
-          FS.syncfs(true, function(err) { if(err) console.log('Cannot sync fs, savegame may not work!'); });
+          addRunDependency('BrowserHack-save-dir');
+          FS.syncfs(true, function(err) { 
+            if(err) console.log('Cannot sync fs, savegame may not work!'); 
+            removeRunDependency('BrowserHack-save-dir');
+          });
 
           // load user options
           if(typeof localStorage !== 'undefined') {
