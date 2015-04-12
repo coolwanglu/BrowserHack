@@ -420,12 +420,23 @@ var LibraryNetHack = {
 
     document.getElementById('browserhack-replay-btn').addEventListener('click', function() { window.location.reload(); });
 
+    nethack.builtin_tilesets = [
+        { file: 'Default_32.png', width: 32, height: 32 },
+        { file: 'DawnHack_32.png', width: 32, height: 32 },
+        { file: 'Absurd_32.png', width: 32, height: 32 }
+    ];
+
     var btn_toggle_tileset = document.getElementById('browserhack-toggle-tileset');
     btn_toggle_tileset.addEventListener('click', function() {
-      if(nethack.tile_file != 'Default_32.png')
-        nethack.apply_tileset('Default_32.png', 32, 32);
-      else
-        nethack.apply_tileset('DawnHack_32.png', 32, 32);
+      var i;
+      for(i = 0; i < nethack.builtin_tilesets.length; ++i)
+        if(nethack.builtin_tilesets[i].file == nethack.tile_file)
+          break;
+      if(i == nethack.builtin_tilesets.length) i = 0; // use default if current is not builtin
+      else i = (i+1) % nethack.builtin_tilesets.length;
+
+      var next_tileset = nethack.builtin_tilesets[i];
+      nethack.apply_tileset(next_tileset.file, next_tileset.width, next_tileset.height);
     });
 
     var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
