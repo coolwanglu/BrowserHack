@@ -230,7 +230,7 @@ var LibraryNetHack = {
           }
         },
         onclose: function() { 
-          save_menu_selection();
+          resume_callback(function() { return -1; });
         } 
       });
       nethack.show_window(win);
