@@ -1,16 +1,6 @@
 #include "hack.h"
 #include "func_tab.h"
 
-// this file will be compiled twice
-// one with EMSCRIPTEN and one without
-#ifndef EMSCRIPTEN
-// the first pass, without EMSCRIPTEN, is for building data files
-// this file is not actually used
-// just define a dummy structure to make the linker happy
-struct window_procs Web_procs;
-#else
-// the second pass, with EMSCRIPTEN
-// is the real deal
 #include <emscripten.h>
 
 extern short glyph2tile[];
@@ -343,5 +333,3 @@ struct window_procs Web_procs = {
     Web_outrip,
     Web_preference_update
 };
-
-#endif //ifndef EMSCRIPTEN

@@ -23,6 +23,10 @@ var LibraryNetHack = {
     PICK_ONE: 1,
     PICK_ANY: 2,
 
+    // for localStorage
+    LS_UI_PREFERENCES: 'BrowserHack_UI_Preferences',
+    LS_OPTIONS: 'BrowserHack_Options',
+
     apply_tileset: function(tile_file, tile_width, tile_height) {
       var tile_per_row = 40;
 
@@ -323,6 +327,15 @@ var LibraryNetHack = {
       nethack.maptiles[x][y].appendChild(nethack.map_cursor_ele);
     },
 
+    toggle_fullscreen: function() {
+      document.getElementById('browserhack-main').classList.toggle('fullscreen');
+    },
+
+    save_ui_preferences: function() {
+      if(typeof localStorage !== 'undefined')
+        localStorage[nethack.LS_UI_PREFERENCES] = JSON.stringify(nethack.ui_preferences);
+    },
+
     _: null
   },
 
@@ -436,6 +449,13 @@ var LibraryNetHack = {
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
 
     // ui logics
+    nethack.ui_preferences = {};
+    if(typeof localStorage !== 'undefined') {
+      try {
+        nethack.ui_preferences = JSON.parse(localStorage[nethack.LS_UI_PREFERENCES]) || {};
+      } catch(e) { }
+    }
+
     document.getElementById('browserhack-replay-btn').addEventListener('click', function() { window.location.reload(); });
 
     nethack.builtin_tilesets = [
@@ -444,7 +464,15 @@ var LibraryNetHack = {
         { file: 'Absurd_32.png', width: 32, height: 32 },
         { file: 'Nevanda_32.png', width: 32, height: 32 }
     ];
-    nethack.apply_tileset('Default_32.png', 32, 32);
+
+    if(!nethack.ui_preferences.tileset)
+        nethack.ui_preferences.tileset = nethack.builtin_tilesets[0];
+
+    nethack.apply_tileset(
+      nethack.ui_preferences.tileset.file,
+      nethack.ui_preferences.tileset.width,
+      nethack.ui_preferences.tileset.height
+    );
 
     var btn_toggle_tileset = document.getElementById('browserhack-toggle-tileset');
     btn_toggle_tileset.addEventListener('click', function() {
@@ -456,24 +484,29 @@ var LibraryNetHack = {
       else i = (i+1) % nethack.builtin_tilesets.length;
 
       var next_tileset = nethack.builtin_tilesets[i];
+      nethack.ui_preferences.tileset = next_tileset;
+      nethack.save_ui_preferences();
       nethack.apply_tileset(next_tileset.file, next_tileset.width, next_tileset.height);
     });
 
     var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
     btn_toggle_fullscreen.addEventListener('click', function() {
-      document.getElementById('browserhack-main').classList.toggle('fullscreen');
+      nethack.toggle_fullscreen();
+      nethack.ui_preferences.fullscreen = !nethack.ui_preferences.fullscreen;
+      nethack.save_ui_preferences();
     });
+
+    if(nethack.ui_preferences.fullscreen) { nethack.toggle_fullscreen(); }
 
     var btn_options = document.getElementById('browserhack-options');
     if(typeof localStorage === 'undefined') {
       btn_options.style.display = 'none';
     } else {
       // try to load user .nethackrc 
-      var storage_key = 'BrowserHack_Options'; // the key is load used in index.html
       var textarea = document.createElement('textarea');
       textarea.className = 'form-control';
       textarea.rows = '20';
-      textarea.value = localStorage[storage_key] || '';
+      textarea.value = localStorage[nethack.LS_OPTIONS] || '';
       btn_options.addEventListener('click', function() {
         if(!nethack.editing_options) {
           var win = nethack.create_window({
@@ -481,7 +514,7 @@ var LibraryNetHack = {
               body.appendChild(textarea);
             },
             onclose: function() {
-              localStorage[storage_key] = textarea.value;
+              localStorage[nethack.LS_OPTIONS] = textarea.value;
               nethack.editing_options = false;
               nethack.input_disabled = false;
             }
@@ -492,15 +525,15 @@ var LibraryNetHack = {
         }
       });
     }
+
+    nethack.save_ui_preferences();
   },
 
   Web_askname_helper: function(buf, len) {
-    var storage_key = 'BrowserHack_LastPlayerName';
-    var last_name = '';
-    if(typeof localStorage !== 'undefined') last_name = localStorage[storage_key] || '';
-    var str = window.prompt('Who are you?', last_name) || '';
-    if(typeof localStorage !== 'undefined') localStorage[storage_key] = str;
-    if (str == '') str = 'Unnamed Player';
+    var last_name = nethack.ui_preferences.player_name || '';
+    var str = window.prompt('Who are you?', last_name) || 'Unnamed Player';
+    nethack.ui_preferences.player_name = str;
+    nethack.save_ui_preferences();
     writeStringToMemory(str, buf); // TODO: check length
   },
 
