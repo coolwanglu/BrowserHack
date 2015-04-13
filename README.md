@@ -30,4 +30,7 @@ Need help for game testing, implementing more features and designing the interfa
   - By Nevanda
   - http://nevanda.deviantart.com/art/nethack-tiles-32x32px-416691316
 
-###
+###Where is my favorite ASCII interface?
+As a player of SuperZZT, yeah, I agree that ASCII is definitely important. But it might worth a separate port. Even if the characters are implemented as a special type of tilesets, you may not get the smooth input experience.
+
+Checkout [nethack.alt.org (aka NAO)](http://alt.org/nethack/) where you can play the ASCII version online.
