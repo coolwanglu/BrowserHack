@@ -131,11 +131,11 @@ var LibraryNetHack = {
           body.appendChild(ele);
         },
         onclose: function() {
-          nethack.input_disabled = false;
+          -- nethack.input_disabled;
           if(auto_remove) win.parentNode.removeChild(win);
         }
       });
-      nethack.input_disabled = true;
+      ++ nethack.input_disabled;
       nethack.show_window(win);
 
       return win;
@@ -172,7 +172,7 @@ var LibraryNetHack = {
                   li.addEventListener('click', function(e) {
                     e.currentTarget.classList.add('active');
                     save_menu_selection();
-                    nethack.input_disabled = false;
+                    -- nethack.input_disabled;
                     nethack.hide_window(win);
                     if(auto_remove)  win.parentNode.removeChild(win);
                   });
@@ -199,7 +199,7 @@ var LibraryNetHack = {
             button_e.textContent = 'OK';
             button_e.addEventListener('click', function(e) {
               save_menu_selection();
-              nethack.input_disabled = false;
+              -- nethack.input_disabled;
               nethack.hide_window(win);
               if(auto_remove) win.parentNode.removeChild(win);
             });
@@ -207,12 +207,12 @@ var LibraryNetHack = {
           }
         },
         onclose: function() {
-          nethack.input_disabled = false;
+          -- nethack.input_disabled;
           nethack.last_menu_selection = 'canceled';
           if(auto_remove) win.parentNode.removeChild(win);
         } 
       });
-      nethack.input_disabled = true;
+      ++ nethack.input_disabled;
       nethack.last_menu_selection = 'waiting';
       nethack.show_window(win);
 
@@ -377,7 +377,7 @@ var LibraryNetHack = {
     // input buffers
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
-    nethack.input_disabled = false; // used to block C code
+    nethack.input_disabled = 0; // used to block C code
 
     // commonly used elements
     nethack.main_win = document.getElementById('browserhack-main');
@@ -424,7 +424,7 @@ var LibraryNetHack = {
         }
         if (nethack.yn_result != null) {
           e.preventDefault();
-          nethack.input_disabled = false;
+          -- nethack.input_disabled;
           nethack.input_area.classList.remove('in');
           nethack.yn_arg = null;
         }
@@ -550,12 +550,12 @@ var LibraryNetHack = {
             onclose: function() {
               localStorage[nethack.LS_OPTIONS] = textarea.value;
               nethack.editing_options = false;
-              nethack.input_disabled = false;
+              -- nethack.input_disabled;
             }
           });
           nethack.show_window(win);
           nethack.editing_options = true;
-          nethack.input_disabled = true;
+          ++ nethack.input_disabled;
         }
       });
     }
@@ -617,7 +617,7 @@ var LibraryNetHack = {
   },
 
   Web_modal_window_opened: function() {
-    return nethack.input_disabled;
+    return (nethack.input_disabled > 0);
   },
 
   Web_display_nhwindow_helper: function(win, blocking) {
@@ -693,6 +693,8 @@ var LibraryNetHack = {
         break;
       case nethack.NHW_STATUS:
         if(win.id != {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}) console.log('TODO: extra status window');
+        // there are only 2 lines in the status windows
+        if(nethack.status_win.childNodes.length >= 2) nethack.status_win.innerHTML = '';
         nethack.add_message(nethack.status_win, attr, str);
         break;
       case nethack.NHW_MENU:
@@ -847,7 +849,7 @@ var LibraryNetHack = {
     };
     nethack.yn_result = null;
     
-    nethack.input_disabled = true;
+    ++ nethack.input_disabled;
   },
 
   Web_getlin: function(quest, input) {
@@ -869,7 +871,7 @@ var LibraryNetHack = {
     nethack.map_win_overlay.classList.add('rip');
     nethack.replay_btn.focus();
     
-    nethack.input_disabled = true; 
+    ++ nethack.input_disabled; 
   },
 
   Web_get_last_ext_cmd: function() {
@@ -893,7 +895,7 @@ var LibraryNetHack = {
       done = true;
       assert(nethack.ext_cmds);
 
-      nethack.input_disabled = false;
+      -- nethack.input_disabled;
       nethack.input_area.classList.remove('in');
       nethack.last_ext_cmd = nethack.ext_cmds.indexOf(cmd);
       if((nethack.last_ext_cmd == -1) && (cmd != ''))
@@ -917,12 +919,12 @@ var LibraryNetHack = {
     });
     nethack.input_area.appendChild(input);
     nethack.input_area.classList.add('in');
-    nethack.input_disabled = true;
+    ++ nethack.input_disabled;
     input.focus();
   },
 
   nethack_exit: function(status) {
-    nethack.input_disabled = true; 
+    ++ nethack.input_disabled; 
     nethack.map_win_overlay.classList.add('in');
     nethack.map_win_overlay.classList.add('exited');
     nethack.replay_btn.focus();
