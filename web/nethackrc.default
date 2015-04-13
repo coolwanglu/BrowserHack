@@ -5,4 +5,4 @@
 # For a list of options, read http://nethackwiki.com/wiki/Options
 # Note that not all the NetHack options are supported by BrowserHack
 
-OPTIONS=cmdassist, hilite_pet, autopickup, autoquiver
+OPTIONS=number_pad:0, cmdassist, hilite_pet, autopickup, autoquiver

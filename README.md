@@ -30,6 +30,9 @@ Need help for game testing, implementing more features and designing the interfa
   - By Nevanda
   - http://nevanda.deviantart.com/art/nethack-tiles-32x32px-416691316
 
+###How to use number pad for movements?
+Enabled `number_pad:1` in options (the cog icon in the top-right corner), then reload the game.
+
 ###How to apply my tileset?
 Run this in your browser console:
 `nethack.apply_tilset(tile_file_url, tile_width, tile_height)`
