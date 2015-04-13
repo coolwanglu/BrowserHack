@@ -50,8 +50,8 @@ var LibraryNetHack = {
 
       // move existing tiles
       if(nethack.maptiles) {
-        for(var x = 0; x < nethack.length; ++x) {
-          var col = nethack[x];
+        for(var x = 0; x < nethack.maptiles.length; ++x) {
+          var col = nethack.maptiles[x];
           if(col) {
             for(var y = 0; y < col.length; ++y) {
               if(col[y]) {
