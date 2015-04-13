@@ -37,7 +37,7 @@ You can make this permanent by setting it in options (the cog icon in the top-ri
 
 ###How to apply my tileset?
 Run this in your browser console:
-`nethack.apply_tilset(tile_file_url, tile_width, tile_height)`
+`nethack.apply_tilset(tile_file_url, tile_width, tile_height);`
 
 ###Where is my favorite ASCII interface?
 As a player of SuperZZT, yeah, I agree that ASCII is definitely important. But it might worth a separate port. Even if the characters are implemented as a special type of tilesets, you may not get the smooth input experience.

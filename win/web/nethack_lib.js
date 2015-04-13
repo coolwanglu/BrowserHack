@@ -601,6 +601,10 @@ var LibraryNetHack = {
     switch(win.type) {
       case nethack.NHW_MESSAGE:
         if(win.id != {{{ makeGetValue('nethack.win_message_p', '0', 'i32') }}}) console.log('TODO: extra message window');
+        var last_child = nethack.message_win.lastChild;
+        if(!(last_child && (last_child.tagName == 'BR')))
+          nethack.message_win.appendChild(document.createElement('br'));
+        nethack.message_win.scrollTop = nethack.message_win.scrollHeight;
         break;
       case nethack.NHW_STATUS:
         if(win.id != {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}) console.log('TODO: extra status window');
