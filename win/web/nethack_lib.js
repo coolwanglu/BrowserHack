@@ -99,8 +99,8 @@ var LibraryNetHack = {
             button_e.type = 'button';
             button_e.innerHTML = '<span>&times;</span>';
             button_e.addEventListener('click', function(e) {
-              if(onclose) onclose();
               nethack.hide_window(win_e);
+              if(onclose) onclose();
             });
             if(obj.title) {
               var header_e = document.createElement('div'); header_e.className = 'modal-header';
@@ -122,7 +122,6 @@ var LibraryNetHack = {
     },
 
     show_text_window: function(lines, callback, auto_remove) {
-      console.log('DEBUG show text window');
        var win = nethack.create_window({
         make_body: function(body) {
           var ele = document.createElement('div');
@@ -133,12 +132,10 @@ var LibraryNetHack = {
           body.appendChild(ele);
         },
         onclose: function() {
-          -- nethack.input_disabled;
           if(auto_remove) win.parentNode.removeChild(win);
           callback();
         }
       });
-      ++ nethack.input_disabled;
       nethack.show_window(win);
 
       return win;
@@ -311,12 +308,15 @@ var LibraryNetHack = {
       try {
         ele.getElementsByClassName('close')[0].focus();
       } catch(e) { }
+      
+      ++nethack.window_pending;
       setTimeout(function() {
         ele.classList.add('in');
       },1);
     },
 
     hide_window: function(ele) {
+      --nethack.window_pending;
       ele.classList.remove('in');
     },
 
@@ -381,6 +381,7 @@ var LibraryNetHack = {
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
     nethack.input_disabled = 0; // used to block C code
+    nethack.window_pending = 0;
 
     // commonly used elements
     nethack.main_win = document.getElementById('browserhack-main');
@@ -398,41 +399,46 @@ var LibraryNetHack = {
 
     // input handlers
     document.addEventListener('keypress', function(e) {
-      if(nethack.editing_options) { // editing user options
+      if(nethack.options_dialog) { // editing user options
         // do nothing
-      } else if(nethack.ext_cmds) { // waiting for an ext command
+      } else if(nethack.pending_ext_cmd_arg) { // waiting for an ext command
         // do nothing
-      } else if(nethack.yn_arg) { // pending a yn question
+      } else if(nethack.pending_yn_arg) { // pending a yn question
         var key = e.charCode;
-        var choices = nethack.yn_arg.choices;
+        var choices = nethack.pending_yn_arg.choices;
         var ch = String.fromCharCode(key); 
+        var yn_result = null;
         if(choices == '') { // accept any 
-          nethack.yn_result = ch;
+          yn_result = ch;
         } else {
           ch = ch.toLowerCase();
           if(key == 27) { // ESC
-            nethack.yn_result = (choices.indexOf('q') > -1) ? 'q'
-                                  : (choices.indexOf('n') > -1) ? 'n'
-                                  : nethack.yn_arg.def;
+            yn_result = (choices.indexOf('q') > -1) ? 'q'
+                         : (choices.indexOf('n') > -1) ? 'n'
+                         : nethack.pending_yn_arg.def;
           } else if (' \n\r'.indexOf(ch) > -1) {
-            nethack.yn_result = nethack.yn_arg.def;
+            yn_result = nethack.pending_yn_arg.def;
           } else if (choices.indexOf(ch) > -1) {
             if (ch == '#') {
               var num = NaN;
               while(isNan(num)) num = parseInt(window.prompt('Enter a number'));
               {{{ makeSetValue('nethack.yn_number_p', '0', 'num', 'i32'); }}};
             }
-            nethack.yn_result = ch;
+            yn_result = ch;
           }
         }
-        if (nethack.yn_result != null) {
+        if (yn_result != null) {
           e.preventDefault();
-          -- nethack.input_disabled;
           nethack.input_area.classList.remove('in');
-          nethack.yn_arg = null;
+          var resume_callback = nethack.pending_yn_arg.resume_callback;
+          nethack.pending_yn_arg = null;
+          resume_callback(function() {
+            return yn_result.charCodeAt(0);
+          });
         }
+      } else if (nethack.window_pending) { // text window etc
+        // do nothing
       } else {
-        if(nethack.input_disabled) return;
         e.preventDefault();
         var code = e.charCode;
         if(e.ctrlKey) {
@@ -545,20 +551,18 @@ var LibraryNetHack = {
       textarea.rows = '20';
       textarea.value = localStorage[nethack.LS_OPTIONS] || '';
       btn_options.addEventListener('click', function() {
-        if(!nethack.editing_options) {
-          var win = nethack.create_window({
+        if(!nethack.options_dialog) {
+          nethack.options_dialog = nethack.create_window({
             make_body: function(body) {
               body.appendChild(textarea);
             },
             onclose: function() {
               localStorage[nethack.LS_OPTIONS] = textarea.value;
-              nethack.editing_options = false;
-              -- nethack.input_disabled;
+              nethack.options_dialog.parentNode.removeChild(nethack.options_dialog);
+              nethack.options_dialog = null;
             }
           });
-          nethack.show_window(win);
-          nethack.editing_options = true;
-          ++ nethack.input_disabled;
+          nethack.show_window(nethack.options_dialog);
         }
       });
     }
@@ -628,7 +632,6 @@ var LibraryNetHack = {
   },
 
   Web_display_nhwindow: function(win, blocking) {
-    console.log('DEBUG display nhwindow');
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       var async = false;
       win = nethack.windows[win];
@@ -722,7 +725,6 @@ var LibraryNetHack = {
   },
 
   Web_display_file: function(str, complain) {
-    console.log('DEBUG display file');
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       fn = Pointer_stringify(str);
       var data = '';
@@ -844,32 +846,27 @@ var LibraryNetHack = {
     {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
   },
 
-  Web_get_yn_result: function() {
-    assert(nethack.yn_result != null);
-    return nethack.yn_result.charCodeAt(0);
-  },
+  Web_yn_function: function(ques, choices, def) {
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      ques = Pointer_stringify(ques);
+      choices = Pointer_stringify(choices);   
+      def = String.fromCharCode(def & 0xff);
 
-  Web_yn_function_helper: function(ques, choices, def) {
-    ques = Pointer_stringify(ques);
-    choices = Pointer_stringify(choices);   
-    def = String.fromCharCode(def & 0xff);
+      var i = choices.indexOf(String.fromCharCode(27)); //ESC
+      if(i > -1) choices = choices.substr(0, i);
 
-    var i = choices.indexOf(String.fromCharCode(27)); //ESC
-    if(i > -1) choices = choices.substr(0, i);
-    
-    var yn_area_text = ques;
-    if(choices != '') yn_area_text += ' [' + choices + ']';
-    nethack.input_area.textContent = yn_area_text;
-    nethack.input_area.classList.add('in');
+      var yn_area_text = ques;
+      if(choices != '') yn_area_text += ' [' + choices + ']';
+      nethack.input_area.textContent = yn_area_text;
+      nethack.input_area.classList.add('in');
 
-    nethack.yn_arg = {
-      ques: ques,
-      choices: choices,
-      def: def
-    };
-    nethack.yn_result = null;
-    
-    ++ nethack.input_disabled;
+      nethack.pending_yn_arg = {
+        ques: ques,
+        choices: choices,
+        def: def,
+        resume_callback: emterpreter_resume
+      };
+    });
   },
 
   Web_getlin: function(quest, input) {
@@ -894,53 +891,57 @@ var LibraryNetHack = {
     ++ nethack.input_disabled; 
   },
 
-  Web_get_last_ext_cmd: function() {
-    return nethack.last_ext_cmd;
-  },
-
   Web_get_ext_cmd_helper: function(commands, command_count) {
-    nethack.ext_cmds = [];
-    for(var i = 0; i < command_count; ++i) 
-      nethack.ext_cmds.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      var cmds = [];
+      for(var i = 0; i < command_count; ++i) 
+        cmds.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+      nethack.pending_ext_cmd_arg = {
+        cmds: cmds,
+        resume_callback: emterpreter_resume
+      };
 
-    nethack.input_area.innerHTML = '';
-    var label = document.createElement('label');
-    label.textContent = '#';
-    nethack.input_area.appendChild(label);
-    var input = document.createElement('input');
-    input.type = 'text';
-    var done = false; // prevent select_ext_cmd from being called twice (once via enter & once via onblur)
-    var select_ext_cmd = function(cmd) {
-      if(done) return;
-      done = true;
-      assert(nethack.ext_cmds);
+      nethack.input_area.innerHTML = '';
+      var label = document.createElement('label');
+      label.textContent = '#';
+      nethack.input_area.appendChild(label);
+      var input = document.createElement('input');
+      input.type = 'text';
 
-      -- nethack.input_disabled;
-      nethack.input_area.classList.remove('in');
-      nethack.last_ext_cmd = nethack.ext_cmds.indexOf(cmd);
-      if((nethack.last_ext_cmd == -1) && (cmd != ''))
-        nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + cmd);
-      nethack.ext_cmds = null;
-    };
-    input.addEventListener('keyup', function(e) {
-      if(e.keyCode == 13) { // Enter
-        e.preventDefault();
-        select_ext_cmd(input.value);
-      } else if (e.keyCode == 27) { // ESC
-        e.preventDefault();
+      var done = false;
+      var select_ext_cmd = function(cmd) {
+        if(done) return; // prevent select_ext_cmd from being called twice (once via enter & once via onblur)
+        done = true;
+
+        assert(nethack.pending_ext_cmd_arg);
+        nethack.input_area.classList.remove('in');
+        var cmd_idx = nethack.pending_ext_cmd_arg.cmds.indexOf(cmd);
+        if((cmd_idx == -1) && (cmd != ''))
+          nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + cmd);
+        var resume_callback = nethack.pending_ext_cmd_arg.resume_callback;
+        nethack.pending_ext_cmd_arg = null;
+        
+        resume_callback(function() { return cmd_idx; });
+      };
+      input.addEventListener('keyup', function(e) {
+        if(e.keyCode == 13) { // Enter
+          e.preventDefault();
+          select_ext_cmd(input.value);
+        } else if (e.keyCode == 27) { // ESC
+          e.preventDefault();
+          select_ext_cmd('');
+        } else if (e.keyCode == 9) { // Tab
+          // prevent losing focus
+          e.preventDefault();
+        }
+      });
+      input.addEventListener('blur', function(e) {
         select_ext_cmd('');
-      } else if (e.keyCode == 9) { // Tab
-        // prevent losing focus
-        e.preventDefault();
-      }
+      });
+      nethack.input_area.appendChild(input);
+      nethack.input_area.classList.add('in');
+      input.focus();
     });
-    input.addEventListener('blur', function(e) {
-      select_ext_cmd('');
-    });
-    nethack.input_area.appendChild(input);
-    nethack.input_area.classList.add('in');
-    ++ nethack.input_disabled;
-    input.focus();
   },
 
   nethack_exit: function(status) {

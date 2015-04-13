@@ -139,22 +139,13 @@ int Web_nh_poskey(int * x, int * y, int * mod)
 }
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
-char Web_get_yn_result(); // in JS
-void Web_yn_function_helper(const char * ques, const char * choices, CHAR_P def); // in JS
-char Web_yn_function(const char * ques, const char * choices, CHAR_P def) // TODO
-{ 
-    Web_yn_function_helper(ques, choices, def);
-    while(Web_modal_window_opened())
-        emscripten_sleep(10); 
-    return Web_get_yn_result();
-}
+char Web_yn_function(const char * ques, const char * choices, CHAR_P def); // in JS
 void Web_getlin(const char * ques, char * input); // in JS
-int Web_get_last_ext_cmd(); // in JS
-void Web_get_ext_cmd_helper(const char ** command_list, int num_commands); // in JS
+int Web_get_ext_cmd_helper(const char ** command_list, int num_commands); // in JS
 int Web_get_ext_cmd()
 { 
     // from X11 port
-    int i, num_commands;
+    int num_commands;
     const char **command_list;
 
     /* count commands */
@@ -163,15 +154,12 @@ int Web_get_ext_cmd()
 
     command_list = (const char **) alloc((unsigned)num_commands * sizeof(char *));
 
-    for (i = 0; i < num_commands; i++)
+    for (int i = 0; i < num_commands; i++)
         command_list[i] = extcmdlist[i].ef_txt;
 
-    Web_get_ext_cmd_helper(command_list, num_commands);
-    while(Web_modal_window_opened())
-        emscripten_sleep(10); 
-    free((char *)command_list);
-
-    return Web_get_last_ext_cmd();
+    int ret = Web_get_ext_cmd_helper(command_list, num_commands);
+    free(command_list);
+    return ret;
 } 
 void Web_number_pad(int state) { }
 void Web_delay_output() { emscripten_sleep(50); }
