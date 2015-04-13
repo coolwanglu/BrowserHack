@@ -882,7 +882,6 @@ var LibraryNetHack = {
   },
 
   Web_outrip_helper: function(lines, line_count) {
-    // todo exit
     var ele = document.getElementById('browserhack-rip-text');
     ele.innerHTML = '';
     for(var i = 0; i < line_count; ++i) {
@@ -892,9 +891,7 @@ var LibraryNetHack = {
       ele.appendChild(cur_line);
     }
         
-    nethack.map_win_overlay.classList.add('in');
     nethack.map_win_overlay.classList.add('rip');
-    nethack.replay_btn.focus();
   },
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
@@ -947,15 +944,6 @@ var LibraryNetHack = {
       nethack.input_area.appendChild(input);
       nethack.input_area.classList.add('in');
       input.focus();
-    });
-  },
-
-  nethack_exit: function(status) {
-    // never call resume 
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
-      nethack.map_win_overlay.classList.add('in');
-      nethack.map_win_overlay.classList.add('exited');
-      nethack.replay_btn.focus();
     });
   },
 

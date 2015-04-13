@@ -122,6 +122,14 @@
             }
             // save to home dir
             FS.writeFile(ENV['HOME'] + '/.nethackrc', user_options, { encoding: 'utf8' });
+
+            // show replay button upon exit
+            EmterpreterAsync.asyncFinalizers.push(function() {
+              console.log('here');
+              nethack.map_win_overlay.classList.add('in');
+              nethack.map_win_overlay.classList.add('exited');
+              nethack.replay_btn.focus();
+            });
           }
         }],
         postRun: [],

@@ -185,7 +185,7 @@ a.list-group-item:visited {
   text-align: center;
 }
 
-#browserhack-map-overlay.exited #browserhack-exited {
+#browserhack-map-overlay.exited:not(.rip) #browserhack-exited {
   display:block;
 }
 
