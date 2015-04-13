@@ -107,13 +107,12 @@
 
           // load user options
           if(typeof localStorage !== 'undefined') {
-            var storage_key = 'BrowserHack_Options'; // the key is load used in JS
-            var user_options = localStorage[storage_key];
+            var user_options = localStorage[nethack.LS_OPTIONS];
             if(!user_options) {
               // load default options
               try {
                 user_options = FS.readFile('/nethack/nethackrc.default', { encoding: 'utf8' });
-                localStorage[storage_key] = user_options;
+                localStorage[nethack.LS_OPTIONS] = user_options;
               } catch (e) {
                 user_options = '';
               }
