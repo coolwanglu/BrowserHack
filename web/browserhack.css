@@ -105,6 +105,7 @@ a.list-group-item:visited {
   padding: 0.5em;
   overflow: hidden;
   font-family: monospace;
+  white-space: pre;
 }
 
 #browserhack-sidebar {
@@ -193,6 +194,7 @@ a.list-group-item:visited {
   left: 170px;
   top: 110px;
   font: 13px monospace;
+  white-space: pre;
   color: rgb(75, 75, 57);
   text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67);
 }
