@@ -328,7 +328,26 @@ var LibraryNetHack = {
     },
 
     toggle_fullscreen: function() {
-      document.getElementById('browserhack-main').classList.toggle('fullscreen');
+      nethack.main_win.classList.toggle('fullscreen');
+      nethack.recenter_map();
+    },
+
+    toggle_zoom: function() {
+      nethack.main_win.classList.toggle('zoomed-out');
+      nethack.recenter_map();
+    },
+
+    recenter_map: function() {
+      var center_x = (nethack.map_center_x + 0.5) * nethack.tile_width;
+      var center_y = (nethack.map_center_y + 0.5) * nethack.tile_height;
+      if(nethack.ui_preferences.zoom_out) {
+        center_x /= 2;
+        center_y /= 2;
+      }
+      var left = (-center_x + nethack.map_win.offsetWidth / 2);
+      var top = (-center_y + nethack.map_win.offsetHeight / 2);
+      nethack.map_win_content.style.left = left + 'px';
+      nethack.map_win_content.style.top = top + 'px';
     },
 
     save_ui_preferences: function() {
@@ -350,6 +369,8 @@ var LibraryNetHack = {
     nethack.yn_number_p = yn_number_p;
 
     nethack.max_tile = max_tile;
+    nethack.map_center_x = 0;
+    nethack.map_center_y = 0;
     nethack.windows = [];
     nethack.maptiles = [];
 
@@ -359,6 +380,7 @@ var LibraryNetHack = {
     nethack.input_disabled = false; // used to block C code
 
     // commonly used elements
+    nethack.main_win = document.getElementById('browserhack-main');
     nethack.map_win = document.getElementById('browserhack-map');
     nethack.map_win_content = document.getElementById('browserhack-map-content');
     nethack.map_win_overlay = document.getElementById('browserhack-map-overlay');
@@ -489,11 +511,23 @@ var LibraryNetHack = {
       nethack.apply_tileset(next_tileset.file, next_tileset.width, next_tileset.height);
     });
 
+    var btn_toggle_zoom = document.getElementById('browserhack-toggle-zoom');
+    btn_toggle_zoom.addEventListener('click', function() {
+      // set ui preferences first, toggle_zoom will need the current value (in recenter_map())
+      nethack.ui_preferences.zoom_out = !nethack.ui_preferences.zoom_out;
+      nethack.save_ui_preferences();
+
+      nethack.toggle_zoom();
+    });
+    if(nethack.ui_preferences.zoom_out) { nethack.toggle_zoom(); }
+
     var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
     btn_toggle_fullscreen.addEventListener('click', function() {
-      nethack.toggle_fullscreen();
+      // set ui preferences first, toggle_fullscreen will need the current value (in recenter_map())
       nethack.ui_preferences.fullscreen = !nethack.ui_preferences.fullscreen;
       nethack.save_ui_preferences();
+
+      nethack.toggle_fullscreen();
     });
 
     if(nethack.ui_preferences.fullscreen) { nethack.toggle_fullscreen(); }
@@ -741,8 +775,9 @@ var LibraryNetHack = {
   },
 
   Web_cliparound: function(x, y) {
-    nethack.map_win_content.style.left = (-(x + 0.5) * nethack.tile_width + nethack.map_win.offsetWidth / 2) + 'px';
-    nethack.map_win_content.style.top = (-(y + 0.5) * nethack.tile_height + nethack.map_win.offsetHeight / 2) + 'px';
+    nethack.map_center_x = x;
+    nethack.map_center_y = y;
+    nethack.recenter_map();
   },
 
   Web_print_tile: function(win, x, y, tile, is_pet) {

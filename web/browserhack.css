@@ -78,10 +78,18 @@ a.list-group-item:visited {
   position: relative;
   top:0;
   left:0;
+  transform: scale(1.0);
+  transform-origin: 0 0;
 }
 
+#browserhack-main.zoomed-out #browserhack-map-content { 
+  transform: scale(0.5);
+}
+
+
 #browserhack-map-content.smooth-scrolling {
-  transition: top 1s ease-out, left 1s ease-out;
+  /* these values will be changed together, for smooth animation, they should use the same timing function */
+  transition: top 1s ease-out, left 1s ease-out, transform 1s ease-out;
 }
 
 #browserhack-message {
@@ -230,12 +238,11 @@ a.list-group-item:visited {
   color: rgb(102, 175, 233);
 }
 
-#browserhack-main.fullscreen .glyphicon-resize-full {
-  display: none;
-}
-#browserhack-main:not(.fullscreen) .glyphicon-resize-small {
-  display: none;
-}
+#browserhack-main.zoomed-out .glyphicon-zoom-out { display: none; }
+#browserhack-main:not(.zoomed-out) .glyphicon-zoom-in { display: none; }
+
+#browserhack-main.fullscreen .glyphicon-resize-full { display: none; }
+#browserhack-main:not(.fullscreen) .glyphicon-resize-small { display: none; }
 
 .inventory-item {
   position: relative;
