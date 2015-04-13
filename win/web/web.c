@@ -38,24 +38,11 @@ void Web_resume_nhwindows() { }
 winid Web_create_nhwindow(int type); // in JS
 void Web_clear_nhwindow(winid window); // in JS
 int Web_modal_window_opened(); // in JS
-void Web_display_nhwindow_helper(winid window, BOOLEAN_P blocking); // in JS
-void Web_display_nhwindow(winid window, BOOLEAN_P blocking)
-{
-    Web_display_nhwindow_helper(window, blocking);
-    // always blocking
-    while(Web_modal_window_opened())
-        emscripten_sleep(10); 
-}
+void Web_display_nhwindow(winid window, BOOLEAN_P blocking); // in JS
 void Web_destroy_nhwindow(winid window); // in JS
 void Web_curs(winid window, int x, int y); // in JS
 void Web_putstr(winid window, int attr, const char* str); // in JS
-void Web_display_file_helper(const char * str, BOOLEAN_P complain); // in JS
-void Web_display_file(const char * str, BOOLEAN_P complain)
-{
-    Web_display_file_helper(str, complain);
-    while(Web_modal_window_opened())
-        emscripten_sleep(10); 
-}
+void Web_display_file(const char * str, BOOLEAN_P complain); // in JS
 void Web_start_menu(winid window); // in JS
 void Web_add_menu_helper(winid window, 
                   int tile, 

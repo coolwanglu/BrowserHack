@@ -1,6 +1,7 @@
 /* vim: set sw=2 ts=2 et ft=javascript */
 // Copyright (c) 2015 Lu Wang <coolwanglu@gmail.com>
 var LibraryNetHack = {
+  $nethack__deps: ['$EmterpreterAsync'],
   $nethack: {
     // Macros from NetHack source code
     // window types
@@ -120,7 +121,8 @@ var LibraryNetHack = {
       return win_e;
     },
 
-    show_text_window: function(lines, auto_remove) {
+    show_text_window: function(lines, callback, auto_remove) {
+      console.log('DEBUG show text window');
        var win = nethack.create_window({
         make_body: function(body) {
           var ele = document.createElement('div');
@@ -133,6 +135,7 @@ var LibraryNetHack = {
         onclose: function() {
           -- nethack.input_disabled;
           if(auto_remove) win.parentNode.removeChild(win);
+          callback();
         }
       });
       ++ nethack.input_disabled;
@@ -624,31 +627,38 @@ var LibraryNetHack = {
     return (nethack.input_disabled > 0);
   },
 
-  Web_display_nhwindow_helper: function(win, blocking) {
-    win = nethack.windows[win];
-    assert(win);
-    switch(win.type) {
-      case nethack.NHW_MAP:
-      case nethack.NHW_STATUS:
-      case nethack.NHW_MESSAGE:
-        break;
-      case nethack.NHW_TEXT:
-        win.element_to_remove = nethack.show_text_window(win.lines);
-        break;
-      case nethack.NHW_MENU:
-        if(!blocking) console.log('TODO windows are always blocking');
-        if(win.lines) {
-          win.element_to_remove = nethack.show_text_window(win.lines);
-        } else if(win.menu) {
-          // show menu
-          console.log(win.type, 'TODO display_nhwindow (menu)', blocking);
-        } else {
-          console.log(win.type, 'ERROR nothing to display!');
-        }
-        break;
-      default:
-        console.log(win.type, 'TODO display_nhwindow', blocking);
-    }
+  Web_display_nhwindow: function(win, blocking) {
+    console.log('DEBUG display nhwindow');
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      var async = false;
+      win = nethack.windows[win];
+      assert(win);
+      switch(win.type) {
+        case nethack.NHW_MAP:
+        case nethack.NHW_STATUS:
+        case nethack.NHW_MESSAGE:
+          break;
+        case nethack.NHW_TEXT:
+          win.element_to_remove = nethack.show_text_window(win.lines, emterpreter_resume);
+          async = true;
+          break;
+        case nethack.NHW_MENU:
+          if(!blocking) console.log('TODO windows are always blocking');
+          if(win.lines) {
+            win.element_to_remove = nethack.show_text_window(win.lines, emterpreter_resume);
+            async = true;
+          } else if(win.menu) {
+            // show menu
+            console.log(win.type, 'TODO display_nhwindow (menu)', blocking);
+          } else {
+            console.log(win.type, 'ERROR nothing to display!');
+          }
+          break;
+        default:
+          console.log(win.type, 'TODO display_nhwindow', blocking);
+      }
+      if(!async) setTimeout(emterpreter_resume, 1);
+    });
   },
 
   Web_destroy_nhwindow: function(win) {
@@ -711,17 +721,23 @@ var LibraryNetHack = {
     } 
   },
 
-  Web_display_file_helper: function(str, complain) {
-    fn = Pointer_stringify(str);
-    var data = '';
-    try {
-      data = FS.readFile(fn, { encoding: 'utf8' });
-      data = UTF8ArrayToString(data, 0) 
-    } catch (e) {
-      if (!complain) return;
-      data = 'File not found: ' + fn;
-    }
-    nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }], true);
+  Web_display_file: function(str, complain) {
+    console.log('DEBUG display file');
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      fn = Pointer_stringify(str);
+      var data = '';
+      try {
+        data = FS.readFile(fn, { encoding: 'utf8' });
+        data = UTF8ArrayToString(data, 0) 
+      } catch (e) {
+        if (!complain) {
+          setTimeout(emterpreter_resume, 1);
+          return;
+        }
+        data = 'File not found: ' + fn;
+      }
+      nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }], emterpreter_resume, true);
+    });
   },
 
   Web_start_menu: function(win) {
