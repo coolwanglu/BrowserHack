@@ -18,14 +18,16 @@ Need help for game testing, implementing more features and designing the interfa
 ###Tilesets
 - `Default_32.png`
   - The default tileset from vanilla NetHack 
-  - http://nethack.wikia.com/wiki/Default_tileset_scaled_to_32x32
+  - http://nethackwiki.com/wiki/Default_tileset_scaled_to_32x32
 - `DawnHack_32.png`
   - By DragonDePlatino
   - Creative Commons Attribution 3.0 License
   - http://dragondeplatino.deviantart.com/art/DawnHack-NetHack-3-4-3-UnNetHack-5-1-0-416312313
 - `Absurd_32.png`
   - By John Shaw
-  - http://nethack.wikia.com/wiki/The_Absurd_NetHack_Tileset
+  - http://nethackwiki.com/wiki/The_Absurd_NetHack_Tileset
 - `Nevanda_32.png`
   - By Nevanda
   - http://nevanda.deviantart.com/art/nethack-tiles-32x32px-416691316
+
+###
