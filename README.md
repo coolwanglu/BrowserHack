@@ -31,7 +31,8 @@ Need help for game testing, implementing more features and designing the interfa
   - http://nevanda.deviantart.com/art/nethack-tiles-32x32px-416691316
 
 ###How to use number pad for movements?
-Enabled `number_pad:1` in options (the cog icon in the top-right corner), then reload the game.
+Press `O` and set `number_pad` to 1. Make sure that NumLock is on.
+You can make this permanent by setting it in options (the cog icon in the top-right corner), then reload the game. 
 
 ###How to apply my tileset?
 Run this in your browser console:

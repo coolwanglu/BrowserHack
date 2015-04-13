@@ -816,7 +816,7 @@ var LibraryNetHack = {
   },
 
   Web_getlin: function(quest, input) {
-    str = window.prompt(Pointer_stringify(quest));
+    str = window.prompt(Pointer_stringify(quest)) || '';
     writeStringToMemory(str, input); // TODO: check length
   },
 
