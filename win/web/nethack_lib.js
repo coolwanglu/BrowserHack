@@ -75,6 +75,7 @@ var LibraryNetHack = {
       ele.textContent = str;
       switch(attr) {
         case nethack.ATR_NONE:
+        case nethack.ATR_INVERSE: // inversed are usually for headers, we handle them ourselves
           break;
         case nethack.ATR_BOLD:
           ele.style.fontWeight = 'bold';
@@ -141,52 +142,76 @@ var LibraryNetHack = {
       return win;
     },
 
-    show_menu_window: function(items, title, how, auto_remove) {
-      var list_items = [];
+    show_menu_window: function(items, title, how, selected_pp, resume_callback) {
+      var menu_items = [];
       var save_menu_selection = function() {
-        nethack.last_menu_selection = [];
-        list_items.forEach(function(item) {
-          if(item.classList.contains('active'))
-            nethack.last_menu_selection.push(parseInt(item.getAttribute('data-identifier')));
+        var selections = [];
+        menu_items.forEach(function(item) {
+          if(item.classList.contains('active')) {
+            var id = parseInt(item.getAttribute('data-identifier'));
+            assert(!isNaN(id));
+            selections.push(id);
+          }
         });
-        list_items = [];
+        menu_items = [];
+
+        // allocate memory inside emterpreter resume !
+        resume_callback(function() {
+          if(selections.length > 0) {
+            var selected_p = _malloc(selections.length * 8); // sizeof(MENU_ITEM_P) == 8
+            for(var i = 0; i < selections.length; ++i) {
+              // id
+              {{{ makeSetValue('selected_p', 'i*8', 'selections[i]', 'i32') }}};
+              // count TODO
+              {{{ makeSetValue('selected_p', 'i*8+4', '-1', 'i32') }}};
+            }
+
+            {{{ makeSetValue('selected_pp', 0, 'selected_p', 'i32') }}};
+          } else {
+            {{{ makeSetValue('selected_pp', 0, '0', 'i32') }}};
+          }
+
+          return selections.length;
+        });
       };
-      nethack.last_menu_selection = null;
+
+      // event handlers
+      var select_one = function(e) {
+        e.currentTarget.classList.add('active');
+        save_menu_selection();
+        nethack.hide_window(win);
+      };
+      var toggle_one = function(e) {
+        e.currentTarget.classList.toggle('active');
+      };
+
+      // build menu window
       var win = nethack.create_window({
         title: title,
         make_body: function(body) {
           var ele = document.createElement('div');
           ele.className = 'container modal-content-wrapper';
             var list = document.createElement('div');
-            list.className = 'list-group'
+            list.className = 'list-group';
             items.forEach(function(item) {
               var li = document.createElement('a');
               li.href = '#';
               li.className = 'list-group-item';
-              if(item.preselected)
-                li.className += ' active';
+              if(item.preselected) li.className += ' active';
               li.appendChild(nethack.create_text_element(item.attr, item.str));
               li.setAttribute('data-identifier', item.identifier);
               if(item.identifier != 0) {
                 if(how == nethack.PICK_ONE) {
-                  li.addEventListener('click', function(e) {
-                    e.currentTarget.classList.add('active');
-                    save_menu_selection();
-                    -- nethack.input_disabled;
-                    nethack.hide_window(win);
-                    if(auto_remove)  win.parentNode.removeChild(win);
-                  });
+                  li.addEventListener('click', select_one);
                 } else if (how == nethack.PICK_ANY) {
-                  li.addEventListener('click', function(e) {
-                    e.currentTarget.classList.toggle('active');
-                  });
+                  li.addEventListener('click', toggle_one);
                 } else if (how == nethack.PICK_NONE) {
                    // do nothing
                 } else {
                   console.log('ERR, unknown `how` for select_menu');
                 }
               }
-              list_items.push(li);
+              menu_items.push(li);
               list.appendChild(li);
             });
           ele.appendChild(list);
@@ -199,21 +224,15 @@ var LibraryNetHack = {
             button_e.textContent = 'OK';
             button_e.addEventListener('click', function(e) {
               save_menu_selection();
-              -- nethack.input_disabled;
               nethack.hide_window(win);
-              if(auto_remove) win.parentNode.removeChild(win);
             });
             body.appendChild(button_e);
           }
         },
-        onclose: function() {
-          -- nethack.input_disabled;
-          nethack.last_menu_selection = 'canceled';
-          if(auto_remove) win.parentNode.removeChild(win);
+        onclose: function() { 
+          save_menu_selection();
         } 
       });
-      ++ nethack.input_disabled;
-      nethack.last_menu_selection = 'waiting';
       nethack.show_window(win);
 
       return win;
@@ -380,7 +399,6 @@ var LibraryNetHack = {
     // input buffers
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
-    nethack.input_disabled = 0; // used to block C code
     nethack.window_pending = 0;
 
     // commonly used elements
@@ -454,7 +472,6 @@ var LibraryNetHack = {
     });
 
     var mouse_event_handler = function(e) {
-      if(nethack.input_disabled) return;
       var x = e.target.getAttribute('data-x');
       var y = e.target.getAttribute('data-y');
       if(x == null || y == null) return;
@@ -627,10 +644,6 @@ var LibraryNetHack = {
     } 
   },
 
-  Web_modal_window_opened: function() {
-    return (nethack.input_disabled > 0);
-  },
-
   Web_display_nhwindow: function(win, blocking) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       var async = false;
@@ -768,34 +781,28 @@ var LibraryNetHack = {
     win.menu_prompt = Pointer_stringify(prmpt);
   },
 
-  Web_get_last_menu_selection_count: function() {
-    if(nethack.last_menu_selection == 'waiting') return -2;
-    if(nethack.last_menu_selection == 'canceled') return -1;
-    assert(nethack.last_menu_selection instanceof Array);
-    return nethack.last_menu_selection.length;
-  },
-
-  Web_get_last_menu_selection_identifier: function(idx) {
-    return nethack.last_menu_selection[idx];
-  },
-
-  Web_select_menu_helper: function(win, how, selected) {
-    win = nethack.windows[win];
-    assert(win);
-    assert(win.menu);
-    switch(win.type) {
-      case nethack.NHW_MENU:
-        if((win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) && (how == nethack.PICK_NONE)) {
-          nethack.update_inventory_window(win.menu);
-        } else {
-          win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how);
-        }
-        break;
-      default:
-        console.log(win.type, 'ERROR: select_menu called on a non-menu window');
-    }
-
-    return 0;
+  Web_select_menu: function(win, how, selected_pp) {
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      var async = false;
+      win = nethack.windows[win];
+      assert(win);
+      assert(win.menu);
+      switch(win.type) {
+        case nethack.NHW_MENU:
+          if((win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) && (how == nethack.PICK_NONE)) {
+            nethack.update_inventory_window(win.menu);
+          } else {
+            win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how, selected_pp, emterpreter_resume);
+            async = true;
+          }
+          break;
+        default:
+          console.log(win.type, 'ERROR: select_menu called on a non-menu window');
+      }
+      if(!async) setTimeout(function() {
+        emterpreter_resume(function() { return -1; });
+      }, 1);
+    });
   },
 
   Web_cliparound: function(x, y) {
@@ -875,6 +882,7 @@ var LibraryNetHack = {
   },
 
   Web_outrip_helper: function(lines, line_count) {
+    // todo exit
     var ele = document.getElementById('browserhack-rip-text');
     ele.innerHTML = '';
     for(var i = 0; i < line_count; ++i) {
@@ -887,8 +895,6 @@ var LibraryNetHack = {
     nethack.map_win_overlay.classList.add('in');
     nethack.map_win_overlay.classList.add('rip');
     nethack.replay_btn.focus();
-    
-    ++ nethack.input_disabled; 
   },
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
@@ -945,10 +951,12 @@ var LibraryNetHack = {
   },
 
   nethack_exit: function(status) {
-    ++ nethack.input_disabled; 
-    nethack.map_win_overlay.classList.add('in');
-    nethack.map_win_overlay.classList.add('exited');
-    nethack.replay_btn.focus();
+    // never call resume 
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.map_win_overlay.classList.add('in');
+      nethack.map_win_overlay.classList.add('exited');
+      nethack.replay_btn.focus();
+    });
   },
 
   _: null

@@ -16,6 +16,7 @@ void Web_init_nhwindows(int * argcp, char ** argv)
     // in JS we treat ANY_P as integer
     if(sizeof(ANY_P) != 4) { EM_ASM( throw new Error('sizeof ANY_P is not 4!'); ); }
     if(sizeof(ANY_P) != sizeof(int)) { EM_ASM( throw new Error('sizeof ANY_P is not sizeof int!'); ); }
+    if(sizeof(MENU_ITEM_P) != 8) { EM_ASM( throw new Error('sizeof MENU_ITEM_P is not 8!'); ); }
     Web_init(total_tiles_used, &WIN_MESSAGE, &WIN_STATUS, &WIN_MAP, &WIN_INVEN); 
 
     WIN_MESSAGE = Web_create_nhwindow(NHW_MESSAGE);
@@ -37,7 +38,6 @@ void Web_suspend_nhwindows(const char * str) { }
 void Web_resume_nhwindows() { }
 winid Web_create_nhwindow(int type); // in JS
 void Web_clear_nhwindow(winid window); // in JS
-int Web_modal_window_opened(); // in JS
 void Web_display_nhwindow(winid window, BOOLEAN_P blocking); // in JS
 void Web_destroy_nhwindow(winid window); // in JS
 void Web_curs(winid window, int x, int y); // in JS
@@ -71,37 +71,7 @@ void Web_add_menu(winid window,
                        preselected);
 }
 void Web_end_menu(winid window, const char * prompt); // in JS
-int Web_get_last_menu_selection_count(); // in JS
-int Web_get_last_menu_selection_identifier(int idx); // in JS
-int Web_select_menu_helper(winid window, int how, MENU_ITEM_P ** selected); // in JS
-int Web_select_menu(winid window, int how, MENU_ITEM_P ** selected)
-{
-    int ret = Web_select_menu_helper(window, how, selected);
-    if (how == PICK_NONE) 
-    {
-        while(Web_modal_window_opened())
-            emscripten_sleep(10); 
-    }
-    else if(how == PICK_ONE || how == PICK_ANY) 
-    {
-      while((ret = Web_get_last_menu_selection_count()) == -2) // still waiting for user input
-      {
-        emscripten_sleep(10);
-      }
-      if(ret > 0) 
-      {
-        MENU_ITEM_P * cur_item = *selected = (MENU_ITEM_P*)alloc(ret * sizeof(MENU_ITEM_P));
-
-        for(int i = 0; i < ret; ++i) 
-        {
-            cur_item->item.a_int = Web_get_last_menu_selection_identifier(i);
-            cur_item->count = -1; // TODO
-            ++cur_item;
-        }
-      }
-    }
-    return ret;
-}
+int Web_select_menu(winid window, int how, MENU_ITEM_P ** selected); // in JS
 char Web_message_menu(CHAR_P let, int how, const char *mesg) { return genl_message_menu(let, how, mesg); }
 void Web_update_inventory() { display_inventory(NULL, FALSE); }
 void Web_mark_synch() { emscripten_sleep(1); }
@@ -246,8 +216,6 @@ void Web_outrip(winid window, int how)
     Sprintf(rip_line[YEAR_LINE], "%4d", getyear());
 
     Web_outrip_helper(rip_line,YEAR_LINE+1);
-    // should not be reachable
-    while(1) emscripten_sleep(1000); 
 }
 void Web_preference_update(const char * preference) { }
 
