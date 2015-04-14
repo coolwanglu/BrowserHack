@@ -206,8 +206,12 @@ a.list-group-item:visited {
 
 #browserhack-rip-text {
   position: absolute;
-  left: 170px;
-  top: 110px;
+  left: 150px;
+  top: 94px;
+  width: 158px;
+  height: 158px;
+  padding-top: 20px;
+  text-align: center;
   font: 13px monospace;
   white-space: pre;
   color: rgb(75, 75, 57);
