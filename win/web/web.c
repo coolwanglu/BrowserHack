@@ -91,22 +91,9 @@ void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph)
 }
 void Web_raw_print(const char * str) { puts(str); }
 void Web_raw_print_bold(const char * str) { puts(str); }
-int Web_keybuffer_empty(); // in JS
-int Web_getch(); // in JS
-int Web_nhgetch()
-{ 
-    while(Web_keybuffer_empty()) emscripten_sleep(10);
-    return Web_getch();
-}
+int Web_nhgetch(); // in JS;
 int Web_mousebuffer_empty(); // in JS
-void Web_save_mouse(int * x, int * y, int * mod); // in JS
-int Web_nh_poskey(int * x, int * y, int * mod)
-{ 
-    while(Web_keybuffer_empty() && Web_mousebuffer_empty()) emscripten_sleep(10);
-    if(!Web_keybuffer_empty()) return Web_getch();
-    Web_save_mouse(x, y, mod);
-    return 0;
-}
+int Web_nh_poskey(int * x, int * y, int * mod); // in JS
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
 char Web_yn_function(const char * ques, const char * choices, CHAR_P def); // in JS

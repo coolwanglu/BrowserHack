@@ -377,6 +377,14 @@ var LibraryNetHack = {
         localStorage[nethack.LS_UI_PREFERENCES] = JSON.stringify(nethack.ui_preferences);
     },
 
+    enable_map_smooth_scrolling: function() {
+      nethack.map_win_content.classList.add('smooth-scrolling');
+    },
+
+    disable_map_smooth_scrolling: function() {
+      nethack.map_win_content.classList.remove('smooth-scrolling');
+    },
+
     _: null
   },
 
@@ -467,7 +475,11 @@ var LibraryNetHack = {
             code = code - 96;
           }
         }
-        nethack.keybuffer.push(code);
+        if(nethack.keypress_callback) {
+          nethack.keypress_callback(code);
+        } else {
+          nethack.keybuffer.push(code);
+        }
       }
     });
 
@@ -484,13 +496,18 @@ var LibraryNetHack = {
       else if (e.type == 'dblclick') mod = 2;
       else return;
 
-      nethack.mousebuffer.push({
+      var obj = {
         x: x,
         y: y,
         mod: mod
-      });
-
+      };
       e.preventDefault();
+
+      if(nethack.mouseclick_callback) {
+        nethack.mouseclick_callback(obj);
+      } else {
+        nethack.mousebuffer.push(obj);
+      }
     };
 
     nethack.map_win.addEventListener('click', mouse_event_handler);
@@ -838,20 +855,63 @@ var LibraryNetHack = {
     if((x == win.curs_x) && (y == win.curs_y)) nethack.update_map_cursor(x, y);
   },
 
-  Web_keybuffer_empty: function() { return nethack.keybuffer.length == 0; },
-  Web_mousebuffer_empty: function() { return nethack.mousebuffer.length == 0; },
-  Web_getch: function() { 
+  Web_nhgetch: function() { 
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
       // for keyboard events we enable the animation on the map
-      nethack.map_win_content.classList.add('smooth-scrolling');
-      return nethack.keybuffer.pop(0); 
+      nethack.enable_map_smooth_scrolling();
+      if(nethack.keybuffer.length > 0) {
+        var ch = nethack.keybuffer.pop(0); 
+        setTimeout(function() {
+          emterpreter_resume(function() { return ch; });
+        }, 1);
+      } else {
+        assert(!nethack.keypress_callback);
+        nethack.keypress_callback = function(code) {
+          nethack.keypress_callback = null;
+          emterpreter_resume(function() { return code; });
+        };
+      }
+    });
   },
-  Web_save_mouse: function(x, y, mod) {
-    // for mouse events we disable the animation on the map
-    nethack.map_win_content.classList.remove('smooth-scrolling');
-    var e = nethack.mousebuffer.pop(0);
-    {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
-    {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
-    {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
+  Web_nh_poskey: function(x, y, mod) {
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      if(nethack.keybuffer.length > 0) {
+        nethack.enable_map_smooth_scrolling();
+        var ch = nethack.keybuffer.pop(0); 
+        setTimeout(function() {
+          emterpreter_resume(function() { return ch; });
+        }, 1);
+      } else if(nethack.mousebuffer.length > 0) {
+        // for mouse events we disable the animation on the map
+        nethack.disable_map_smooth_scrolling();
+        var e = nethack.mousebuffer.pop(0);
+        {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
+        {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
+        {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
+        setTimeout(function() {
+          emterpreter_resume(function() { return 0; });
+        }, 1);
+      } else {
+        assert(!nethack.keypress_callback);
+        assert(!nethack.mouse_callback);
+        nethack.keypress_callback = function(code) {
+          nethack.keypress_callback = null;
+          nethack.mouseclick_callback = null;
+          emterpreter_resume(function() { return code; });
+        };
+        nethack.mouseclick_callback = function(e) {
+          nethack.keypress_callback = null;
+          nethack.mouseclick_callback = null;
+          emterpreter_resume(function() { 
+            {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
+            {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
+            {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
+            return 0; 
+          });
+        };
+      }
+        
+    });
   },
 
   Web_yn_function: function(ques, choices, def) {
