@@ -467,6 +467,7 @@ var LibraryNetHack = {
 
     // input handlers
     document.addEventListener('keypress', function(e) {
+      if(ABORT) return; // game exited
       if(nethack.options_dialog) { // editing user options
         // do nothing
       } else if(nethack.pending_get_line) { // waiting for a line input
@@ -526,6 +527,7 @@ var LibraryNetHack = {
     });
 
     var mouse_event_handler = function(e) {
+      if(ABORT) return; // game exited
       var x = e.target.getAttribute('data-x');
       var y = e.target.getAttribute('data-y');
       if(x == null || y == null) return;
