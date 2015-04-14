@@ -185,7 +185,7 @@ a.list-group-item:visited {
   text-align: center;
 }
 
-#browserhack-map-overlay.exited #browserhack-exited {
+#browserhack-map-overlay.exited:not(.rip) #browserhack-exited {
   display:block;
 }
 
@@ -306,8 +306,8 @@ a.list-group-item:visited {
   background-color: rgba(0,0,0,0.7);
   padding: 0.5em;
   border-radius: 10px;
-  left: 100%;
-  top: 0;
+  right: 0;
+  bottom: 100%;
   z-index: 1000;
   pointer-events: none;
 }
