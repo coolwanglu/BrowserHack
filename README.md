@@ -30,6 +30,9 @@ Need help for game testing, implementing more features and designing the interfa
 - `Nevanda_32.png`
   - By Nevanda
   - http://nevanda.deviantart.com/art/nethack-tiles-32x32px-416691316
+- `Geoduck_40x24.png`
+  - By geoduck42
+  - http://geoduck42.deviantart.com/art/Geoduck-s-4-0-NetHack-Tiles-305559245
 
 ###How to use number pad for movements?
 Press `O` and set `number_pad` to 1. Make sure that NumLock is on.

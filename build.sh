@@ -18,9 +18,9 @@ stage2() {
 pushd build
   cp ../src/nethack nethack.bc 
   $EMCC nethack.bc \
-    -o browserhack.js \
     -O3 \
     -Oz \
+    -o browserhack.js \
     -s EMTERPRETIFY=1 \
     -s EMTERPRETIFY_ASYNC=1 \
     --memory-init-file 1 \

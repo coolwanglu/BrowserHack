@@ -510,7 +510,8 @@ var LibraryNetHack = {
         { file: 'Default_32.png', width: 32, height: 32 },
         { file: 'DawnHack_32.png', width: 32, height: 32 },
         { file: 'Absurd_32.png', width: 32, height: 32 },
-        { file: 'Nevanda_32.png', width: 32, height: 32 }
+        { file: 'Nevanda_32.png', width: 32, height: 32 },
+        { file: 'Geoduck_40x24.png', width: 24, height: 40 }
     ];
 
     if(!nethack.ui_preferences.tileset)
@@ -945,6 +946,15 @@ var LibraryNetHack = {
       nethack.input_area.classList.add('in');
       input.focus();
     });
+  },
+
+  nethack_exit: function(status) {
+    nethack.map_win_overlay.classList.add('in');
+    nethack.map_win_overlay.classList.add('exited');
+    nethack.replay_btn.focus();
+    // emscripten_force_exit
+    Module['noExitRuntime'] = false;
+    Module['exit'](status);
   },
 
   _: null

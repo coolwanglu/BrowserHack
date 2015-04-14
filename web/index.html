@@ -88,6 +88,7 @@
         <img src="DawnHack_32.png">
         <img src="Absurd_32.png">
         <img src="Nevanda_32.png">
+        <img src="Geoduck_40x24.png">
       </div>
     </div>
     <script>
@@ -122,14 +123,6 @@
             }
             // save to home dir
             FS.writeFile(ENV['HOME'] + '/.nethackrc', user_options, { encoding: 'utf8' });
-
-            // show replay button upon exit
-            EmterpreterAsync.asyncFinalizers.push(function() {
-              console.log('here');
-              nethack.map_win_overlay.classList.add('in');
-              nethack.map_win_overlay.classList.add('exited');
-              nethack.replay_btn.focus();
-            });
           }
         }],
         postRun: [],
