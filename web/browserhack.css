@@ -155,6 +155,7 @@ a.list-group-item:visited {
 #browserhack-input-area label {
   width: 1%;
   display: table-cell;
+  white-space: pre;
 }
 
 #browserhack-input-area input {
@@ -163,6 +164,8 @@ a.list-group-item:visited {
   background-color: transparent;
   border:none;
   outline:none;
+  margin-top: -3px;
+  margin-bottom: -3px;
 }
 
 #browserhack-rip {

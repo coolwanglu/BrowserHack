@@ -68,6 +68,8 @@ var LibraryNetHack = {
           }
         }
       }         
+
+      nethack.recenter_map();
     },
 
     create_text_element: function(attr, str) {
@@ -236,6 +238,46 @@ var LibraryNetHack = {
       nethack.show_window(win);
 
       return win;
+    },
+
+    get_line: function(obj) {
+      nethack.input_area.innerHTML = '';
+      var label = document.createElement('label');
+      label.textContent = obj.label;
+      nethack.input_area.appendChild(label);
+      var input = document.createElement('input');
+      input.type = 'text';
+      var done = false; // prevent callbacks being called twice (once via enter & once via onblur)
+      var handle = function(value) {
+        if(done) return;
+        done = true;
+        nethack.pending_get_line = false;
+        nethack.input_area.classList.remove('in');
+        if(obj.callback) obj.callback(value);
+      };
+      input.addEventListener('keyup', function(e) {
+        if(e.keyCode == 13) { // Enter
+          e.preventDefault();
+          handle(input.value);
+        } else if (e.keyCode == 27) { // ESC
+          e.preventDefault();
+          handle(null);
+        } else if (e.keyCode == 9) { // Tab
+          // prevent losing focus
+          e.preventDefault();
+        }
+      });
+      input.addEventListener('blur', function(e) {
+        handle(null);
+      });
+      nethack.input_area.appendChild(input);
+      nethack.input_area.classList.add('in');
+      input.focus();
+      if(obj.default_text) {
+        input.value = obj.default_text;
+        input.select();
+      }
+      nethack.pending_get_line = true;
     },
 
     create_inventory_element: function(item) {
@@ -427,7 +469,7 @@ var LibraryNetHack = {
     document.addEventListener('keypress', function(e) {
       if(nethack.options_dialog) { // editing user options
         // do nothing
-      } else if(nethack.pending_ext_cmd_arg) { // waiting for an ext command
+      } else if(nethack.pending_get_line) { // waiting for a line input
         // do nothing
       } else if(nethack.pending_yn_arg) { // pending a yn question
         var key = e.charCode;
@@ -447,7 +489,7 @@ var LibraryNetHack = {
           } else if (choices.indexOf(ch) > -1) {
             if (ch == '#') {
               var num = NaN;
-              while(isNan(num)) num = parseInt(window.prompt('Enter a number'));
+              while(isNaN(num)) num = parseInt(window.prompt('Enter a number'));
               {{{ makeSetValue('nethack.yn_number_p', '0', 'num', 'i32'); }}};
             }
             yn_result = ch;
@@ -606,11 +648,24 @@ var LibraryNetHack = {
   },
 
   Web_askname_helper: function(buf, len) {
-    var last_name = nethack.ui_preferences.player_name || '';
-    var str = window.prompt('Who are you?', last_name) || 'Unnamed Player';
-    nethack.ui_preferences.player_name = str;
-    nethack.save_ui_preferences();
-    writeStringToMemory(str, buf); // TODO: check length
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      var labels = [
+        'Who are you? ',
+        'What is your name? ',
+        'Enter your name: '
+      ];
+      nethack.get_line({
+        label: labels[Math.floor(Math.random() * labels.length)],
+        default_text: nethack.ui_preferences.player_name || '',
+        callback: function(value) {
+          value = value || 'Unnamed Player';
+          nethack.ui_preferences.player_name = value;
+          nethack.save_ui_preferences();
+          writeStringToMemory(value, buf); // TODO: check length
+          emterpreter_resume();
+        }
+      });
+    });
   },
 
   Web_create_nhwindow: function(type) {
@@ -925,6 +980,7 @@ var LibraryNetHack = {
 
       var yn_area_text = ques;
       if(choices != '') yn_area_text += ' [' + choices + ']';
+      if(def.charCodeAt(0)) yn_area_text += ' (' + def + ')';
       nethack.input_area.textContent = yn_area_text;
       nethack.input_area.classList.add('in');
 
@@ -938,8 +994,15 @@ var LibraryNetHack = {
   },
 
   Web_getlin: function(quest, input) {
-    str = window.prompt(Pointer_stringify(quest)) || '';
-    writeStringToMemory(str, input); // TODO: check length
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.get_line({
+        label: (Pointer_stringify(quest) || '') + ' ',
+        callback: function(value) {
+          writeStringToMemory(value || '', input); // TODO: check length
+          emterpreter_resume();
+        }
+      });
+    });
   },
 
   Web_outrip_helper: function(lines, line_count) {
@@ -957,54 +1020,23 @@ var LibraryNetHack = {
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
-      var cmds = [];
-      for(var i = 0; i < command_count; ++i) 
-        cmds.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
-      nethack.pending_ext_cmd_arg = {
-        cmds: cmds,
-        resume_callback: emterpreter_resume
-      };
+      nethack.get_line({
+        label: '#',
+        callback: function(value) {
+          var cmd_idx = -1;
+          value = value || ''; // value could be null
+          for(var i = 0; i < command_count; ++i) {
+            if(value == Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}})) {
+              cmd_idx = i;
+              break;
+            }
+          }
+          if((cmd_idx == -1) && (value != ''))
+            nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + value);
 
-      nethack.input_area.innerHTML = '';
-      var label = document.createElement('label');
-      label.textContent = '#';
-      nethack.input_area.appendChild(label);
-      var input = document.createElement('input');
-      input.type = 'text';
-
-      var done = false;
-      var select_ext_cmd = function(cmd) {
-        if(done) return; // prevent select_ext_cmd from being called twice (once via enter & once via onblur)
-        done = true;
-
-        assert(nethack.pending_ext_cmd_arg);
-        nethack.input_area.classList.remove('in');
-        var cmd_idx = nethack.pending_ext_cmd_arg.cmds.indexOf(cmd);
-        if((cmd_idx == -1) && (cmd != ''))
-          nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + cmd);
-        var resume_callback = nethack.pending_ext_cmd_arg.resume_callback;
-        nethack.pending_ext_cmd_arg = null;
-        
-        resume_callback(function() { return cmd_idx; });
-      };
-      input.addEventListener('keyup', function(e) {
-        if(e.keyCode == 13) { // Enter
-          e.preventDefault();
-          select_ext_cmd(input.value);
-        } else if (e.keyCode == 27) { // ESC
-          e.preventDefault();
-          select_ext_cmd('');
-        } else if (e.keyCode == 9) { // Tab
-          // prevent losing focus
-          e.preventDefault();
+          emterpreter_resume(function() { return cmd_idx; });
         }
       });
-      input.addEventListener('blur', function(e) {
-        select_ext_cmd('');
-      });
-      nethack.input_area.appendChild(input);
-      nethack.input_area.classList.add('in');
-      input.focus();
     });
   },
 
