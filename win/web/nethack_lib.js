@@ -230,7 +230,7 @@ var LibraryNetHack = {
               badge.className = 'badge';
               if((item.accelerator == 0) && (item.identifier != 0)) {
                 if(next_accelerator_id < accelerators.length) {
-                  item.accelerator = accelerators[next_accelerator_id];
+                  item.accelerator = accelerators.charCodeAt(next_accelerator_id);
                   ++next_accelerator_id;
                 }
               }
