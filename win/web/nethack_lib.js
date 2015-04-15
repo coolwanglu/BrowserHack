@@ -195,8 +195,9 @@ var LibraryNetHack = {
       // event handlers
       var select_one = function(e) {
         e.currentTarget.classList.add('active');
-        save_menu_selection();
+        // need to hide the window before continue
         nethack.hide_window(win);
+        save_menu_selection();
       };
       var toggle_one = function(e) {
         e.currentTarget.classList.toggle('active');
@@ -307,7 +308,6 @@ var LibraryNetHack = {
           }
         },
         onclose: function() { 
-          nethack.pending_window_keymap = null;
           resume_callback(function() { return -1; });
         } 
       });
