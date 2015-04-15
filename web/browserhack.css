@@ -16,17 +16,13 @@ body,
 
 body {
   color: #fff;
+  font-family: Consolas,monaco,"Source Code Pro","Lucida Console",monospace;
 }
 
-a:link,
-a:visited { 
+.footer a:link,
+.footer a:visited { 
   color: #fff; 
-}
-
-a.list-group-item,
-a.list-group-item:link,
-a.list-group-item:visited { 
-  color: inherit; 
+  outline: none;
 }
 
 #github-star {
@@ -117,7 +113,6 @@ a.list-group-item:visited {
   background-color: #333;
   padding: 0.5em;
   overflow: hidden;
-  font-family: monospace;
   white-space: pre;
 }
 
@@ -212,7 +207,7 @@ a.list-group-item:visited {
   height: 158px;
   padding-top: 20px;
   text-align: center;
-  font: 13px monospace;
+  font-size: 13px;
   white-space: pre;
   color: rgb(75, 75, 57);
   text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67);
@@ -273,10 +268,6 @@ a.list-group-item:visited {
   display: inline-block;
   border: 0;
   border-radius: 5px;
-}
-
-.tile.tile-empty {
-  background-color: black;
 }
 
 .pet-icon {
@@ -365,12 +356,65 @@ a.list-group-item:visited {
 }
 
 .modal-content {
-  font-family: monospace;
   white-space: pre;
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
   box-shadow: 0 5px 15px rgba(255,255,255,.5);
   color: #aaa;
   background-color: rgba(0,0,0,0.5);
+}
+
+.list-group {
+  margin: 0;
+}
+
+.list-group-item {
+  padding: 0.25em;
+  background-color: transparent;
+  border: none;
+}
+
+a.list-group-item:focus:not(:hover),
+a.list-group-item.group-header:hover {
+  background-color: transparent;
+}
+
+.list-group-item:not(:hover):not(.active):not(.group-header) {
+  color: #aaa;
+  outline: none;
+}
+
+.list-group-item:first-child,
+.list-group-item:last-child {
+  border-radius: 0;
+}
+
+.list-group-item > .badge {
+  float: none;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.list-group-item > p {
+  display: inline-block;
+  margin: 0;
+  margin-left: 1em;
+}
+
+.list-group-item > .inventory-item {
+  vertical-align: middle;
+}
+
+.list-group-item .inventory-item-accelerator,
+.list-group-item .inventory-item-description {
+  display: none;
+}
+
+.list-group-item.group-header:focus,
+.list-group-item.group-header:hover,
+.list-group-item.group-header {
+  font-weight: bold;
+  color: #fff;
+  outline: none;
 }
 
 .close, 

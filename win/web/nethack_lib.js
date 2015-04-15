@@ -123,11 +123,19 @@ var LibraryNetHack = {
               content_e.appendChild(header_e);
             }
             var body_e = document.createElement('div'); body_e.className = 'modal-body';
+            // by default, the window is closed by pressing Esc, Enter or Space
+            var keymap = {};
+            keymap[String.fromCharCode(13)] = button_e;
+            keymap[String.fromCharCode(27)] = button_e;
+            keymap[String.fromCharCode(32)] = button_e;
+
             if(!obj.title) body_e.appendChild(button_e);
-            if(obj.make_body) obj.make_body(body_e);
+            if(obj.make_body) obj.make_body(body_e, keymap);
           content_e.appendChild(body_e);
         dialog_e.appendChild(content_e);
       win_e.appendChild(dialog_e);
+
+      nethack.pending_window_keymap = keymap;
       return win_e;
     },
 
@@ -197,18 +205,72 @@ var LibraryNetHack = {
       // build menu window
       var win = nethack.create_window({
         title: title,
-        make_body: function(body) {
+        make_body: function(body, keymap) {
           var ele = document.createElement('div');
           ele.className = 'container modal-content-wrapper';
+            if(how == nethack.PICK_ANY) keymap['*'] = [];
             var list = document.createElement('div');
             list.className = 'list-group';
+            // check if any item has a tile
+            var any_tile = items.some(function(item) { return item.tile != -1; });
+            var accelerators = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var next_accelerator_id = 0;
             items.forEach(function(item) {
               var li = document.createElement('a');
               li.href = '#';
-              li.className = 'list-group-item';
-              if(item.preselected) li.className += ' active';
-              li.appendChild(nethack.create_text_element(item.attr, item.str));
+              li.classList.add('list-group-item');
               li.setAttribute('data-identifier', item.identifier);
+              if(item.identifier == 0) li.classList.add('group-header');
+              else if (how == nethack.PICK_ANY) keymap['*'].push(li);
+
+              if(item.preselected) li.className += ' active';
+
+              // accelerator/selection badge
+              var badge = document.createElement('span');
+              badge.className = 'badge';
+              if((item.accelerator == 0) && (item.identifier != 0)) {
+                if(next_accelerator_id < accelerators.length) {
+                  item.accelerator = accelerators[next_accelerator_id];
+                  ++next_accelerator_id;
+                }
+              }
+              if(item.accelerator == 0) {
+                badge.textContent = '*'; // to fill the width
+                badge.classList.add('invisible');
+              } else {
+                var acc = String.fromCharCode(item.accelerator);
+                badge.textContent = acc;
+                keymap[acc] = li;
+              }
+                
+              li.appendChild(badge);
+
+              // tile
+              if(item.tile != -1) {
+                li.appendChild(nethack.create_inventory_element(item))
+                li.appendChild(nethack.create_text_element(
+                  item.attr, 
+                  nethack.parse_inventory_description(item.str).description
+                ));
+              } else {
+                // if some item has a tile, 
+                // we need to create a dummy tile here for alignment
+                if(any_tile) li.appendChild(nethack.create_inventory_element(item))
+                else {
+                  // ugly hack for choosing a spell
+                  // to makie alignment correct
+                  if((item.str.length > 4) && (item.str.substr(0,4) == '    '))
+                    item.str = item.str.substr(4);
+                }
+
+                li.appendChild(nethack.create_text_element(
+                  item.attr, 
+                  item.str
+                ));
+              }
+
+
+              // event handlers
               if(item.identifier != 0) {
                 if(how == nethack.PICK_ONE) {
                   li.addEventListener('click', select_one);
@@ -232,18 +294,25 @@ var LibraryNetHack = {
             button_e.type = 'button';
             button_e.textContent = 'OK';
             button_e.addEventListener('click', function(e) {
-              save_menu_selection();
+              // hide the window first
+              // as new window may be created in save_menu_selection 
+              // which sets nethack.pending_window_keymap
               nethack.hide_window(win);
+              save_menu_selection();
             });
             body.appendChild(button_e);
+            // Enter and Space are mapped to the button
+            keymap[String.fromCharCode(13)] = button_e;
+            keymap[String.fromCharCode(32)] = button_e;
           }
         },
         onclose: function() { 
+          nethack.pending_window_keymap = null;
           resume_callback(function() { return -1; });
         } 
       });
-      nethack.show_window(win);
 
+      nethack.show_window(win);
       return win;
     },
 
@@ -275,7 +344,7 @@ var LibraryNetHack = {
         }
       });
       input.addEventListener('blur', function(e) {
-        handle(null);
+        handle(input.value);
       });
       nethack.input_area.appendChild(input);
       nethack.input_area.classList.add('in');
@@ -285,6 +354,33 @@ var LibraryNetHack = {
         input.select();
       }
       nethack.pending_get_line = true;
+    },
+
+    parse_inventory_description: function(description) {
+      // parse description
+      var count = null;
+      var idx = description.indexOf(' ');
+      if(idx > -1) {
+        var prefix = description.substr(0, idx);
+        if((prefix == 'a') || (prefix == 'an')) {
+          count = 1;
+        } else {
+          count = parseInt(prefix);
+          if(isNaN(count)) count = null;
+        }
+        if(count != null) {
+          description = description.substr(idx + 1);
+        }
+      }
+      
+      if(count == null) {
+        count = 1;
+      }
+
+      return {
+        count: count,
+        description: description
+      };
     },
 
     create_inventory_element: function(item) {
@@ -302,52 +398,32 @@ var LibraryNetHack = {
       var tile = document.createElement('span');
       tile.className = 'tile';
       if(item.tile == -1) {
-        console.log('TODO no tile in inventory!');
-        tile.className += ' tile-empty';
+        ele.appendChild(tile);
+        ele.classList.add('invisible');
       } else {
         tile.className += ' tile' + item.tile.toString(16);
-      }
-      ele.appendChild(tile);
-
-      var acc = document.createElement('div');
-      acc.className = 'inventory-item-accelerator';
-      acc.textContent = String.fromCharCode(item.accelerator);  
-      ele.appendChild(acc);
-
-      // parse description
-      var description = item.str;
-      var count = null;
-      var idx = description.indexOf(' ');
-      if(idx > -1) {
-        var prefix = description.substr(0, idx);
-        if((prefix == 'a') || (prefix == 'an')) {
-          count = 1;
-        } else {
-          count = parseInt(prefix);
-          if(isNaN(count)) count = null;
-        }
-        if(count != null) {
-          description = description.substr(idx + 1);
+        ele.appendChild(tile);
+  
+        var acc = document.createElement('div');
+        acc.className = 'inventory-item-accelerator';
+        acc.textContent = String.fromCharCode(item.accelerator);  
+        ele.appendChild(acc);
+  
+        var parsed = nethack.parse_inventory_description(item.str);
+  
+        var des = document.createElement('div');
+        des.className = 'inventory-item-description';
+        des.textContent = parsed.description;
+        ele.appendChild(des);
+  
+        if(parsed.count > 1) {
+          var cnt = document.createElement('div');
+          cnt.className = 'inventory-item-count';
+          cnt.textContent = parsed.count;
+          ele.appendChild(cnt);
         }
       }
-      
-      if(count == null) {
-        console.log('TODO cannot parse description', description);
-        count = 1;
-      }
-
-      var des = document.createElement('div');
-      des.className = 'inventory-item-description';
-      des.textContent = description;
-      ele.appendChild(des);
-
-      if(count > 1) {
-        var cnt = document.createElement('div');
-        cnt.className = 'inventory-item-count';
-        cnt.textContent = count;
-        ele.appendChild(cnt);
-      }
-      
+        
       return ele;
     },
 
@@ -373,9 +449,6 @@ var LibraryNetHack = {
     show_window: function(ele) {
       document.body.appendChild(ele);
       ele.style.display = 'block';
-      try {
-        ele.getElementsByClassName('close')[0].focus();
-      } catch(e) { }
       
       ++nethack.window_pending;
       setTimeout(function() {
@@ -385,6 +458,7 @@ var LibraryNetHack = {
 
     hide_window: function(ele) {
       --nethack.window_pending;
+      nethack.pending_window_keymap = null;
       ele.classList.remove('in');
     },
 
@@ -479,8 +553,24 @@ var LibraryNetHack = {
         // do nothing
       } else if(nethack.pending_get_line) { // waiting for a line input
         // do nothing
+      } else if(nethack.pending_window_keymap) { // in a window dialog
+        var key = String.fromCharCode(e.charCode || e.keyCode);
+        var ele = nethack.pending_window_keymap[key];
+        if(ele) {
+          e.preventDefault();
+          if(key == '*') {
+            // special for menu
+            // select all if some is not selected
+            // otherwise deselect all
+            if(ele.every(function(_) { return _.classList.contains('active'); }))
+               ele.forEach(function(_) { _.classList.remove('active'); });
+            else
+               ele.forEach(function(_) { _.classList.add('active'); });
+          }
+          else ele.click();
+        }
       } else if(nethack.pending_yn_arg) { // pending a yn question
-        var key = e.charCode;
+        var key = e.charCode || e.keyCode;
         var choices = nethack.pending_yn_arg.choices;
         var ch = String.fromCharCode(key); 
         var yn_result = null;
@@ -516,7 +606,7 @@ var LibraryNetHack = {
         // do nothing
       } else {
         e.preventDefault();
-        var code = e.charCode;
+        var code = e.charCode || e.keyCode;
         if(e.ctrlKey) {
           // some browsers do not `apply` the control key to charCode
           if((code >= 65) && (code <= 90)) { // A~Z
