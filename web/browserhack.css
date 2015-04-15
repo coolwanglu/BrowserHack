@@ -410,8 +410,8 @@ a.list-group-item.group-header:hover {
   vertical-align: middle;
 }
 
-.list-group-item .inventory-item-accelerator,
-.list-group-item .inventory-item-description {
+.list-group-item .inventory-item .inventory-item-accelerator,
+.list-group-item .inventory-item .inventory-item-description {
   display: none;
 }
 
