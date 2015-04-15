@@ -89,7 +89,14 @@ var LibraryNetHack = {
     },
 
     add_message: function(ele, attr, str) {
-      ele.appendChild(nethack.create_text_element(attr, str));
+      var msg_ele = nethack.create_text_element(attr, str);
+      if(ele == nethack.message_win) {
+        msg_ele.classList.add('fade');
+        setTimeout(function() {
+          msg_ele.classList.add('in');
+        }, 1);
+      }
+      ele.appendChild(msg_ele);
       ele.scrollTop = ele.scrollHeight;
     },
 
