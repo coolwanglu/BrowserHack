@@ -654,6 +654,21 @@ var LibraryNetHack = {
     nethack.map_win.addEventListener('click', mouse_event_handler);
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
 
+    // magic
+    // tilenames is loaded in index.html
+    document.addEventListener('click', function(e) {
+      if(!nethack.tilenames) return;
+      if(!e.shiftKey) return;
+      var r = /(?:^| )tile([0-9a-fA-F]+)(?: |$)/.exec(e.target.className);
+      if(!r) return;
+      var tile_idx = parseInt(r[1], 16);
+      if(tile_idx >= nethack.tilenames.length) return;
+      var tile_name = nethack.tilenames[tile_idx].replace(' ', '_');
+      var wiki_url = 'http://nethackwiki.com/wiki/' + tile_name;
+      e.preventDefault();
+      window.open(wiki_url, '_blank');
+    });
+
     // ui logics
     nethack.ui_preferences = {};
     if(typeof localStorage !== 'undefined') {

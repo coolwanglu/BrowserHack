@@ -8,10 +8,12 @@ MYDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 stage1() {
 sh $MYDIR/sys/unix/setup.sh
 make CC=$EMCC -j$JOBS
+
 make install CC=$EMCC PREFIX=$MYDIR/build
 rm $MYDIR/build/nethack/nethack
 rm $MYDIR/build/nethack/recover
 cp $MYDIR/web/nethackrc.default $MYDIR/build/nethack/
+
 }
 
 stage2() {
@@ -31,6 +33,10 @@ popd
 cp build/browserhack.js web/
 cp build/browserhack.js.mem web/
 cp build/browserhack.data web/
+
+pushd web
+  python ../win/web/tile2name.py
+popd
 }
 
 stage1

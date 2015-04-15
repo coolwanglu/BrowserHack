@@ -25,7 +25,7 @@
     <div class="container">
       <div class="jumbotron">
         <h1>BrowserHack<sup>beta</sup></h1>
-        <p>press <kbd>?</kbd> for help</p>
+        <p>Press <kbd>?</kbd> for help. Shift-click a tile for magic</p>
       </div>
       <div id="browserhack-main" class="container">
         <div id="browserhack-wrapper">
@@ -124,6 +124,14 @@
             // save to home dir
             FS.writeFile(ENV['HOME'] + '/.nethackrc', user_options, { encoding: 'utf8' });
           }
+
+          // load tilenames
+          nethack.tilenames = [];
+          Browser.asyncLoad('tilenames.json', function(u8_array) {
+            try {
+              nethack.tilenames = JSON.parse(UTF8ArrayToString(u8_array, 0));
+            } catch(e) { }
+          });
         }],
         postRun: [],
         setStatus: function() {

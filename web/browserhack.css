@@ -342,6 +342,7 @@ body {
   background-color: transparent;
   text-align: center;
   text-shadow: 0px 0px 10px rgb(210, 225, 235);
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 .jumbotron h1 {
   margin-top: 0px;
@@ -353,6 +354,11 @@ body {
   font-size: 33%;
   text-shadow: none;
   top: -1.5em;
+}
+
+.jumbotron p {
+  color: #aaa;
+  font-size: 17px;
 }
 
 .modal-content {
