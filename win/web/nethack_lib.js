@@ -915,7 +915,6 @@ var LibraryNetHack = {
       var data = '';
       try {
         data = FS.readFile(fn, { encoding: 'utf8' });
-        data = UTF8ArrayToString(data, 0) 
       } catch (e) {
         if (!complain) {
           setTimeout(emterpreter_resume, 1);
