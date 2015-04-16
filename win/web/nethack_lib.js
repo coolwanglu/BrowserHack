@@ -117,23 +117,23 @@ var LibraryNetHack = {
         var old_match = old_value.match(number_pattern);
         var new_match = new_value.match(number_pattern);
         if((old_match != null) && (new_match != null)) {
-          var diff = parseInt(new_match[0]) - parseInt(old_match[0]);
+          var diff = parseInt(new_match[1]) - parseInt(old_match[1]);
           if(diff != 0) { // major difference
             ele.textContent = new_value;
             var better = (diff > 0);
             if(invert) better = !better;
             ele.className = (better ? 'green' : 'red');
-          } else if(new_match[1] == old_match[1]) { // the same
+          } else if(new_match[2] == old_match[2]) { // the same
             ele.textContent = new_value;
           } else { // minor difference
             var ele1 = document.createElement('span');
-            ele1.textContent = new_match[0] + '/';
+            ele1.textContent = new_match[1] + '/';
             ele.appendChild(ele1);
 
-            var better = ((parseInt(new_match[1]) || 0) > (parseInt(old_match[1]) || 0));
+            var better = ((parseInt(new_match[2]) || 0) > (parseInt(old_match[2]) || 0));
             if(invert) better = !better;
             var ele2 = document.createElement('span');
-            ele2.textContent = new_match[1];
+            ele2.textContent = new_match[2];
             ele2.className = (better ? 'green' : 'red');
             ele.appendChild(ele2);
           } 
