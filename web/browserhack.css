@@ -334,7 +334,11 @@ body {
   overflow: auto;
 }
 
-/* overrides some bootstrap styles */
+/* bootstrap adds ::before to .container */
+.modal-content-wrapper::before {
+  display: none;
+}
+
 .jumbotron { 
   padding-top: 32px;
   padding-bottom: 16px;
