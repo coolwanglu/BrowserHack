@@ -15,7 +15,8 @@ body,
 }
 
 body {
-  color: #fff;
+  /* solarized */
+  color: #eee8d5;
   font-family: Consolas,monaco,"Source Code Pro","Lucida Console",monospace;
 }
 
@@ -114,6 +115,25 @@ body {
   padding: 0.5em;
   overflow: hidden;
   white-space: pre;
+}
+
+#browserhack-status .red {
+  /* solarized */
+  color: #dc322f;
+}
+
+#browserhack-status .green {
+  /* solarized */
+  color: #859900;
+}
+
+#browserhack-status .orange {
+  /* solarized */
+  color: #cb4b16;
+}
+#browserhack-status .highlight {
+  /* solarized */
+  color: #fdf6e3;
 }
 
 #browserhack-sidebar {
@@ -361,7 +381,8 @@ body {
 }
 
 .jumbotron p {
-  color: #aaa;
+  /* solarized */
+  color: #93a1a1;
   font-size: 17px;
 }
 
@@ -369,7 +390,8 @@ body {
   white-space: pre;
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
   box-shadow: 0 5px 15px rgba(255,255,255,.5);
-  color: #aaa;
+  /* solarized */
+  color: #93a1a1;
   background-color: rgba(0,0,0,0.5);
 }
 
@@ -389,7 +411,8 @@ a.list-group-item.group-header:hover {
 }
 
 .list-group-item:not(:hover):not(.active):not(.group-header) {
-  color: #aaa;
+  /* solarized */
+  color: #93a1a1;
   outline: none;
 }
 
@@ -430,6 +453,7 @@ a.list-group-item.group-header:hover {
 .close, 
 .close:focus,
 .close:hover {
-  color: #aaa;
+  /* solarized */
+  color: #93a1a1;
   opacity: 1;
 }

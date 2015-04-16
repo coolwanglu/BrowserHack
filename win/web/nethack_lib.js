@@ -100,6 +100,122 @@ var LibraryNetHack = {
       ele.scrollTop = ele.scrollHeight;
     },
 
+    update_status: function(row, str) {
+      var win = nethack.status_win;
+
+      if(win.childNodes.length < 2) {
+        win.innerHTML = '';
+        win.appendChild(document.createElement('p'));
+        win.appendChild(document.createElement('p'));
+      }
+
+      var row_ele = win.childNodes[row];
+
+      var create_highlight_element = function(old_value, new_value, invert) {
+        var ele = document.createElement('span');
+        var number_pattern = /^(-?\d+)(?:\/(-\d+))?$/;
+        var old_match = old_value.match(number_pattern);
+        var new_match = new_value.match(number_pattern);
+        if((old_match != null) && (new_match != null)) {
+          var diff = parseInt(new_match[0]) - parseInt(old_match[0]);
+          if(diff != 0) { // major difference
+            ele.textContent = new_value;
+            var better = (diff > 0);
+            if(invert) better = !better;
+            ele.className = (better ? 'green' : 'red');
+          } else if(new_match[1] == old_match[1]) { // the same
+            ele.textContent = new_value;
+          } else { // minor difference
+            var ele1 = document.createElement('span');
+            ele1.textContent = new_match[0] + '/';
+            ele.appendChild(ele1);
+
+            var better = ((parseInt(new_match[1]) || 0) > (parseInt(old_match[1]) || 0));
+            if(invert) better = !better;
+            var ele2 = document.createElement('span');
+            ele2.textContent = new_match[1];
+            ele2.className = (better ? 'green' : 'red');
+            ele.appendChild(ele2);
+          } 
+        } else { // nothing special
+          ele.textContent = new_value;
+        }
+        return ele;
+      };
+      // parse status line
+      // refer to bot1() and bot2() in src/botl.c
+      if(row == 0) {
+        var pattern = /^(.*?)(\s+St:)(-?\d+(?:\/\d+)?)(\s+Dx:)(-?\d+)(\s+Co:)(-?\d+)(\s+In:)(-?\d+)(\s+Wi:)(-?\d+)(\s+Ch:)(-?\d+)(.*?)$/;
+        var old_status = row_ele.textContent.match(pattern);
+        var new_status = str.match(pattern);
+        if(old_status == null) old_status = new_status;
+        if(new_status == null) {
+          row_ele.textContent = str;
+        } else {
+          try {
+            assert(old_status.length == 15);
+            assert(new_status.length == 15);
+            row_ele.innerHTML = '';
+          
+            // player name and rank
+            var ele1 = document.createElement('span');
+            ele1.className = 'highlight';
+            ele1.textContent = new_status[1];
+            row_ele.appendChild(ele1);
+
+            // status
+            for(var i = 2; i < 14; ++i) {
+              var status_name = new_status[i];
+              row_ele.appendChild(create_highlight_element(old_status[i], new_status[i]));
+            }
+
+            var ele2 = document.createElement('span');
+            ele2.className = 'highlight';
+            ele2.textContent = new_status[new_status.length - 1];
+            row_ele.appendChild(ele2);
+
+          } catch (e) {
+            console.log('Error while updating status', row, str);
+            row_ele.textContent = str;
+          }
+        }
+      } else if (row == 1) {
+        var pattern = /^(.*?:)(-?\d+)(\s+HP:)(\d+)(\()(\d+)(\))(\s+Pw:)(\d+)(\()(\d+)(\))(\s+AC:)(-?\d+)(\s+(?:HD|Xp|Exp):)(\d+(?:\/-?\d+)?)(\s+T:\d+)?(.*?)$/;
+        var old_status = row_ele.textContent.match(pattern);
+        var new_status = str.match(pattern);
+        if(old_status == null) old_status = new_status;
+        if((new_status == null) || (old_status.length != new_status.length)) {
+          row_ele.textContent = str; 
+        } else {
+          try {
+            row_ele.innerHTML = '';
+            // dungeon info and $ symbol
+            row_ele.appendChild(document.createTextNode(new_status[1]));
+
+            // status
+            var invert = false; // for AC
+            for(var i = 2; i < new_status.length - 1; ++i) {
+              var old_value = old_status[i];
+              var new_value = new_status[i];
+              if(new_value == null) continue;
+              row_ele.appendChild(create_highlight_element(old_status[i], new_status[i], invert));
+              // for AC, the smaller the better
+              invert = /^\s+AC:$/.test(new_value);
+            }
+
+            // others
+            var ele = document.createElement('span');
+            ele.className = 'orange';
+            ele.textContent = new_status[new_status.length - 1];
+            row_ele.appendChild(ele);
+          } catch (e) {
+            console.log('Error while updating status', row, str, e);
+            row_ele.textContent = str;
+          }
+        }
+      } else console.log('TODO: update status', row, str);
+    },
+
     create_window: function(obj) {
       var onclose = obj.onclose;
       var win_e = document.createElement('div'); win_e.className = 'modal fade';
@@ -625,6 +741,8 @@ var LibraryNetHack = {
 
     var mouse_event_handler = function(e) {
       if(ABORT) return; // game exited
+      if(e.shiftKey) return; // shiftKey is for wiki links
+
       var x = e.target.getAttribute('data-x');
       var y = e.target.getAttribute('data-y');
       if(x == null || y == null) return;
@@ -797,8 +915,8 @@ var LibraryNetHack = {
       if(!nethack.windows[i]) {
         nethack.windows[i] = {
           type: type,
-          x: 0,
-          y: 0,
+          curs_x: 0,
+          curs_y: 0,
           id: i
         };
         return i;
@@ -910,9 +1028,9 @@ var LibraryNetHack = {
         break;
       case nethack.NHW_STATUS:
         if(win.id != {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}) console.log('TODO: extra status window');
-        // there are only 2 lines in the status windows
-        if(nethack.status_win.childNodes.length >= 2) nethack.status_win.innerHTML = '';
-        nethack.add_message(nethack.status_win, attr, str);
+        if(win.curs_x != 1) { console.log('TODO: x=' + win.curs_x + ' for status window!'); }
+        else if((win.curs_y != 0) && (win.curs_y != 1)) { console.log('TODO: y=' + win.curs_y + ' for status window!'); }
+        else nethack.update_status(win.curs_y, str);
         break;
       case nethack.NHW_MENU:
       case nethack.NHW_TEXT:
