@@ -1216,10 +1216,42 @@ var LibraryNetHack = {
       var i = choices.indexOf(String.fromCharCode(27)); //ESC
       if(i > -1) choices = choices.substr(0, i);
 
-      var yn_area_text = ques;
-      if(choices != '') yn_area_text += ' [' + choices + ']';
-      if(def.charCodeAt(0)) yn_area_text += ' (' + def + ')';
-      nethack.input_area.textContent = yn_area_text;
+      nethack.input_area.innerHTML = '';
+
+      var ques_ele = document.createElement('span');
+      ques_ele.className = 'yn-question';
+      ques_ele.textContent = ques;
+      nethack.input_area.appendChild(ques_ele);
+
+      if(choices != '') {
+        if(def.charCodeAt(0)) {
+          var idx = choices.indexOf(def);
+          if(idx == -1) {
+            console.log('Error: bad yn_question', ques, choices, def);
+            idx = choices.length;
+          }
+          var ele = document.createElement('span');
+          ele.className = 'yn-choices';
+
+          var ele1 = document.createTextNode(' [' + choices.substring(0, idx));
+          ele.appendChild(ele1);
+
+          var ele2 = document.createElement('span');
+          ele2.className = 'yn-default-choice';
+          ele2.textContent = def;
+          ele.appendChild(ele2);
+
+          var ele3 = document.createTextNode(choices.substring(idx+1) + ']');
+          ele.appendChild(ele3);
+
+          nethack.input_area.appendChild(ele);
+        } else {
+          var ele = document.createElement('span');
+          ele.className = 'yn-choices';
+          ele.textContent = choices;
+          nethack.input_area.appendChild(ele);
+        }
+      }
       nethack.input_area.classList.add('in');
 
       nethack.pending_yn_arg = {

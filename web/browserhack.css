@@ -168,12 +168,27 @@ body {
   padding: 5px 1em;
   width: 100%;
   display: table;
+  font-weight: normal;
+}
+
+#browserhack-input-area .yn-question {
+  font-weight: bold;
+}
+
+#browserhack-input-area .yn-choices {
+  font-weight: normal;
+}
+
+#browserhack-input-area .yn-default-choice {
+  font-weight: bold;
+  color: #d33682;
 }
 
 #browserhack-input-area label {
   width: 1%;
   display: table-cell;
   white-space: pre;
+  font-weight: bold;
 }
 
 #browserhack-input-area input {
@@ -185,6 +200,7 @@ body {
   margin-top: -0.25em;
   margin-bottom: -0.25em;
   height: 1.5em;
+  font-weight: normal;
 }
 
 #browserhack-rip {
