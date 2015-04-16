@@ -391,7 +391,7 @@ body {
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
   box-shadow: 0 5px 15px rgba(255,255,255,.5);
   /* solarized */
-  color: #93a1a1;
+  color: #eee8d5;
   background-color: rgba(0,0,0,0.5);
 }
 
@@ -412,7 +412,7 @@ a.list-group-item.group-header:hover {
 
 .list-group-item:not(:hover):not(.active):not(.group-header) {
   /* solarized */
-  color: #93a1a1;
+  color: #eee8d5;
   outline: none;
 }
 
@@ -454,6 +454,6 @@ a.list-group-item.group-header:hover {
 .close:focus,
 .close:hover {
   /* solarized */
-  color: #93a1a1;
+  color: #eee8d5;
   opacity: 1;
 }

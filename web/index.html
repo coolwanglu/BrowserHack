@@ -132,6 +132,14 @@
               nethack.tilenames = JSON.parse(UTF8ArrayToString(u8_array, 0));
             } catch(e) { }
           });
+
+          // show warning on exit
+          window.addEventListener('beforeunload', function(e) {
+            if(ABORT) return;
+            var msg = "Game progress will be lost if not saved.";
+            e.returnValue = msg;
+            return msg;
+          });
         }],
         postRun: [],
         setStatus: function() {
