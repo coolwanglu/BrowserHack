@@ -956,6 +956,7 @@ var LibraryNetHack = {
 
   Web_display_nhwindow: function(win, blocking) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       var async = false;
       win = nethack.windows[win];
       assert(win);
@@ -1049,6 +1050,7 @@ var LibraryNetHack = {
 
   Web_display_file: function(str, complain) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       fn = Pointer_stringify(str);
       var data = '';
       try {
@@ -1092,6 +1094,7 @@ var LibraryNetHack = {
 
   Web_select_menu: function(win, how, selected_pp) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       var async = false;
       win = nethack.windows[win];
       assert(win);
@@ -1209,6 +1212,7 @@ var LibraryNetHack = {
 
   Web_yn_function: function(ques, choices, def) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       ques = Pointer_stringify(ques);
       choices = Pointer_stringify(choices);   
       def = String.fromCharCode(def & 0xff);
@@ -1265,6 +1269,7 @@ var LibraryNetHack = {
 
   Web_getlin: function(quest, input) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       nethack.get_line({
         label: (Pointer_stringify(quest) || '') + ' ',
         callback: function(value) {
@@ -1290,6 +1295,7 @@ var LibraryNetHack = {
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       nethack.get_line({
         label: '#',
         callback: function(value) {
