@@ -1248,7 +1248,7 @@ var LibraryNetHack = {
         } else {
           var ele = document.createElement('span');
           ele.className = 'yn-choices';
-          ele.textContent = choices;
+          ele.textContent = ' [' + choices + ']';
           nethack.input_area.appendChild(ele);
         }
       }
