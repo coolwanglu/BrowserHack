@@ -402,6 +402,13 @@ body {
   font-size: 17px;
 }
 
+/* to make modal dialog work on small screens */
+/* note that we only add .modal elements to document.body */
+.modal {
+  position: absolute;
+  overflow: visible;
+}
+
 .modal-content {
   white-space: pre;
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
