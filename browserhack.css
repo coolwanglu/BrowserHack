@@ -15,7 +15,8 @@ body,
 }
 
 body {
-  color: #fff;
+  /* solarized */
+  color: #eee8d5;
   font-family: Consolas,monaco,"Source Code Pro","Lucida Console",monospace;
 }
 
@@ -116,6 +117,25 @@ body {
   white-space: pre;
 }
 
+#browserhack-status .red {
+  /* solarized */
+  color: #dc322f;
+}
+
+#browserhack-status .green {
+  /* solarized */
+  color: #859900;
+}
+
+#browserhack-status .orange {
+  /* solarized */
+  color: #cb4b16;
+}
+#browserhack-status .highlight {
+  /* solarized */
+  colro: #93a1a1;
+}
+
 #browserhack-sidebar {
   position: absolute;
   top: 0;
@@ -148,12 +168,27 @@ body {
   padding: 5px 1em;
   width: 100%;
   display: table;
+  font-weight: normal;
+}
+
+#browserhack-input-area .yn-question {
+  font-weight: bold;
+}
+
+#browserhack-input-area .yn-choices {
+  font-weight: normal;
+}
+
+#browserhack-input-area .yn-default-choice {
+  font-weight: bold;
+  color: #d33682;
 }
 
 #browserhack-input-area label {
   width: 1%;
   display: table-cell;
   white-space: pre;
+  font-weight: bold;
 }
 
 #browserhack-input-area input {
@@ -165,6 +200,7 @@ body {
   margin-top: -0.25em;
   margin-bottom: -0.25em;
   height: 1.5em;
+  font-weight: normal;
 }
 
 #browserhack-rip {
@@ -334,7 +370,11 @@ body {
   overflow: auto;
 }
 
-/* overrides some bootstrap styles */
+/* bootstrap adds ::before to .container */
+.modal-content-wrapper::before {
+  display: none;
+}
+
 .jumbotron { 
   padding-top: 32px;
   padding-bottom: 16px;
@@ -357,7 +397,8 @@ body {
 }
 
 .jumbotron p {
-  color: #aaa;
+  /* solarized */
+  color: #93a1a1;
   font-size: 17px;
 }
 
@@ -365,7 +406,8 @@ body {
   white-space: pre;
   -webkit-box-shadow: 0 5px 15px rgba(255,255,255,.5);
   box-shadow: 0 5px 15px rgba(255,255,255,.5);
-  color: #aaa;
+  /* solarized */
+  color: #eee8d5;
   background-color: rgba(0,0,0,0.5);
 }
 
@@ -385,7 +427,8 @@ a.list-group-item.group-header:hover {
 }
 
 .list-group-item:not(:hover):not(.active):not(.group-header) {
-  color: #aaa;
+  /* solarized */
+  color: #eee8d5;
   outline: none;
 }
 
@@ -410,8 +453,8 @@ a.list-group-item.group-header:hover {
   vertical-align: middle;
 }
 
-.list-group-item .inventory-item-accelerator,
-.list-group-item .inventory-item-description {
+.list-group-item .inventory-item .inventory-item-accelerator,
+.list-group-item .inventory-item .inventory-item-description {
   display: none;
 }
 
@@ -426,6 +469,7 @@ a.list-group-item.group-header:hover {
 .close, 
 .close:focus,
 .close:hover {
-  color: #aaa;
+  /* solarized */
+  color: #eee8d5;
   opacity: 1;
 }

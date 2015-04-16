@@ -25,7 +25,7 @@
     <div class="container">
       <div class="jumbotron">
         <h1>BrowserHack<sup>beta</sup></h1>
-        <p>Press <kbd>?</kbd> for help. Shift-click a tile for magic</p>
+        <p>Press <kbd>?</kbd> for help. Shift-click a tile for magic.</p>
       </div>
       <div id="browserhack-main" class="container">
         <div id="browserhack-wrapper">
@@ -131,6 +131,14 @@
             try {
               nethack.tilenames = JSON.parse(UTF8ArrayToString(u8_array, 0));
             } catch(e) { }
+          });
+
+          // show warning on exit
+          window.addEventListener('beforeunload', function(e) {
+            if(ABORT) return;
+            var msg = "Game progress will be lost if not saved.";
+            e.returnValue = msg;
+            return msg;
           });
         }],
         postRun: [],
