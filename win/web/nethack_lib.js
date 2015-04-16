@@ -100,7 +100,7 @@ var LibraryNetHack = {
       ele.scrollTop = ele.scrollHeight;
     },
 
-    update_status: function(row, str) {
+    update_status: function() {
       var win = nethack.status_win;
 
       if(win.childNodes.length < 2) {
@@ -108,8 +108,6 @@ var LibraryNetHack = {
         win.appendChild(document.createElement('p'));
         win.appendChild(document.createElement('p'));
       }
-
-      var row_ele = win.childNodes[row];
 
       var create_highlight_element = function(old_value, new_value, invert) {
         var ele = document.createElement('span');
@@ -142,9 +140,12 @@ var LibraryNetHack = {
         }
         return ele;
       };
+
       // parse status line
       // refer to bot1() and bot2() in src/botl.c
-      if(row == 0) {
+      {
+        var row_ele = win.childNodes[0];
+        var str = nethack.status_lines[0];
         var pattern = /^(.*?)(\s+St:)(-?\d+(?:\/\d+)?)(\s+Dx:)(-?\d+)(\s+Co:)(-?\d+)(\s+In:)(-?\d+)(\s+Wi:)(-?\d+)(\s+Ch:)(-?\d+)(.*?)$/;
         var old_status = row_ele.textContent.match(pattern);
         var new_status = str.match(pattern);
@@ -175,11 +176,14 @@ var LibraryNetHack = {
             row_ele.appendChild(ele2);
 
           } catch (e) {
-            console.log('Error while updating status', row, str);
+            console.log('Error while updating first status line', str, e);
             row_ele.textContent = str;
           }
         }
-      } else if (row == 1) {
+      } 
+      {
+        var row_ele = win.childNodes[1];
+        var str = nethack.status_lines[1];
         var pattern = /^(.*?:)(-?\d+)(\s+HP:)(\d+)(\()(\d+)(\))(\s+Pw:)(\d+)(\()(\d+)(\))(\s+AC:)(-?\d+)(\s+(?:HD|Xp|Exp):)(\d+(?:\/-?\d+)?)(\s+T:\d+)?(.*?)$/;
         var old_status = row_ele.textContent.match(pattern);
         var new_status = str.match(pattern);
@@ -209,11 +213,11 @@ var LibraryNetHack = {
             ele.textContent = new_status[new_status.length - 1];
             row_ele.appendChild(ele);
           } catch (e) {
-            console.log('Error while updating status', row, str, e);
+            console.log('Error while updating second status line', str, e);
             row_ele.textContent = str;
           }
         }
-      } else console.log('TODO: update status', row, str);
+      }
     },
 
     create_window: function(obj) {
@@ -396,7 +400,7 @@ var LibraryNetHack = {
                 } else if (how == nethack.PICK_NONE) {
                    // do nothing
                 } else {
-                  console.log('ERR, unknown `how` for select_menu');
+                  console.log('Error: unknown `how` for select_menu');
                 }
               }
               menu_items.push(li);
@@ -642,6 +646,7 @@ var LibraryNetHack = {
     nethack.map_center_y = 0;
     nethack.windows = [];
     nethack.maptiles = [];
+    nethack.status_lines = ['', '']; // 2 status lines, current we just save the default text and parse them
 
     // input buffers
     nethack.keybuffer = [];
@@ -1030,7 +1035,7 @@ var LibraryNetHack = {
         if(win.id != {{{ makeGetValue('nethack.win_status_p', '0', 'i32') }}}) console.log('TODO: extra status window');
         if(win.curs_x != 1) { console.log('TODO: x=' + win.curs_x + ' for status window!'); }
         else if((win.curs_y != 0) && (win.curs_y != 1)) { console.log('TODO: y=' + win.curs_y + ' for status window!'); }
-        else nethack.update_status(win.curs_y, str);
+        else nethack.status_lines[win.curs_y] = str;
         break;
       case nethack.NHW_MENU:
       case nethack.NHW_TEXT:
@@ -1143,6 +1148,7 @@ var LibraryNetHack = {
 
   Web_nhgetch: function() { 
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       // for keyboard events we enable the animation on the map
       nethack.enable_map_smooth_scrolling();
       if(nethack.keybuffer.length > 0) {
@@ -1161,6 +1167,7 @@ var LibraryNetHack = {
   },
   Web_nh_poskey: function(x, y, mod) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.update_status();
       if(nethack.keybuffer.length > 0) {
         nethack.enable_map_smooth_scrolling();
         var ch = nethack.keybuffer.pop(0); 
