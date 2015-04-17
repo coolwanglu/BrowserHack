@@ -715,7 +715,6 @@ var LibraryNetHack = {
     nethack.status_win = document.getElementById('browserhack-status');
     nethack.inventory_win = document.getElementById('browserhack-inventory');
     nethack.input_area = document.getElementById('browserhack-input-area');
-    nethack.replay_btn = document.getElementById('browserhack-replay-btn');
 
     nethack.map_cursor_ele = document.createElement('div');
     nethack.map_cursor_ele.className = 'map-cursor';
@@ -781,18 +780,23 @@ var LibraryNetHack = {
       } else {
         e.preventDefault();
         var code = e.charCode || e.keyCode;
-        if(e.ctrlKey) {
-          // some browsers do not `apply` the control key to charCode
-          if((code >= 65) && (code <= 90)) { // A~Z
-            code = code - 64;
-          } else if ((code >= 97) && (code <= 122)) {
-            code = code - 96;
-          }
-        }
-        if(nethack.keypress_callback) {
-          nethack.keypress_callback(code);
+        // S-space: toggle zoom
+        if((code == 32) && (e.shiftKey) && !(e.ctrlKey || e.altKey || e.metaKey)) {
+          nethack.btn_toggle_zoom.click();
         } else {
-          nethack.keybuffer.push(code);
+          if(e.ctrlKey) {
+            // some browsers do not `apply` the control key to charCode
+            if((code >= 65) && (code <= 90)) { // A~Z
+              code = code - 64;
+            } else if ((code >= 97) && (code <= 122)) {
+              code = code - 96;
+            }
+          }
+          if(nethack.keypress_callback) {
+            nethack.keypress_callback(code);
+          } else {
+            nethack.keybuffer.push(code);
+          }
         }
       }
     });
@@ -895,6 +899,7 @@ var LibraryNetHack = {
 
       nethack.toggle_zoom();
     });
+    nethack.btn_toggle_zoom = btn_toggle_zoom;
     if(nethack.ui_preferences.zoom_out) { nethack.toggle_zoom(); }
 
     var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
@@ -1373,7 +1378,7 @@ var LibraryNetHack = {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.map_win_overlay.classList.add('in');
       nethack.map_win_overlay.classList.add('exited');
-      nethack.replay_btn.focus();
+      document.getElementById('browserhack-replay-btn').focus();
       // sync save/ again, for record and logfile
       FS.syncfs(function (err) { 
         if(err) console.log('Cannot sync FS, savegame may not work!'); 
