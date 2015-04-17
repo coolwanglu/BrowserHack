@@ -19,6 +19,7 @@ Need help for game testing, implementing more features and designing the interfa
 ###Shortcuts
 - `?` = NetHack Help
 - `shift-click` = Magic (only on tiles)
+  - very handy with `_`
 - `shift-space` = Toggle zoom
 
 ###Tilesets

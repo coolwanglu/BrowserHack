@@ -162,7 +162,7 @@ var LibraryNetHack = {
 
       var create_highlight_element = function(old_value, new_value, invert) {
         var ele = document.createElement('span');
-        var number_pattern = /^(-?\d+)(?:\/(-\d+))?$/;
+        var number_pattern = /^(-?\d+)(?:\/(\*\*|-\d+))?$/;
         var old_match = old_value.match(number_pattern);
         var new_match = new_value.match(number_pattern);
         if((old_match != null) && (new_match != null)) {
@@ -179,6 +179,7 @@ var LibraryNetHack = {
             ele1.textContent = new_match[1] + '/';
             ele.appendChild(ele1);
 
+            // '**' is 0
             var better = ((parseInt(new_match[2]) || 0) > (parseInt(old_match[2]) || 0));
             if(invert) better = !better;
             var ele2 = document.createElement('span');
@@ -197,7 +198,7 @@ var LibraryNetHack = {
       { // first row
         var row_ele = win.childNodes[0];
         var str = nethack.status_lines[0];
-        var pattern = /^(.*?)(\s+St:)(-?\d+(?:\/\d+)?)(\s+Dx:)(-?\d+)(\s+Co:)(-?\d+)(\s+In:)(-?\d+)(\s+Wi:)(-?\d+)(\s+Ch:)(-?\d+)(.*?)$/;
+        var pattern = /^(.*?)(\s+St:)(-?\d+(?:\/(?:\*\*|-?\d+))?)(\s+Dx:)(-?\d+)(\s+Co:)(-?\d+)(\s+In:)(-?\d+)(\s+Wi:)(-?\d+)(\s+Ch:)(-?\d+)(.*?)$/;
         var old_status = row_ele.textContent.match(pattern);
         var new_status = str.match(pattern);
         if(old_status == null) old_status = new_status;
@@ -566,6 +567,8 @@ var LibraryNetHack = {
          || item.str.indexOf('(weapon in hands)') > -1 
          || item.str.indexOf('(on left hand)') > -1 
          || item.str.indexOf('(on right hand)') > -1 
+         || item.str.indexOf('(on left foreclaw)') > -1 
+         || item.str.indexOf('(on right foreclaw)') > -1 
          || item.str.indexOf('(being worn)') > -1)
           ele.className += ' active'
 
