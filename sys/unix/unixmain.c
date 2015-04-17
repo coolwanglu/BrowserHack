@@ -306,6 +306,10 @@ char *argv[];
 		switch(argv[0][1]){
 		case 'D':
 #ifdef WIZARD
+#ifdef WEB_GRAPHICS
+            wizard = TRUE;
+            break;
+#else
 			{
 			  char *user;
 			  int uid;
@@ -332,6 +336,7 @@ char *argv[];
 			      break;
 			  }
 			}
+#endif
 			/* otherwise fall thru to discover */
 			wiz_error_flag = TRUE;
 #endif
