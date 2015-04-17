@@ -179,8 +179,10 @@ var LibraryNetHack = {
             ele1.textContent = new_match[1] + '/';
             ele.appendChild(ele1);
 
-            // '**' is 0
-            var better = ((parseInt(new_match[2]) || 0) > (parseInt(old_match[2]) || 0));
+            // '**' is 100
+            var old_value2 = (old_match[2] == '**' ? 100 : (parseInt(old_match[2]) || 0))
+            var new_value2 = (new_match[2] == '**' ? 100 : (parseInt(new_match[2]) || 0))
+            var better = new_value2 > old_value2;
             if(invert) better = !better;
             var ele2 = document.createElement('span');
             ele2.textContent = new_match[2];
