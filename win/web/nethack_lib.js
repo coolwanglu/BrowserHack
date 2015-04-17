@@ -135,6 +135,42 @@ var LibraryNetHack = {
       return ele;
     },
 
+    // for status line highlighting
+    create_highlight_element: function(old_value, new_value, invert) {
+      var ele = document.createElement('span');
+      var number_pattern = /^(-?\d+)(?:\/(\*\*|-?\d+))?$/;
+      var old_match = old_value.match(number_pattern);
+      var new_match = new_value.match(number_pattern);
+      if((old_match != null) && (new_match != null)) {
+        var diff = parseInt(new_match[1]) - parseInt(old_match[1]);
+        if(diff != 0) { // major difference
+          ele.textContent = new_value;
+          var better = (diff > 0);
+          if(invert) better = !better;
+          ele.className = (better ? 'green' : 'red');
+        } else if(new_match[2] == old_match[2]) { // the same
+          ele.textContent = new_value;
+        } else { // minor difference
+          var ele1 = document.createElement('span');
+          ele1.textContent = new_match[1] + '/';
+          ele.appendChild(ele1);
+
+          // '**' is 100
+          var old_value2 = (old_match[2] == '**' ? 100 : (parseInt(old_match[2]) || 0))
+          var new_value2 = (new_match[2] == '**' ? 100 : (parseInt(new_match[2]) || 0))
+          var better = new_value2 > old_value2;
+          if(invert) better = !better;
+          var ele2 = document.createElement('span');
+          ele2.textContent = new_match[2];
+          ele2.className = (better ? 'green' : 'red');
+          ele.appendChild(ele2);
+        } 
+      } else { // nothing special
+        ele.textContent = new_value;
+      }
+      return ele;
+    },
+
     add_message: function(ele, attr, str) {
       var msg_ele = nethack.create_text_element(attr, str);
       if(ele == nethack.message_win) {
@@ -160,40 +196,6 @@ var LibraryNetHack = {
         win.appendChild(document.createElement('p'));
       }
 
-      var create_highlight_element = function(old_value, new_value, invert) {
-        var ele = document.createElement('span');
-        var number_pattern = /^(-?\d+)(?:\/(\*\*|-\d+))?$/;
-        var old_match = old_value.match(number_pattern);
-        var new_match = new_value.match(number_pattern);
-        if((old_match != null) && (new_match != null)) {
-          var diff = parseInt(new_match[1]) - parseInt(old_match[1]);
-          if(diff != 0) { // major difference
-            ele.textContent = new_value;
-            var better = (diff > 0);
-            if(invert) better = !better;
-            ele.className = (better ? 'green' : 'red');
-          } else if(new_match[2] == old_match[2]) { // the same
-            ele.textContent = new_value;
-          } else { // minor difference
-            var ele1 = document.createElement('span');
-            ele1.textContent = new_match[1] + '/';
-            ele.appendChild(ele1);
-
-            // '**' is 100
-            var old_value2 = (old_match[2] == '**' ? 100 : (parseInt(old_match[2]) || 0))
-            var new_value2 = (new_match[2] == '**' ? 100 : (parseInt(new_match[2]) || 0))
-            var better = new_value2 > old_value2;
-            if(invert) better = !better;
-            var ele2 = document.createElement('span');
-            ele2.textContent = new_match[2];
-            ele2.className = (better ? 'green' : 'red');
-            ele.appendChild(ele2);
-          } 
-        } else { // nothing special
-          ele.textContent = new_value;
-        }
-        return ele;
-      };
 
       // parse status line
       // refer to bot1() and bot2() in src/botl.c
@@ -221,7 +223,7 @@ var LibraryNetHack = {
             // status
             for(var i = 2; i < 14; ++i) {
               var status_name = new_status[i];
-              row_ele.appendChild(create_highlight_element(old_status[i], new_status[i]));
+              row_ele.appendChild(nethack.create_highlight_element(old_status[i], new_status[i]));
             }
 
             var ele2 = document.createElement('span');
@@ -256,7 +258,7 @@ var LibraryNetHack = {
               var old_value = old_status[i];
               var new_value = new_status[i];
               if(new_value == null) continue;
-              row_ele.appendChild(create_highlight_element(old_status[i], new_status[i], invert));
+              row_ele.appendChild(nethack.create_highlight_element(old_status[i], new_status[i], invert));
               // for AC, the smaller the better
               invert = /^\s+AC:$/.test(new_value);
             }
