@@ -16,6 +16,11 @@ Search for `TODO` in `win/web/*` and `web/*`.
 
 Need help for game testing, implementing more features and designing the interface.
 
+###Shortcuts
+- `?` = NetHack Help
+- `shift-click` = Magic (only on tiles)
+- `shift-space` = Toggle zoom
+
 ###Tilesets
 - `Default_32.png`
   - The default tileset from vanilla NetHack 
