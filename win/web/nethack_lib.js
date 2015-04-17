@@ -148,7 +148,7 @@ var LibraryNetHack = {
     },
 
     update_status: function() {
-      if((nethack.status_lines[0] == null) || (nethack.status_lines[1] == nul)) return;
+      if((nethack.status_lines[0] == null) || (nethack.status_lines[1] == null)) return;
       var win = nethack.status_win;
 
       if(win.childNodes.length < 2) {
