@@ -382,7 +382,7 @@ var LibraryNetHack = {
         make_body: function(body, keymap) {
           var ele = document.createElement('div');
           ele.className = 'container modal-content-wrapper';
-            if(how == nethack.PICK_ANY) keymap['*'] = [];
+            var selectables = [];
             var list = document.createElement('div');
             list.className = 'list-group';
             // check if any item has a tile
@@ -395,7 +395,7 @@ var LibraryNetHack = {
               li.classList.add('list-group-item');
               li.setAttribute('data-identifier', item.identifier);
               if(item.identifier == 0) li.classList.add('group-header');
-              else if (how == nethack.PICK_ANY) keymap['*'].push(li);
+              else if (how == nethack.PICK_ANY) selectables.push(li);
 
               if(item.preselected) li.className += ' active';
 
@@ -478,6 +478,8 @@ var LibraryNetHack = {
             // Enter and Space are mapped to the button
             keymap[String.fromCharCode(13)] = button_e;
             keymap[String.fromCharCode(32)] = button_e;
+          } else if (how == nethack.PICK_ONE) {
+            if(!keymap['*']) keymap['*'] = selectables;
           }
         },
         onclose: function() { 
@@ -731,7 +733,7 @@ var LibraryNetHack = {
         var ele = nethack.pending_window_keymap[key];
         if(ele) {
           e.preventDefault();
-          if(key == '*') {
+          if((key == '*') && (ele instanceof Array)) {
             // special for menu
             // select all if some is not selected
             // otherwise deselect all
@@ -980,7 +982,10 @@ var LibraryNetHack = {
           type: type,
           curs_x: 0,
           curs_y: 0,
-          id: i
+          id: i,
+          elements_to_remove: [] // dialogs or elements, will be removed in destroy_nhwindow
+                                 // as there is transition animation while hiding the window
+                                 // this way is easier than removing the elements upon transitionEnd
         };
         return i;
       }
@@ -1024,13 +1029,13 @@ var LibraryNetHack = {
         case nethack.NHW_MESSAGE:
           break;
         case nethack.NHW_TEXT:
-          win.element_to_remove = nethack.show_text_window(win.lines, emterpreter_resume);
+          win.elements_to_remove.push(nethack.show_text_window(win.lines, emterpreter_resume));
           async = true;
           break;
         case nethack.NHW_MENU:
           if(!blocking) console.log('TODO windows are always blocking');
           if(win.lines) {
-            win.element_to_remove = nethack.show_text_window(win.lines, emterpreter_resume);
+            win.elements_to_remove.push(nethack.show_text_window(win.lines, emterpreter_resume));
             async = true;
           } else if(win.menu) {
             // show menu
@@ -1048,10 +1053,10 @@ var LibraryNetHack = {
 
   Web_destroy_nhwindow: function(win) {
     old_win = nethack.windows[win];
-    if(old_win.element_to_remove) {
-      old_win.element_to_remove.parentNode.removeChild(old_win.element_to_remove);
-      old_win.element_to_remove = null;
-    }
+    old_win.elements_to_remove.forEach(function(e) {
+      e.parentNode.removeChild(e);
+    });
+    old_win.elements_to_remove = [];
     assert(old_win);
     switch(win) {
       case {{{ makeGetValue('nethack.win_message_p', '0', 'i32') }}}:
@@ -1162,7 +1167,7 @@ var LibraryNetHack = {
           if((win.id == {{{ makeGetValue('nethack.win_inven_p', '0', 'i32') }}}) && (how == nethack.PICK_NONE)) {
             nethack.update_inventory_window(win.menu);
           } else {
-            win.element_to_remove = nethack.show_menu_window(win.menu, win.menu_prompt, how, selected_pp, emterpreter_resume);
+            win.elements_to_remove.push(nethack.show_menu_window(win.menu, win.menu_prompt, how, selected_pp, emterpreter_resume));
             async = true;
           }
           break;
