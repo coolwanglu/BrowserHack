@@ -147,6 +147,9 @@ var LibraryNetHack = {
       ele.scrollTop = ele.scrollHeight;
     },
 
+    // update the status lines and highlight changed areas
+    // NetHack sometimes updates the (same) status lines for multiple times, which cancels all the highlight
+    // so we only call this function right before waiting for user input
     update_status: function() {
       if((nethack.status_lines[0] == null) || (nethack.status_lines[1] == null)) return;
       var win = nethack.status_win;
@@ -1006,7 +1009,7 @@ var LibraryNetHack = {
 
   Web_display_nhwindow: function(win, blocking) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
-      nethack.update_status();
+      if(blocking) nethack.update_status();
       var async = false;
       win = nethack.windows[win];
       assert(win);
@@ -1100,7 +1103,6 @@ var LibraryNetHack = {
 
   Web_display_file: function(str, complain) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
-      nethack.update_status();
       fn = Pointer_stringify(str);
       var data = '';
       try {
@@ -1112,6 +1114,7 @@ var LibraryNetHack = {
         }
         data = 'File not found: ' + fn;
       }
+      nethack.update_status();
       nethack.show_text_window([{ attr:nethack.ATR_NONE, str:data }], emterpreter_resume, true);
     });
   },
@@ -1144,7 +1147,7 @@ var LibraryNetHack = {
 
   Web_select_menu: function(win, how, selected_pp) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
-      nethack.update_status();
+      if(how != nethack.PICK_NONE) nethack.update_status();
       var async = false;
       win = nethack.windows[win];
       assert(win);
