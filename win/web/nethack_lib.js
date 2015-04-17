@@ -68,7 +68,7 @@ var LibraryNetHack = {
 
       // show warning on exit
       window.addEventListener('beforeunload', function(e) {
-        if(nethack.exited_and_saved) return;
+        if(ABORT) return;
         var msg = "Game progress will be lost if not saved.";
         e.returnValue = msg;
         return msg;
@@ -148,6 +148,7 @@ var LibraryNetHack = {
     },
 
     update_status: function() {
+      if((nethack.status_lines[0] == null) || (nethack.status_lines[1] == nul)) return;
       var win = nethack.status_win;
 
       if(win.childNodes.length < 2) {
@@ -190,7 +191,7 @@ var LibraryNetHack = {
 
       // parse status line
       // refer to bot1() and bot2() in src/botl.c
-      {
+      { // first row
         var row_ele = win.childNodes[0];
         var str = nethack.status_lines[0];
         var pattern = /^(.*?)(\s+St:)(-?\d+(?:\/\d+)?)(\s+Dx:)(-?\d+)(\s+Co:)(-?\d+)(\s+In:)(-?\d+)(\s+Wi:)(-?\d+)(\s+Ch:)(-?\d+)(.*?)$/;
@@ -228,7 +229,7 @@ var LibraryNetHack = {
           }
         }
       } 
-      {
+      { // second row
         var row_ele = win.childNodes[1];
         var str = nethack.status_lines[1];
         var pattern = /^(.*?:)(-?\d+)(\s+HP:)(\d+)(\()(\d+)(\))(\s+Pw:)(\d+)(\()(\d+)(\))(\s+AC:)(-?\d+)(\s+(?:HD|Xp|Exp):)(\d+(?:\/-?\d+)?)(\s+T:\d+)?(.*?)$/;
@@ -265,6 +266,8 @@ var LibraryNetHack = {
           }
         }
       }
+
+      nethack.status_lines = [];
     },
 
     create_window: function(obj) {
@@ -693,8 +696,7 @@ var LibraryNetHack = {
     nethack.map_center_y = 0;
     nethack.windows = [];
     nethack.maptiles = [];
-    nethack.status_lines = ['', '']; // 2 status lines, current we just save the default text and parse them
-    nethack.exited_and_saved = false;
+    nethack.status_lines = []; // 2 status lines, current we just save the default text and parse them
 
     // input buffers
     nethack.keybuffer = [];
@@ -1365,19 +1367,20 @@ var LibraryNetHack = {
   },
 
   nethack_exit: function(status) {
-    FS.syncfs(function (err) { 
-      if(err) console.log('Cannot sync FS, savegame may not work!'); 
-      nethack.exited_and_saved = true;
+    return EmterpreterAsync.handle(function(emterpreter_resume) {
+      nethack.map_win_overlay.classList.add('in');
+      nethack.map_win_overlay.classList.add('exited');
+      nethack.replay_btn.focus();
+      // sync save/ again, for record and logfile
+      FS.syncfs(function (err) { 
+        if(err) console.log('Cannot sync FS, savegame may not work!'); 
+        emterpreter_resume(function() {
+          // emscripten_force_exit
+          Module['noExitRuntime'] = false;
+          Module['exit'](status);
+        });
+      });
     });
-
-    nethack.map_win_overlay.classList.add('in');
-    nethack.map_win_overlay.classList.add('exited');
-    nethack.replay_btn.focus();
-
-    // emscripten_force_exit
-    Module['noExitRuntime'] = false;
-    Module['exit'](status);
-
   },
 
   _: null
