@@ -14,7 +14,8 @@
  * Files expected to exist in the playground directory.
  */
 
-#define RECORD	      "record"	/* file containing list of topscorers */
+/* WangLu: move RECORD to save/ to make it locally persistent */
+#define RECORD	      "save/record"	/* file containing list of topscorers */
 #define HELP	      "help"	/* file containing command descriptions */
 #define SHELP	      "hh"	/* abbreviated form of the same */
 #define DEBUGHELP     "wizhelp" /* file containing debug mode cmds */

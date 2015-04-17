@@ -28,6 +28,53 @@ var LibraryNetHack = {
     LS_UI_PREFERENCES: 'BrowserHack_UI_Preferences',
     LS_OPTIONS: 'BrowserHack_Options',
 
+    pre_run: function() { // this is called before main()
+      ENV['USER'] = 'player'; // set to `player` such that NetHack will ask for a name
+      ENV['HOME'] = '/home/nethack_player';
+      try { FS.mkdir('/home/nethack_player'); } catch(e) { }
+
+      // mount and load the save dir
+      try { FS.mkdir('/nethack/save'); } catch(e) { }
+      FS.mount(IDBFS, {}, '/nethack/save');
+      addRunDependency('BrowserHack-save-dir');
+      FS.syncfs(true, function(err) { 
+        if(err) console.log('Cannot sync fs, savegame may not work!'); 
+        removeRunDependency('BrowserHack-save-dir');
+      });
+
+      // load user options
+      if(typeof localStorage !== 'undefined') {
+        var user_options = localStorage[nethack.LS_OPTIONS];
+        if(!user_options) {
+          // load default options
+          try {
+            user_options = FS.readFile('/nethack/nethackrc.default', { encoding: 'utf8' });
+            localStorage[nethack.LS_OPTIONS] = user_options;
+          } catch (e) {
+            user_options = '';
+          }
+        }
+        // save to home dir
+        FS.writeFile(ENV['HOME'] + '/.nethackrc', user_options, { encoding: 'utf8' });
+      }
+
+      // load tilenames
+      nethack.tilenames = [];
+      Browser.asyncLoad('tilenames.json', function(u8_array) {
+        try {
+          nethack.tilenames = JSON.parse(UTF8ArrayToString(u8_array, 0));
+        } catch(e) { }
+      });
+
+      // show warning on exit
+      window.addEventListener('beforeunload', function(e) {
+        if(nethack.exited_and_saved) return;
+        var msg = "Game progress will be lost if not saved.";
+        e.returnValue = msg;
+        return msg;
+      });
+    },
+
     apply_tileset: function(tile_file, tile_width, tile_height) {
       var tile_per_row = 40;
 
@@ -647,6 +694,7 @@ var LibraryNetHack = {
     nethack.windows = [];
     nethack.maptiles = [];
     nethack.status_lines = ['', '']; // 2 status lines, current we just save the default text and parse them
+    nethack.exited_and_saved = false;
 
     // input buffers
     nethack.keybuffer = [];
@@ -778,7 +826,7 @@ var LibraryNetHack = {
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
 
     // magic
-    // tilenames is loaded in index.html
+    // tilenames is loaded in pre_run
     document.addEventListener('click', function(e) {
       if(!nethack.tilenames) return;
       if(!e.shiftKey) return;
@@ -1317,12 +1365,19 @@ var LibraryNetHack = {
   },
 
   nethack_exit: function(status) {
+    FS.syncfs(function (err) { 
+      if(err) console.log('Cannot sync FS, savegame may not work!'); 
+      nethack.exited_and_saved = true;
+    });
+
     nethack.map_win_overlay.classList.add('in');
     nethack.map_win_overlay.classList.add('exited');
     nethack.replay_btn.focus();
+
     // emscripten_force_exit
     Module['noExitRuntime'] = false;
     Module['exit'](status);
+
   },
 
   _: null

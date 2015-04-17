@@ -157,7 +157,8 @@
 # endif
 #endif
 
-#define LOGFILE "logfile"	/* larger file for debugging purposes */
+/* WangLu: move RECORD to save/ to make it locally persistent */
+#define LOGFILE "save/logfile"	/* larger file for debugging purposes */
 #define NEWS "news"		/* the file containing the latest hack news */
 #define PANICLOG "paniclog"	/* log of panic and impossible events */
 
