@@ -844,7 +844,13 @@ var LibraryNetHack = {
       if(!r) return;
       var tile_idx = parseInt(r[1], 16);
       if(tile_idx >= nethack.tilenames.length) return;
-      var tile_name = nethack.tilenames[tile_idx].replace(' ', '_');
+
+      var tile_name = nethack.tilenames[tile_idx];
+      // handle the tile_names with a separator
+      var l = tile_name.split(' / ');
+      tile_name = l[l.length - 1];
+      tile_name = tile_name.replace(' ', '_');
+
       var wiki_url = 'http://nethackwiki.com/wiki/' + tile_name;
       e.preventDefault();
       window.open(wiki_url, '_blank');
