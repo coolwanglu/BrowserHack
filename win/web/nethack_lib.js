@@ -463,6 +463,7 @@ var LibraryNetHack = {
           body.appendChild(ele);
 
           if(how == nethack.PICK_ANY) {
+            if(!keymap['*']) keymap['*'] = selectables;
             var button_e = document.createElement('button'); 
             button_e.className = 'btn btn-primary'; 
             button_e.type = 'button';
@@ -478,9 +479,7 @@ var LibraryNetHack = {
             // Enter and Space are mapped to the button
             keymap[String.fromCharCode(13)] = button_e;
             keymap[String.fromCharCode(32)] = button_e;
-          } else if (how == nethack.PICK_ONE) {
-            if(!keymap['*']) keymap['*'] = selectables;
-          }
+          } 
         },
         onclose: function() { 
           resume_callback(function() { return -1; });
