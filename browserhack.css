@@ -323,6 +323,7 @@ body {
   /* from bootstrap */
   border: 1px solid rgb(102, 175, 233);
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+  pointer-events: none;
 }
 
 .inventory-item-accelerator {
