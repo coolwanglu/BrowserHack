@@ -399,7 +399,7 @@ var LibraryNetHack = {
               li.href = '#';
               li.classList.add('list-group-item');
               li.setAttribute('data-identifier', item.identifier);
-              if(item.identifier == 0) li.classList.add('group-header');
+              if(item.attr != nethack.ATR_NONE) li.classList.add('group-header');
               else if (how == nethack.PICK_ANY) selectables.push(li);
 
               if(item.preselected) li.className += ' active';
