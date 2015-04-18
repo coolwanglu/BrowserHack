@@ -4,8 +4,10 @@ NetHack ported to the Web by Lu Wang
 
 ##[Start your adventure](http://coolwanglu.github.io/BrowserHack/)
 
-###Screenshot
+###Screenshots
 ![Screenshot](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot.png)
+![Screenshot2](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot2.png)
+![Screenshot3](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot3.png)
 
 Most porting stuffs go to `win/web/*` and `web/*`.
 
