@@ -117,11 +117,13 @@ body {
   white-space: pre;
 }
 
+.item-description .cursed,
 #browserhack-status .red {
   /* solarized */
   color: #dc322f;
 }
 
+.item-description .blessed,
 #browserhack-status .green {
   /* solarized */
   color: #859900;
@@ -131,9 +133,11 @@ body {
   /* solarized */
   color: #cb4b16;
 }
+
+.item-description .uncursed,
 #browserhack-status .highlight {
   /* solarized */
-  colro: #93a1a1;
+  color: #93a1a1;
 }
 
 #browserhack-sidebar {
@@ -451,7 +455,8 @@ a.list-group-item.group-header:hover {
   margin-right: 1em;
 }
 
-.list-group-item > p {
+.list-group-item > p,
+.list-group-item > .item-description {
   display: inline-block;
   margin: 0;
   margin-left: 1em;
