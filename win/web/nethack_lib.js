@@ -427,10 +427,7 @@ var LibraryNetHack = {
               // tile
               if(item.tile != -1) {
                 li.appendChild(nethack.create_inventory_element(item))
-                li.appendChild(nethack.create_text_element(
-                  item.attr, 
-                  nethack.parse_inventory_description(item.str).description
-                ));
+                li.appendChild(nethack.create_item_description_element(nethack.parse_inventory_description(item.str)));
               } else {
                 // if some item has a tile, 
                 // we need to create a dummy tile here for alignment
@@ -536,30 +533,41 @@ var LibraryNetHack = {
     },
 
     parse_inventory_description: function(description) {
-      // parse description
-      var count = null;
-      var idx = description.indexOf(' ');
-      if(idx > -1) {
-        var prefix = description.substr(0, idx);
-        if((prefix == 'a') || (prefix == 'an')) {
-          count = 1;
-        } else {
-          count = parseInt(prefix);
-          if(isNaN(count)) count = null;
-        }
-        if(count != null) {
-          description = description.substr(idx + 1);
-        }
+      // parse count
+      var r = description.split(/^(a|an|\d+)\s+/);
+
+      var count = 1;
+      if(r.length == 3) {
+        description = r[2];
+        count = parseInt(r[1]) || 1; 
       }
-      
-      if(count == null) {
-        count = 1;
+
+      // parse BCU
+      var bcu = null;
+      var r = description.split(/^(blessed|uncursed|cursed)\s+/);
+      if(r.length == 3) {
+        description = r[2];
+        bcu = r[1];
       }
 
       return {
         count: count,
+        bcu: bcu,
         description: description
       };
+    },
+
+    create_item_description_element: function(parsed) {
+      var ele = document.createElement('span');
+      ele.className = 'item-description';
+      if(parsed.bcu) {
+        var ele1 = document.createElement('span');
+        ele1.className = parsed.bcu;
+        ele1.textContent = parsed.bcu + ' ';
+        ele.appendChild(ele1);
+      }
+      ele.appendChild(document.createTextNode(parsed.description));
+      return ele;
     },
 
     create_inventory_element: function(item) {
@@ -594,7 +602,7 @@ var LibraryNetHack = {
   
         var des = document.createElement('div');
         des.className = 'inventory-item-description';
-        des.textContent = parsed.description;
+        des.appendChild(nethack.create_item_description_element(parsed));
         ele.appendChild(des);
   
         if(parsed.count > 1) {
