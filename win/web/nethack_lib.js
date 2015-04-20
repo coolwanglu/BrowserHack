@@ -517,6 +517,21 @@ var LibraryNetHack = {
         } else if (e.keyCode == 9) { // Tab
           // prevent losing focus
           e.preventDefault();
+        } else if(obj.candidates) {
+          if (e.keyCode == 8) {// Backspace
+            input.value = input.value.substr(0, input.selectionStart);  
+          } else {
+            var l = [];
+            var s = input.value;
+            obj.candidates.forEach(function(str) {
+              if(str.indexOf(s) == 0)
+                l.push(str);
+            });
+            if(l.length == 1) {
+              input.value = l[0];
+              input.setSelectionRange(s.length, l[0].length);
+            }
+          }
         }
       });
       input.addEventListener('blur', function(e) {
@@ -573,15 +588,7 @@ var LibraryNetHack = {
     create_inventory_element: function(item) {
       var ele = document.createElement('span');
       ele.className = 'inventory-item';
-      if( item.str.indexOf('(wielded)') > -1 
-         || item.str.indexOf('(in quiver)') > -1 
-         || item.str.indexOf('(weapon in hand)') > -1 
-         || item.str.indexOf('(weapon in hands)') > -1 
-         || item.str.indexOf('(on left hand)') > -1 
-         || item.str.indexOf('(on right hand)') > -1 
-         || item.str.indexOf('(on left foreclaw)') > -1 
-         || item.str.indexOf('(on right foreclaw)') > -1 
-         || item.str.indexOf('(being worn)') > -1)
+      if(/\(wielded|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin)\)/.test(item.str)) 
           ele.className += ' active'
 
       var tile = document.createElement('span');
@@ -1276,11 +1283,13 @@ var LibraryNetHack = {
         nethack.keypress_callback = function(code) {
           nethack.keypress_callback = null;
           nethack.mouseclick_callback = null;
+          nethack.enable_map_smooth_scrolling();
           emterpreter_resume(function() { return code; });
         };
         nethack.mouseclick_callback = function(e) {
           nethack.keypress_callback = null;
           nethack.mouseclick_callback = null;
+          nethack.disable_map_smooth_scrolling();
           emterpreter_resume(function() { 
             {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
             {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
@@ -1379,17 +1388,16 @@ var LibraryNetHack = {
   Web_get_ext_cmd_helper: function(commands, command_count) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
+      var ext_cmd_list = [];
+      for(var i = 0; i < command_count; ++i) 
+        ext_cmd_list.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+
       nethack.get_line({
         label: '#',
+        candidates: ext_cmd_list,
         callback: function(value) {
-          var cmd_idx = -1;
           value = value || ''; // value could be null
-          for(var i = 0; i < command_count; ++i) {
-            if(value == Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}})) {
-              cmd_idx = i;
-              break;
-            }
-          }
+          var cmd_idx = ext_cmd_list.indexOf(value);
           if((cmd_idx == -1) && (value != ''))
             nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + value);
 
