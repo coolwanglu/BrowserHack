@@ -527,7 +527,10 @@ var LibraryNetHack = {
               if(str.indexOf(s) == 0)
                 l.push(str);
             });
-            if(l.length == 1) {
+            // we may press a, then press b before releasing a
+            // thus for the string "ab" we will receive two keyup events
+            // do not clear the selection
+            if((l.length == 1) && (input.selectionStart == input.selectionEnd)) {
               input.value = l[0];
               input.setSelectionRange(s.length, l[0].length);
             }
