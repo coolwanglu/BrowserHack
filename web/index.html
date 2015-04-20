@@ -113,24 +113,8 @@
             console.log(e);
           }
         },
-        print: function() { 
-          if (console.group !== undefined) {
-            console.group.apply(console, arguments); 
-            console.groupEnd();
-          } else {
-            // IE
-            console.log(arguments);
-          }
-        },
-        printErr: function() { 
-          if (console.group !== undefined) {
-            console.group.apply(console, arguments); 
-            console.groupEnd();
-          } else {
-            // IE
-            console.log(arguments);
-          }
-        }
+        print: function() { console.log(arguments); },
+        printErr: function() { console.log(arguments); }
       };
     </script>
     <script async src="browserhack.js"></script>
