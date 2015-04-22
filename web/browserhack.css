@@ -20,9 +20,11 @@ body {
   font-family: Consolas,monaco,"Source Code Pro","Lucida Console",monospace;
 }
 
+.jumbotron a:link,
+.jumbotron a:visited,
 .footer a:link,
 .footer a:visited { 
-  color: #fff; 
+  color: inherit;
   outline: none;
 }
 
