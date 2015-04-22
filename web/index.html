@@ -113,8 +113,14 @@
             console.log(e);
           }
         },
-        print: function() { console.log(arguments); },
-        printErr: function() { console.log(arguments); }
+        print: function(text) { 
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.log(text); 
+        },
+        printErr: function(text) { 
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text); 
+        }
       };
     </script>
     <script async src="browserhack.js"></script>

@@ -73,6 +73,15 @@ var LibraryNetHack = {
         e.returnValue = msg;
         return msg;
       });
+
+      // wizard mode
+      var wizard_mode_hashes = [
+        '#WL-the-wizard',
+        '#↑↑↓↓←→←→BAStart',
+        '#黑化黑灰化肥灰会挥发'
+      ];
+      if(document.location.hash == '#wizard-mode') alert('Could not enable wizard mode!');
+      else if(wizard_mode_hashes.indexOf(document.location.hash) != -1) Module.arguments = ['-D'];
     },
 
     apply_tileset: function(tile_file, tile_width, tile_height) {
