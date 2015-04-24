@@ -823,20 +823,33 @@ var LibraryNetHack = {
         if((code == 32) && (e.shiftKey) && !(e.ctrlKey || e.altKey || e.metaKey)) {
           nethack.btn_toggle_zoom.click();
         } else {
-          if(e.ctrlKey) {
-            // some browsers do not `apply` the control key to charCode
-            if((code >= 65) && (code <= 90)) { // A~Z
-              code = code - 64;
-            } else if ((code >= 97) && (code <= 122)) {
-              code = code - 96;
-            }
-          }
+          if(e.ctrlKey) return; // should have been processed in keydown
           if(nethack.keypress_callback) {
             nethack.keypress_callback(code);
           } else {
             nethack.keybuffer.push(code);
           }
         }
+      }
+    });
+
+    // we can only intercept ctrl-keys using keydown events in Chrome+Window
+    document.addEventListener('keydown', function(e) {
+      if(ABORT) return; // game exited
+      if(nethack.options_dialog || nethack.pending_get_line || nethack.pending_window_keymap || nethack.window_pending) return; // not for game input
+      if(!e.ctrlKey) return;
+      e.preventDefault();
+      var code = e.charCode || e.keyCode;
+      // some browsers do not `apply` the control key to charCode
+      if((code >= 65) && (code <= 90)) { // A~Z
+        code = code - 64;
+      } else if ((code >= 97) && (code <= 122)) {
+        code = code - 96;
+      }
+      if(nethack.keypress_callback) {
+        nethack.keypress_callback(code);
+      } else {
+        nethack.keybuffer.push(code);
       }
     });
 
