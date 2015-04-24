@@ -837,7 +837,8 @@ var LibraryNetHack = {
     document.addEventListener('keydown', function(e) {
       if(ABORT) return; // game exited
       if(nethack.options_dialog || nethack.pending_get_line || nethack.pending_window_keymap || nethack.window_pending) return; // not for game input
-      if(!e.ctrlKey) return;
+      if(!e.ctrlKey) return; // key events without ctrl is handled in `keypress` events
+      if(e.keyCode == 17) return; // ctrl is pressed down
       e.preventDefault();
       var code = e.charCode || e.keyCode;
       // some browsers do not `apply` the control key to charCode
