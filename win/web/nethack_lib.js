@@ -604,7 +604,7 @@ var LibraryNetHack = {
     create_inventory_element: function(item) {
       var ele = document.createElement('span');
       ele.className = 'inventory-item';
-      if(/\(wielded|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin)\)/.test(item.str)) 
+      if(/\((wielded( in other hand)?|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin))\)/.test(item.str)) 
           ele.className += ' active'
 
       var tile = document.createElement('span');
