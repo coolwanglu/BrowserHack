@@ -377,8 +377,8 @@ void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph)
 }
 void Web_raw_print(const char * str) { puts(str); }
 void Web_raw_print_bold(const char * str) { puts(str); }
-int Web_nhgetch(); // in JS;
-int Web_mousebuffer_empty(); // in JS
+int Web_nhgetch(void); // in JS;
+int Web_mousebuffer_empty(void); // in JS
 int Web_nh_poskey(int * x, int * y, int * mod); // in JS
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
