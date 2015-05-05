@@ -7,7 +7,7 @@ extern short glyph2tile[];
 extern int total_tiles_used;
 extern const char *killed_by_prefix[];
 
-void BrowserHack_update_stats_helper(int, int, int, int, int); // in JS
+void BrowserHack_update_stats_helper(int, int, int, int, int, int, int, int, int, int, int, int); // in JS
 void BrowserHack_update_stats() {
   BrowserHack_update_stats_helper(
 #ifndef GOLDOBJ
@@ -18,7 +18,16 @@ void BrowserHack_update_stats() {
     u.ulevel,
     moves,
     depth(&u.uz),
-    10-u.uac
+    u.uac,
+
+    u.uhave.amulet,
+    u.uhave.menorah,
+    u.uhave.questart,
+
+    u.uevent.qcompleted,
+    u.uevent.gehennom_entered,
+    u.uevent.udemigod,
+    u.uevent.ascended
   );
 }
 
@@ -392,9 +401,17 @@ void Web_print_glyph(winid window, XCHAR_P x, XCHAR_P y, int glyph)
 }
 void Web_raw_print(const char * str) { puts(str); }
 void Web_raw_print_bold(const char * str) { puts(str); }
-int Web_nhgetch(void); // in JS;
+int Web_nhgetch_helper(void); // in JS;
+int Web_nhgetch(void) {
+  BrowserHack_update_stats();
+  return Web_nhgetch_helper();
+}
 int Web_mousebuffer_empty(void); // in JS
-int Web_nh_poskey(int * x, int * y, int * mod); // in JS
+int Web_nh_poskey_helper(int * x, int * y, int * mod); // in JS
+int Web_nh_poskey(int * x, int * y, int * mod) {
+  BrowserHack_update_stats();
+  return Web_nh_poskey_helper(x, y, mod);
+}
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
 char Web_yn_function(const char * ques, const char * choices, CHAR_P def); // in JS
@@ -564,3 +581,9 @@ struct window_procs Web_procs = {
     Web_outrip,
     Web_preference_update
 };
+
+void nethack_exit_helper(int status); // in JS
+void nethack_exit(int status) {
+  BrowserHack_update_stats();
+  nethack_exit_helper(status);
+}

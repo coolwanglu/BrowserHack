@@ -1073,22 +1073,27 @@ var LibraryNetHack = {
     });
   },
 
-  BrowserHack_update_stats_helper: function(s_gold, s_level, s_turn, s_depth, s_armorclass) {
+  BrowserHack_update_stats_helper: function(s_gold, s_level, s_turn, s_depth, s_armorclass, s_have_amulet, s_have_candelabrum, s_have_quest_artifact, s_quest_completed, s_entered_gehennom, s_killed_wizard, s_ascended) {
+    if(!window.parent.kongregate) return;
     var stats = {
       gold: s_gold,
       level: s_level,
       turn: s_turn,
-      depth: s_depth,
-      armorclass: s_armorclass  
+      depth: (s_depth < 1) ? (100 - s_depth) : s_depth, //s_depth < 1 for Elemental Planes
+      armorclass: 10 - s_armorclass,  // armor class range from 10 to -infinity
+      have_amulet: s_have_amulet,
+      have_candelabrum: s_have_candelabrum,
+      have_quest_artifact: s_have_quest_artifact,
+      quest_completed: s_quest_completed,
+      entered_gehennom: s_entered_gehennom,
+      killed_wizard: s_killed_wizard,
+      ascended: s_ascended
     };
-    console.log(JSON.stringify(stats));
-    if(window.parent.kongregate) {
-      if(!nethack.last_kongregate_stats) nethack.last_kongregate_stats = {};
-      for(var n in stats) {
-        if(nethack.last_kongregate_stats[n] != stats[n]) {
-          nethack.last_kongregate_stats[n] = stats[n];
-          window.parent.kongregate.stats.submit(n, stats[n]);
-        }
+    if(!nethack.last_kongregate_stats) nethack.last_kongregate_stats = {};
+    for(var n in stats) {
+      if(nethack.last_kongregate_stats[n] != stats[n]) {
+        nethack.last_kongregate_stats[n] = stats[n];
+        window.parent.kongregate.stats.submit(n, stats[n]);
       }
     }
   },
@@ -1340,7 +1345,7 @@ var LibraryNetHack = {
     if((x == win.curs_x) && (y == win.curs_y)) nethack.update_map_cursor(x, y);
   },
 
-  Web_nhgetch: function() { 
+  Web_nhgetch_helper: function() { 
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
       // for keyboard events we enable the animation on the map
@@ -1359,7 +1364,7 @@ var LibraryNetHack = {
       }
     });
   },
-  Web_nh_poskey: function(x, y, mod) {
+  Web_nh_poskey_helper: function(x, y, mod) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
       if(nethack.keybuffer.length > 0) {
@@ -1508,7 +1513,7 @@ var LibraryNetHack = {
     });
   },
 
-  nethack_exit: function(status) {
+  nethack_exit_helper: function(status) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.map_win_overlay.classList.add('in');
       nethack.map_win_overlay.classList.add('exited');
