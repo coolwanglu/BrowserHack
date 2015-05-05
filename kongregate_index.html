@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>BrowserHack</title>
+    <script type="text/javascript" src="https://cdn1.kongregate.com/javascripts/kongregate_api.js"></script>
+    
+    <!-- Give the shell no border/scroll bars and match the Kongregate background color.
+         If your game needs scrollbars, you might need to modify these styles -->
+    <style type="text/css">
+      html{border: none; overflow: hidden; background-color: #333; height: 100%;}
+      body{border: none; background-color: #333;margin:0; padding:0;}
+    </style>
+  </head>
+
+  <body>
+    <script type="text/javascript">
+      kongregateAPI.loadAPI(function onLoadCompleted(){
+        // Get a global reference to the kongregate API. This way, pages included in the
+        // iframe can access it by using "parent.kongregate"
+        kongregate = kongregateAPI.getAPI();
+        referrer = document.referrer.toString();
+        
+        document.getElementById('contentdiv').innerHTML = 
+          '<iframe id="content" frameborder="0" style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;border:0px none;padding:0px;" width="100%" height="100%" src="index.html?' + Math.random() + '"></iframe>';
+      });
+    </script>
+    
+    <div id="contentdiv" style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;borders:none;"></div>
+  </body>
+</html>
