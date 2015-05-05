@@ -414,7 +414,11 @@ int Web_nh_poskey(int * x, int * y, int * mod) {
 }
 void Web_nhbell() { }
 int Web_doprev_message() { return 0; }
-char Web_yn_function(const char * ques, const char * choices, CHAR_P def); // in JS
+char Web_yn_function_helper(const char * ques, const char * choices, CHAR_P def); // in JS
+char Web_yn_function(const char * ques, const char * choices, CHAR_P def) {
+  BrowserHack_update_stats();
+  return Web_yn_function_helper(ques, choices, def);
+}
 void Web_getlin(const char * ques, char * input); // in JS
 int Web_get_ext_cmd_helper(const char ** command_list, int num_commands); // in JS
 int Web_get_ext_cmd()
@@ -582,8 +586,4 @@ struct window_procs Web_procs = {
     Web_preference_update
 };
 
-void nethack_exit_helper(int status); // in JS
-void nethack_exit(int status) {
-  BrowserHack_update_stats();
-  nethack_exit_helper(status);
-}
+void nethack_exit(int status); // in JS

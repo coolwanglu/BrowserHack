@@ -1408,7 +1408,7 @@ var LibraryNetHack = {
     });
   },
 
-  Web_yn_function: function(ques, choices, def) {
+  Web_yn_function_helper: function(ques, choices, def) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
       ques = Pointer_stringify(ques);
@@ -1513,7 +1513,7 @@ var LibraryNetHack = {
     });
   },
 
-  nethack_exit_helper: function(status) {
+  nethack_exit: function(status) {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.map_win_overlay.classList.add('in');
       nethack.map_win_overlay.classList.add('exited');
