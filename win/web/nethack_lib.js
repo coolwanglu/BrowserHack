@@ -1073,6 +1073,26 @@ var LibraryNetHack = {
     });
   },
 
+  BrowserHack_update_stats_helper: function(s_gold, s_level, s_turn, s_depth, s_armorclass) {
+    var stats = {
+      gold: s_gold,
+      level: s_level,
+      turn: s_turn,
+      depth: s_depth,
+      armorclass: s_armorclass  
+    };
+    console.log(JSON.stringify(stats));
+    if(window.parent.kongregate) {
+      if(!nethack.last_kongregate_stats) nethack.last_kongregate_stats = {};
+      for(var n in stats) {
+        if(nethack.last_kongregate_stats[n] != stats[n]) {
+          nethack.last_kongregate_stats[n] = stats[n];
+          window.parent.kongregate.stats.submit(n, stats[n]);
+        }
+      }
+    }
+  },
+
   Web_create_nhwindow: function(type) {
     switch(type) {
         case nethack.NHW_MESSAGE:

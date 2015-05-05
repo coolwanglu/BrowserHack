@@ -7,6 +7,21 @@ extern short glyph2tile[];
 extern int total_tiles_used;
 extern const char *killed_by_prefix[];
 
+void BrowserHack_update_stats_helper(int, int, int, int, int); // in JS
+void BrowserHack_update_stats() {
+  BrowserHack_update_stats_helper(
+#ifndef GOLDOBJ
+    u.ugold,
+#else
+    money_cnt(invent),
+#endif
+    u.ulevel,
+    moves,
+    depth(&u.uz),
+    10-u.uac
+  );
+}
+
 // forward declaration
 winid Web_create_nhwindow(int type);
 
