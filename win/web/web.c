@@ -7,8 +7,11 @@ extern short glyph2tile[];
 extern int total_tiles_used;
 extern const char *killed_by_prefix[];
 
+static int in_player_selection = 0;
+
 void BrowserHack_update_stats_helper(int, int, int, int, int, int, int, int, int, int, int, int); // in JS
 void BrowserHack_update_stats() {
+  if(in_player_selection) return; // should not report anything in player_selection(), at which moment the stats are invalid
   BrowserHack_update_stats_helper(
 #ifndef GOLDOBJ
     u.ugold,
@@ -48,6 +51,8 @@ void Web_init_nhwindows(int * argcp, char ** argv)
 }
 void Web_player_selection() 
 { 
+    in_player_selection = 1;
+
     // based on tty port
 	int i, k, n;
 	char pick4u = 'n', thisch, lastch = 0;
@@ -339,6 +344,7 @@ void Web_player_selection()
 	    }
 	}
 	/* Success! */
+    in_player_selection = 0;
 }
 void Web_askname_helper(char * buf, int len); // in JS
 void Web_askname() { Web_askname_helper(plname, PL_NSIZ); }
