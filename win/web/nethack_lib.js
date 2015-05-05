@@ -27,20 +27,60 @@ var LibraryNetHack = {
     // for localStorage
     LS_UI_PREFERENCES: 'BrowserHack_UI_Preferences',
     LS_OPTIONS: 'BrowserHack_Options',
+    LS_KONGREGATE_SAVE: 'BrowserHack_Kongregate_Save',
 
-    pre_run: function() { // this is called before main()
-      ENV['USER'] = 'player'; // set to `player` such that NetHack will ask for a name
+    pre_run: function() { // thisois called before main()
+      if(window.parent.kongregate) {
+        ENV['USER'] = window.parent.kongregate.services.getUsername();
+        if(ENV['USER'] == 'coolwanglu')
+          Module.arguments = ['-D'];   
+      } else {
+        ENV['USER'] = 'player'; // set to `player` such that NetHack will ask for a name
+        // wizard mode
+        var wizard_mode_hashes = [
+          '#↑↑↓↓←→←→BAStart',
+          '#黑化黑灰化肥灰会挥发',
+          '#The quick brown fox jumps over the lazy dog',
+          '#子子子子子子子子子子子子',
+          '#Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo',
+          '#石室诗士施氏嗜狮誓食十狮',
+          '#WL-the-wizard'
+        ];
+        if(document.location.hash == '#wizard-mode') alert('Could not enable wizard mode!');
+        else if(wizard_mode_hashes.indexOf(document.location.hash) != -1) Module.arguments = ['-D'];
+      }
+
       ENV['HOME'] = '/home/nethack_player';
       try { FS.mkdir('/home/nethack_player'); } catch(e) { }
 
       // mount and load the save dir
       try { FS.mkdir('/nethack/save'); } catch(e) { }
-      FS.mount(IDBFS, {}, '/nethack/save');
-      addRunDependency('BrowserHack-save-dir');
-      FS.syncfs(true, function(err) { 
-        if(err) console.log('Cannot sync fs, savegame may not work!'); 
-        removeRunDependency('BrowserHack-save-dir');
-      });
+      if(window.parent.kongregate) {
+        // in kongregate we cannot use IDBFS
+        if(typeof localStorage !== 'undefined') {
+          var savedata = {};
+          try {
+            var savedata = JSON.parse(localStorage[nethack.LS_KONGREGATE_SAVE] || '');
+          } catch (e) {}
+          for(var fn in savedata) {
+            try {
+              var data = atob(savedata[fn]);
+              var buf = new ArrayBuffer(data.length);
+              var array = new Uint8Array(buf);
+              for(var i = 0; i < data.length; ++i)
+                array[i] = data.charCodeAt(i);
+              FS.writeFile(fn, array, { encoding: 'binary' });
+            } catch(e) { }
+          }
+        }
+      } else {
+        FS.mount(IDBFS, {}, '/nethack/save');
+        addRunDependency('BrowserHack-save-dir');
+        FS.syncfs(true, function(err) { 
+          if(err) console.log('Cannot sync fs, savegame may not work!'); 
+          removeRunDependency('BrowserHack-save-dir');
+        });
+      }
 
       // load user options
       if(typeof localStorage !== 'undefined') {
@@ -68,24 +108,30 @@ var LibraryNetHack = {
 
       // show warning on exit
       window.addEventListener('beforeunload', function(e) {
-        if(ABORT) return;
-        var msg = "Game progress will be lost if not saved.";
-        e.returnValue = msg;
-        return msg;
+        if(ABORT) {
+          if(window.parent.kongregate) {
+            if(typeof localStorage !== 'undefined') {
+              try {
+                var savedata = {};
+                var savefiles = FS.readdir('/nethack/save');
+                for(var i = 0; i < savefiles.length; ++i) {
+                  var fn = savefiles[i];
+                  if(fn == '.' || fn == '..') continue;
+                  fn = '/nethack/save/' + fn;
+                  try {
+                    savedata[fn] = btoa(String.fromCharCode.apply(null, FS.readFile(fn, {encoding: 'binary'})));
+                  } catch (e) {}
+                }
+                localStorage[nethack.LS_KONGREGATE_SAVE] = JSON.stringify(savedata);
+              } catch(e) { }
+            }
+          }
+        } else {
+          var msg = "Game progress will be lost if not saved.";
+          e.returnValue = msg;
+          return msg;
+        }
       });
-
-      // wizard mode
-      var wizard_mode_hashes = [
-        '#↑↑↓↓←→←→BAStart',
-        '#黑化黑灰化肥灰会挥发',
-        '#The quick brown fox jumps over the lazy dog',
-        '#子子子子子子子子子子子子',
-        '#Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo',
-        '#石室诗士施氏嗜狮誓食十狮',
-        '#WL-the-wizard'
-      ];
-      if(document.location.hash == '#wizard-mode') alert('Could not enable wizard mode!');
-      else if(wizard_mode_hashes.indexOf(document.location.hash) != -1) Module.arguments = ['-D'];
     },
 
     apply_tileset: function(tile_file, tile_width, tile_height) {
@@ -927,7 +973,7 @@ var LibraryNetHack = {
     ];
 
     if(!nethack.ui_preferences.tileset)
-        nethack.ui_preferences.tileset = nethack.builtin_tilesets[0];
+        nethack.ui_preferences.tileset = nethack.builtin_tilesets[3];
 
     nethack.apply_tileset(
       nethack.ui_preferences.tileset.file,
@@ -962,15 +1008,20 @@ var LibraryNetHack = {
     if(nethack.ui_preferences.zoom_out) { nethack.toggle_zoom(); }
 
     var btn_toggle_fullscreen = document.getElementById('browserhack-toggle-fullscreen');
-    btn_toggle_fullscreen.addEventListener('click', function() {
-      // set ui preferences first, toggle_fullscreen will need the current value (in recenter_map())
-      nethack.ui_preferences.fullscreen = !nethack.ui_preferences.fullscreen;
-      nethack.save_ui_preferences();
+    if(window.parent.kongregate) {
+      // always full screen when embedded
+      btn_toggle_fullscreen.style.display = 'none';
+    } else {
+      btn_toggle_fullscreen.addEventListener('click', function() {
+        // set ui preferences first, toggle_fullscreen will need the current value (in recenter_map())
+        nethack.ui_preferences.fullscreen = !nethack.ui_preferences.fullscreen;
+        nethack.save_ui_preferences();
 
-      nethack.toggle_fullscreen();
-    });
+        nethack.toggle_fullscreen();
+      });
 
-    if(nethack.ui_preferences.fullscreen) { nethack.toggle_fullscreen(); }
+      if(nethack.ui_preferences.fullscreen) { nethack.toggle_fullscreen(); }
+    }
 
     var btn_options = document.getElementById('browserhack-options');
     if(typeof localStorage === 'undefined') {

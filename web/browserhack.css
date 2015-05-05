@@ -48,6 +48,12 @@ body {
   background-color:#222324;
 }
 
+.kongregate #browserhack-main {
+  box-shadow: none;
+  border: 0px none;
+}
+
+.kongregate #browserhack-main,
 #browserhack-main.fullscreen {
   position: fixed;
   top:0;
