@@ -2,7 +2,6 @@
 
 NetHack ported to the Web by Lu Wang
 
-##[Start your adventure](http://coolwanglu.github.io/BrowserHack/)
 ##[Play on Kongregate](http://www.kongregate.com/games/coolwanglu/browserhack)
 
 ###Screenshots
