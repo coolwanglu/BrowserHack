@@ -531,6 +531,10 @@ winid endwin;
     }
 }
 
+#ifdef WEB_GRAPHICS
+void BrowserHack_report(const char *, int);
+#endif
+
 /* Be careful not to call panic from here! */
 void
 done(how)
@@ -611,6 +615,11 @@ int how;
      */
 
 die:
+#ifdef WEB_GRAPHICS
+    if(how == ASCENDED) BrowserHack_report("ascended", 1);
+    else if(how == ESCAPED) BrowserHack_report("escaped", 1);
+    else if(how <= GENOCIDED) BrowserHack_report("died", 1);
+#endif
 	program_state.gameover = 1;
 	/* in case of a subsequent panic(), there's no point trying to save */
 	program_state.something_worth_saving = 0;
