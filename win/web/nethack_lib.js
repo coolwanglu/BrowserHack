@@ -1099,7 +1099,7 @@ var LibraryNetHack = {
 
   BrowserHack_report: function(str, value) {
     if(window.parent.kongregate)
-      window.parent.kongregate.stats.submit(Pointer_stringify(str), v);
+      window.parent.kongregate.stats.submit(Pointer_stringify(str), value);
   },
 
   Web_create_nhwindow: function(type) {
