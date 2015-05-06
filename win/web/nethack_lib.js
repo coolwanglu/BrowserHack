@@ -1073,13 +1073,14 @@ var LibraryNetHack = {
     });
   },
 
-  BrowserHack_update_stats_helper: function(s_gold, s_level, s_turn, s_depth, s_armorclass, s_have_amulet, s_have_candelabrum, s_have_quest_artifact, s_quest_completed, s_entered_gehennom, s_killed_wizard, s_ascended) {
+  BrowserHack_update_stats_helper: function(s_gold, s_level, s_turn, s_depth, s_hp, s_armorclass, s_have_amulet, s_have_candelabrum, s_have_quest_artifact, s_quest_completed, s_entered_gehennom, s_killed_wizard, s_ascended) {
     if(!window.parent.kongregate) return;
     var stats = {
       gold: s_gold,
       level: s_level,
       turn: s_turn,
       depth: (s_depth < 1) ? (100 - s_depth) : s_depth, //s_depth < 1 for Elemental Planes
+      death: (s_hp <= 0) ? 1 : 0,
       armorclass: 10 - s_armorclass,  // armor class range from 10 to -infinity
       have_amulet: s_have_amulet,
       have_candelabrum: s_have_candelabrum,

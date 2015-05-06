@@ -9,7 +9,7 @@ extern const char *killed_by_prefix[];
 
 static int in_player_selection = 0;
 
-void BrowserHack_update_stats_helper(int, int, int, int, int, int, int, int, int, int, int, int); // in JS
+void BrowserHack_update_stats_helper(int s_gold, int s_level, int s_turn, int s_depth, int s_hp, int s_armorclass, int s_have_amulet, int s_have_candelabrum, int s_have_quest_artifact, int s_quest_completed, int s_entered_gehennom, int s_killed_wizard, int s_ascended); // in JS
 void BrowserHack_update_stats() {
   if(in_player_selection) return; // should not report anything in player_selection(), at which moment the stats are invalid
   BrowserHack_update_stats_helper(
@@ -21,6 +21,7 @@ void BrowserHack_update_stats() {
     u.ulevel,
     moves,
     depth(&u.uz),
+    (Upolyd ? u.mh : u.uhp),
     u.uac,
 
     u.uhave.amulet,
