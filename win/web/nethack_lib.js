@@ -1097,8 +1097,9 @@ var LibraryNetHack = {
     }
   },
 
-  BrowserHack_UI_report: function(str, value) {
-    window.parent.kongregate.stats.submit(Pointer_stringify(str), v);
+  BrowserHack_report: function(str, value) {
+    if(window.parent.kongregate)
+      window.parent.kongregate.stats.submit(Pointer_stringify(str), v);
   },
 
   Web_create_nhwindow: function(type) {
