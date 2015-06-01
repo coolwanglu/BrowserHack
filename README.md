@@ -36,6 +36,10 @@ Need help for game testing, implementing more features and designing the interfa
 - `Geoduck_40x24.png`
   - By geoduck42
   - http://geoduck42.deviantart.com/art/Geoduck-s-4-0-NetHack-Tiles-305559245
+- `NethackModern_32.png`
+  - By Tower Hufham
+  - http://sourceforge.net/projects/nethackmodern/
+
 
 ###How to use number pad for movements?
 Press `O` and set `number_pad` to 1. Make sure that NumLock is on.

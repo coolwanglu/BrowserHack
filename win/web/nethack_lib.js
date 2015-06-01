@@ -969,7 +969,8 @@ var LibraryNetHack = {
         { file: 'DawnHack_32.png', width: 32, height: 32 },
         { file: 'Absurd_32.png', width: 32, height: 32 },
         { file: 'Nevanda_32.png', width: 32, height: 32 },
-        { file: 'Geoduck_40x24.png', width: 24, height: 40 }
+        { file: 'Geoduck_40x24.png', width: 24, height: 40 },
+        { file: 'NethackModern_32.png', width: 32, height: 32 }
     ];
 
     if(!nethack.ui_preferences.tileset)
