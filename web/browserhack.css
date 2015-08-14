@@ -90,6 +90,8 @@ body {
   left:0;
   transform: scale(1.0);
   transform-origin: 0 0;
+  background-color: rgba(255, 255, 255, 0.025);
+  box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.025);
 }
 
 #browserhack-main.zoomed-out #browserhack-map-content { 

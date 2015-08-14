@@ -175,6 +175,10 @@ var LibraryNetHack = {
         }
       }         
 
+	  // update whole map size
+      nethack.map_win_content.style.width = nethack.tile_width * 80 + 'px';
+      nethack.map_win_content.style.height = nethack.tile_height * 24 + 'px';
+	  
       nethack.recenter_map();
     },
 
