@@ -1,11 +1,11 @@
-#BrowserHack
+# BrowserHack
 
 NetHack ported to the Web by Lu Wang
 
-##[Play on Kongregate](http://www.kongregate.com/games/coolwanglu/browserhack)
-##[Play on GitHub](http://coolwanglu.github.io/BrowserHack)
+## [Play on Kongregate](http://www.kongregate.com/games/coolwanglu/browserhack)
+## [Play on GitHub](http://coolwanglu.github.io/BrowserHack)
 
-###Screenshots
+### Screenshots
 ![Screenshot](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot.png)
 ![Screenshot2](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot2.png)
 ![Screenshot3](https://raw.githubusercontent.com/coolwanglu/BrowserHack/master/screenshot3.png)
@@ -19,7 +19,7 @@ Search for `TODO` in `win/web/*` and `web/*`.
 
 Need help for game testing, implementing more features and designing the interface.
 
-###Tilesets
+### Tilesets
 - `Default_32.png`
   - The default tileset from vanilla NetHack 
   - http://nethackwiki.com/wiki/Default_tileset_scaled_to_32x32
@@ -41,15 +41,15 @@ Need help for game testing, implementing more features and designing the interfa
   - http://sourceforge.net/projects/nethackmodern/
 
 
-###How to use number pad for movements?
+### How to use number pad for movements?
 Press `O` and set `number_pad` to 1. Make sure that NumLock is on.
 You can make this permanent by setting it in options (the cog icon in the top-right corner), then reload the game. 
 
-###How to apply my tileset?
+### How to apply my tileset?
 Run this in your browser console:
 `nethack.apply_tilset(tile_file_url, tile_width, tile_height);`
 
-###Where is my favorite ASCII interface?
+### Where is my favorite ASCII interface?
 As a player of SuperZZT, yeah, I agree that ASCII is definitely important. But it might worth a separate port. Even if the characters are implemented as a special type of tilesets, you may not get the smooth input experience.
 
 Checkout [nethack.alt.org (aka NAO)](http://alt.org/nethack/) where you can play the ASCII version online.
