@@ -1,5 +1,5 @@
 <!doctype html>
-<!--  vim: set sw=2 ts=2 et : --> 
+<!--  vim: set sw=2 ts=2 et : -->
 <html>
   <head>
     <meta charset="utf-8">
@@ -7,6 +7,7 @@
     <title>BrowserHack</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="browserhack.css">
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -76,7 +77,7 @@
               <div id="browserhack-loading-progress-bar" class="progress-bar progress-bar-striped active" class="progress-bar" style="width: 0%;"></div>
             </div>
           </div>
-        </div> 
+        </div>
         <a target="_blank" href="http://www.kongregate.com/games/coolwanglu/browserhack"><img src="http://cdn1.kongcdn.com/images/sharedassets/badge_dev_220x25.png" width="220" height="25" alt="Kongregate Games logo" style="position:absolute;left:100.2%;bottom:100.2%;transform:rotate(90deg);transform-origin:0 100%;"></a>
       </div>
       <br/>
@@ -125,13 +126,13 @@
             console.log(e);
           }
         },
-        print: function(text) { 
+        print: function(text) {
           if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-          console.log(text); 
+          console.log(text);
         },
-        printErr: function(text) { 
+        printErr: function(text) {
           if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-          console.error(text); 
+          console.error(text);
         }
       };
       })();
