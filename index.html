@@ -96,7 +96,7 @@
       var Module;
       (function() {
       if(window.parent != window.top) {
-        if(!/^https?:\/\/www.kongregate.com\/games\/coolwanglu\/browserhack/.test(window.parent.referrer)) {
+        if(!/^https?:\/\/www.kongregate.com\/.*/.test(window.parent.referrer)) {
           alert(':(');
           document.body.innerHTML = '';
           return;
