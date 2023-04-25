@@ -3,14 +3,14 @@
 
 body,
 #browserhack-loading {
-  /* http://philbit.com/svgpatterns/#crossstripes */
+  /* https://philiprogers.com/svgpatterns/#crossstripes */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNDAzYzNmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiMxZTI5MmQiPjwvcGF0aD4KPC9zdmc+");
 }
 
 #browserhack-map-overlay,
 .modal-content,
 #browserhack-sidebar {
-  /* http://philbit.com/svgpatterns/#specklednoise */
+  /* https://philiprogers.com/svgpatterns/#specklednoise */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCI+CjxmaWx0ZXIgaWQ9Im4iIHg9IjAiIHk9IjAiPgo8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC43IiBudW1PY3RhdmVzPSIxMCIgc3RpdGNoVGlsZXM9InN0aXRjaCI+PC9mZVR1cmJ1bGVuY2U+CjwvZmlsdGVyPgo8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzAwMCI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjQiPjwvcmVjdD4KPC9zdmc+");
 }
 
@@ -23,7 +23,7 @@ body {
 .jumbotron a:link,
 .jumbotron a:visited,
 .footer a:link,
-.footer a:visited { 
+.footer a:visited {
   color: inherit;
   outline: none;
 }
@@ -35,7 +35,7 @@ body {
 }
 
 #browserhack-main {
-  border:1px solid; 
+  border:1px solid;
   padding:0;
   width:800px;
   height:600px;
@@ -94,7 +94,7 @@ body {
   box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.025);
 }
 
-#browserhack-main.zoomed-out #browserhack-map-content { 
+#browserhack-main.zoomed-out #browserhack-map-content {
   transform: scale(0.5);
 }
 
@@ -390,7 +390,7 @@ body {
   display: none;
 }
 
-.jumbotron { 
+.jumbotron {
   padding-top: 32px;
   padding-bottom: 16px;
   margin-bottom: 0px;
@@ -489,7 +489,7 @@ a.list-group-item.group-header:hover {
   outline: none;
 }
 
-.close, 
+.close,
 .close:focus,
 .close:hover {
   /* solarized */
