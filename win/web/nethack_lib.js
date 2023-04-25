@@ -33,7 +33,7 @@ var LibraryNetHack = {
       if(window.parent.kongregate) {
         ENV['USER'] = window.parent.kongregate.services.getUsername();
         if(ENV['USER'] == 'coolwanglu')
-          Module.arguments = ['-D'];   
+          Module.arguments = ['-D'];
       } else {
         ENV['USER'] = 'player'; // set to `player` such that NetHack will ask for a name
         // wizard mode
@@ -76,8 +76,8 @@ var LibraryNetHack = {
       } else {
         FS.mount(IDBFS, {}, '/nethack/save');
         addRunDependency('BrowserHack-save-dir');
-        FS.syncfs(true, function(err) { 
-          if(err) console.log('Cannot sync fs, savegame may not work!'); 
+        FS.syncfs(true, function(err) {
+          if(err) console.log('Cannot sync fs, savegame may not work!');
           removeRunDependency('BrowserHack-save-dir');
         });
       }
@@ -173,12 +173,12 @@ var LibraryNetHack = {
             }
           }
         }
-      }         
+      }
 
 	  // update whole map size
       nethack.map_win_content.style.width = nethack.tile_width * 80 + 'px';
       nethack.map_win_content.style.height = nethack.tile_height * 24 + 'px';
-	  
+
       nethack.recenter_map();
     },
 
@@ -227,7 +227,7 @@ var LibraryNetHack = {
           ele2.textContent = new_match[2];
           ele2.className = (better ? 'green' : 'red');
           ele.appendChild(ele2);
-        } 
+        }
       } else { // nothing special
         ele.textContent = new_value;
       }
@@ -276,7 +276,7 @@ var LibraryNetHack = {
             assert(old_status.length == 15);
             assert(new_status.length == 15);
             row_ele.innerHTML = '';
-          
+
             // player name and rank
             var ele1 = document.createElement('span');
             ele1.className = 'highlight';
@@ -299,7 +299,7 @@ var LibraryNetHack = {
             row_ele.textContent = str;
           }
         }
-      } 
+      }
       { // second row
         var row_ele = win.childNodes[1];
         var str = nethack.status_lines[1];
@@ -308,7 +308,7 @@ var LibraryNetHack = {
         var new_status = str.match(pattern);
         if(old_status == null) old_status = new_status;
         if((new_status == null) || (old_status.length != new_status.length)) {
-          row_ele.textContent = str; 
+          row_ele.textContent = str;
         } else {
           try {
             row_ele.innerHTML = '';
@@ -346,7 +346,7 @@ var LibraryNetHack = {
       var win_e = document.createElement('div'); win_e.className = 'modal fade';
         var dialog_e = document.createElement('div'); dialog_e.className = 'modal-dialog';
           var content_e = document.createElement('div'); content_e.className = 'modal-content';
-            var button_e = document.createElement('button'); button_e.className = 'close'; 
+            var button_e = document.createElement('button'); button_e.className = 'close';
             button_e.type = 'button';
             button_e.innerHTML = '<span>&times;</span>';
             button_e.addEventListener('click', function(e) {
@@ -484,7 +484,7 @@ var LibraryNetHack = {
                 badge.textContent = acc;
                 keymap[acc] = li;
               }
-                
+
               li.appendChild(badge);
 
               // tile
@@ -492,7 +492,7 @@ var LibraryNetHack = {
                 li.appendChild(nethack.create_inventory_element(item))
                 li.appendChild(nethack.create_item_description_element(nethack.parse_inventory_description(item.str)));
               } else {
-                // if some item has a tile, 
+                // if some item has a tile,
                 // we need to create a dummy tile here for alignment
                 if(any_tile) li.appendChild(nethack.create_inventory_element(item))
                 else {
@@ -503,7 +503,7 @@ var LibraryNetHack = {
                 }
 
                 li.appendChild(nethack.create_text_element(
-                  item.attr, 
+                  item.attr,
                   item.str
                 ));
               }
@@ -529,13 +529,13 @@ var LibraryNetHack = {
 
           if(how == nethack.PICK_ANY) {
             if(!keymap['*']) keymap['*'] = selectables;
-            var button_e = document.createElement('button'); 
-            button_e.className = 'btn btn-primary'; 
+            var button_e = document.createElement('button');
+            button_e.className = 'btn btn-primary';
             button_e.type = 'button';
             button_e.textContent = 'OK';
             button_e.addEventListener('click', function(e) {
               // hide the window first
-              // as new window may be created in save_menu_selection 
+              // as new window may be created in save_menu_selection
               // which sets nethack.pending_window_keymap
               nethack.hide_window(win);
               save_menu_selection();
@@ -544,11 +544,11 @@ var LibraryNetHack = {
             // Enter and Space are mapped to the button
             keymap[String.fromCharCode(13)] = button_e;
             keymap[String.fromCharCode(32)] = button_e;
-          } 
+          }
         },
-        onclose: function() { 
+        onclose: function() {
           resume_callback(function() { return -1; });
-        } 
+        }
       });
 
       nethack.show_window(win);
@@ -582,7 +582,7 @@ var LibraryNetHack = {
           e.preventDefault();
         } else if(obj.candidates) {
           if (e.keyCode == 8) {// Backspace
-            input.value = input.value.substr(0, input.selectionStart);  
+            input.value = input.value.substr(0, input.selectionStart);
           } else {
             var l = [];
             var s = input.value;
@@ -620,7 +620,7 @@ var LibraryNetHack = {
       var count = 1;
       if(r.length == 3) {
         description = r[2];
-        count = parseInt(r[1]) || 1; 
+        count = parseInt(r[1]) || 1;
       }
 
       // parse BCU
@@ -654,7 +654,7 @@ var LibraryNetHack = {
     create_inventory_element: function(item) {
       var ele = document.createElement('span');
       ele.className = 'inventory-item';
-      if(/\((wielded( in other hand)?|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin))\)/.test(item.str)) 
+      if(/\((wielded( in other hand)?|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin))\)/.test(item.str))
           ele.className += ' active'
 
       var tile = document.createElement('span');
@@ -665,19 +665,19 @@ var LibraryNetHack = {
       } else {
         tile.className += ' tile' + item.tile.toString(16);
         ele.appendChild(tile);
-  
+
         var acc = document.createElement('div');
         acc.className = 'inventory-item-accelerator';
-        acc.textContent = String.fromCharCode(item.accelerator);  
+        acc.textContent = String.fromCharCode(item.accelerator);
         ele.appendChild(acc);
-  
+
         var parsed = nethack.parse_inventory_description(item.str);
-  
+
         var des = document.createElement('div');
         des.className = 'inventory-item-description';
         des.appendChild(nethack.create_item_description_element(parsed));
         ele.appendChild(des);
-  
+
         if(parsed.count > 1) {
           var cnt = document.createElement('div');
           cnt.className = 'inventory-item-count';
@@ -685,7 +685,7 @@ var LibraryNetHack = {
           ele.appendChild(cnt);
         }
       }
-        
+
       return ele;
     },
 
@@ -701,7 +701,7 @@ var LibraryNetHack = {
           if(!cur_row) {
             cur_row = document.createElement('p');
             nethack.inventory_win.appendChild(cur_row);
-          } 
+          }
           var ele = nethack.create_inventory_element(item);
           cur_row.appendChild(ele);
         }
@@ -711,7 +711,7 @@ var LibraryNetHack = {
     show_window: function(ele) {
       document.body.appendChild(ele);
       ele.style.display = 'block';
-      
+
       ++nethack.window_pending;
       setTimeout(function() {
         ele.classList.add('in');
@@ -834,9 +834,9 @@ var LibraryNetHack = {
       } else if(nethack.pending_yn_arg) { // pending a yn question
         var key = e.charCode || e.keyCode;
         var choices = nethack.pending_yn_arg.choices;
-        var ch = String.fromCharCode(key); 
+        var ch = String.fromCharCode(key);
         var yn_result = null;
-        if(choices == '') { // accept any 
+        if(choices == '') { // accept any
           yn_result = ch;
         } else {
           ch = ch.toLowerCase();
@@ -914,7 +914,7 @@ var LibraryNetHack = {
 
       x = parseInt(x);
       y = parseInt(y);
-       
+
       var mod = 0;
       if(e.type == 'click') mod = 1;
       else if (e.type == 'dblclick') mod = 2;
@@ -953,7 +953,7 @@ var LibraryNetHack = {
       tile_name = l[l.length - 1];
       tile_name = tile_name.replace(' ', '_');
 
-      var wiki_url = 'http://nethackwiki.com/wiki/' + tile_name;
+      var wiki_url = 'https://nethackwiki.com/wiki/' + tile_name;
       e.preventDefault();
       window.open(wiki_url, '_blank');
     });
@@ -1032,7 +1032,7 @@ var LibraryNetHack = {
     if(typeof localStorage === 'undefined') {
       btn_options.style.display = 'none';
     } else {
-      // try to load user .nethackrc 
+      // try to load user .nethackrc
       var textarea = document.createElement('textarea');
       textarea.className = 'form-control';
       textarea.rows = '20';
@@ -1156,7 +1156,7 @@ var LibraryNetHack = {
         break;
       default:
         console.log(win.type, 'TODO clear_nhwindow');
-    } 
+    }
   },
 
   Web_display_nhwindow: function(win, blocking) {
@@ -1250,7 +1250,7 @@ var LibraryNetHack = {
         break;
       default:
         console.log(win.type, 'TODO putstr', attr, str);
-    } 
+    }
   },
 
   Web_display_file: function(str, complain) {
@@ -1354,13 +1354,13 @@ var LibraryNetHack = {
     if((x == win.curs_x) && (y == win.curs_y)) nethack.update_map_cursor(x, y);
   },
 
-  Web_nhgetch_helper: function() { 
+  Web_nhgetch_helper: function() {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
       // for keyboard events we enable the animation on the map
       nethack.enable_map_smooth_scrolling();
       if(nethack.keybuffer.length > 0) {
-        var ch = nethack.keybuffer.pop(0); 
+        var ch = nethack.keybuffer.pop(0);
         setTimeout(function() {
           emterpreter_resume(function() { return ch; });
         }, 1);
@@ -1378,7 +1378,7 @@ var LibraryNetHack = {
       nethack.update_status();
       if(nethack.keybuffer.length > 0) {
         nethack.enable_map_smooth_scrolling();
-        var ch = nethack.keybuffer.pop(0); 
+        var ch = nethack.keybuffer.pop(0);
         setTimeout(function() {
           emterpreter_resume(function() { return ch; });
         }, 1);
@@ -1405,15 +1405,15 @@ var LibraryNetHack = {
           nethack.keypress_callback = null;
           nethack.mouseclick_callback = null;
           nethack.disable_map_smooth_scrolling();
-          emterpreter_resume(function() { 
+          emterpreter_resume(function() {
             {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
             {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
             {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
-            return 0; 
+            return 0;
           });
         };
       }
-        
+
     });
   },
 
@@ -1421,7 +1421,7 @@ var LibraryNetHack = {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
       ques = Pointer_stringify(ques);
-      choices = Pointer_stringify(choices);   
+      choices = Pointer_stringify(choices);
       def = String.fromCharCode(def & 0xff);
 
       var i = choices.indexOf(String.fromCharCode(27)); //ESC
@@ -1496,7 +1496,7 @@ var LibraryNetHack = {
       cur_line.textContent = str;
       ele.appendChild(cur_line);
     }
-        
+
     nethack.map_win_overlay.classList.add('rip');
   },
 
@@ -1504,7 +1504,7 @@ var LibraryNetHack = {
     return EmterpreterAsync.handle(function(emterpreter_resume) {
       nethack.update_status();
       var ext_cmd_list = [];
-      for(var i = 0; i < command_count; ++i) 
+      for(var i = 0; i < command_count; ++i)
         ext_cmd_list.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
 
       nethack.get_line({
@@ -1528,8 +1528,8 @@ var LibraryNetHack = {
       nethack.map_win_overlay.classList.add('exited');
       document.getElementById('browserhack-replay-btn').focus();
       // sync save/ again, for record and logfile
-      FS.syncfs(function (err) { 
-        if(err) console.log('Cannot sync FS, savegame may not work!'); 
+      FS.syncfs(function (err) {
+        if(err) console.log('Cannot sync FS, savegame may not work!');
         emterpreter_resume(function() {
           // emscripten_force_exit
           Module['noExitRuntime'] = false;

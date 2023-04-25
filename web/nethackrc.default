@@ -2,7 +2,7 @@
 # Changes will be applied after the game is reloaded (you can save & quit)
 # To restore this file to default, clear everything and reload the game
 
-# For a list of options, read http://nethackwiki.com/wiki/Options
+# For a list of options, read https://nethackwiki.com/wiki/Options
 # Note that not all the NetHack options are supported by BrowserHack
 
 OPTIONS=number_pad:0, cmdassist, hilite_pet, !autopickup, autoquiver
